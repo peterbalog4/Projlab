@@ -1,3 +1,5 @@
+package jarmuvek;
+
 public class Auto extends Jarmu {
 
     public void csuszik(){
