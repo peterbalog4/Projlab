@@ -1,3 +1,5 @@
+package vezerles;
+
 import java.util.Scanner;
 
 public class Skeleton {
@@ -26,7 +28,16 @@ public class Skeleton {
 
     /**
      * Kiírja a visszatérést és csökkenti a behúzást.
-     * Visszatérési érték nélküli metódusokhoz.
+     * Visszatérési érték nélküli (void) metódusokhoz.
+     */
+    public static void visszater(String metodusNev) {
+        behuzasSzintje--;
+        behuzasKiiras();
+        System.out.println("<- " + metodusNev);
+    }
+    /**
+     * Kiírja a visszatérést és csökkenti a behúzást.
+     * Visszatérési értékkel (pl. boolean, int) rendelkező metódusokhoz.
      */
     public static void visszater(String metodusNev, String visszateresiErtek){
         behuzasSzintje--;
@@ -60,6 +71,26 @@ public class Skeleton {
                 behuzasKiiras();
                 System.out.println("Érvénytelen válasz! Kérlek, 'y' vagy 'n' betűt adj meg.");
             }
+        }
+    }
+
+    /**
+     * Választós kérdés, ahol a menüpontokat számokkal lehet kiválasztani.
+     */
+    public static int kerdezOpcio(String kerdes, int maxOpcio) {
+        while (true) {
+            behuzasKiiras();
+            System.out.print("? " + kerdes + " (1-" + maxOpcio + "): ");
+            try {
+                int valasz = Integer.parseInt(scanner.nextLine().trim());
+                if (valasz >= 1 && valasz <= maxOpcio) {
+                    return valasz;
+                }
+            } catch (NumberFormatException e) {
+                // Nem számot adott meg
+            }
+            behuzasKiiras();
+            System.out.println("Érvénytelen válasz! Adj meg egy számot 1 és " + maxOpcio + " között.");
         }
     }
 }
