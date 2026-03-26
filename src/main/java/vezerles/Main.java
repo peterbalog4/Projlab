@@ -1,9 +1,86 @@
 package vezerles;
 
+import kotrofejek.*;
+import funkcionalisElemek.*;
+import jarmuvek.*;
+
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        boolean kilepes = false;
+
+        while(!kilepes){
+            System.out.println("\n___ Skeleton menü ___\n");
+            System.out.println("1. Autó vagy Busz elakadása hóban");
+            System.out.println("2. Járművek ütközése jégen");
+            System.out.println("3. Hókotró utat takarít");
+            System.out.println("4. Sáv eljegesedése");
+            System.out.println("5. Kotrófej cseréje");
+            System.out.println("6. Vásárlás a Boltban");
+            System.out.println("7. Busz forduló teljesítése");
+            System.out.println("8. Kotrófej újratöltése");
+            System.out.println("9. Sávváltás");
+            System.out.println("10. Hóesés");
+            System.out.println("11. JMF módosítása a Telephelyen");
+            System.out.println("12. Kilépés");
+
+            int valasz = Skeleton.kerdezOpcio("Melyik use-case-t szeretnéd tesztelni?", 12);
+
+            System.out.print("\n");
+            switch (valasz){
+                case 1:
+                    //System.out.print("\n");
+                    tesztElakadas();
+                    break;
+                case 2:
+                    //tesztUtkozes();
+                    break;
+                case 3:
+                    //tesztHokotroTakaritas();
+                    break;
+                case 4:
+                    //tesztJegesedes();
+                    break;
+                case 5:
+                    //tesztFejcsere();
+                    break;
+                case 6:
+                    //tesztVasarlas();
+                    break;
+                case 7:
+                    //tesztBuszFordulas();
+                    break;
+                case 8:
+                    //tesztFejUjratoltes();
+                    break;
+                case 9:
+                    //tesztSavvaltas();
+                    break;
+                case 10:
+                    //tesztHoeses();
+                    break;
+                case 11:
+                    //tesztPenzValtozas();
+                    break;
+                case 12:
+                    kilepes = true;
+                    System.out.println("Kilépés...");
+                    break;
+            }
+            System.out.print("\n");
+        }
+    }
+
+    private static void tesztElakadas() {
+        Skeleton.naploz("Inicializálás: Autó elakadása hóban");
+
+        KorSzamlalo k = new KorSzamlalo();
+        Auto a = new Auto();
+        Sav s = new Sav();
+
+        Skeleton.naploz("Teszt indítása");
+
+        k.leptet();
     }
     
 }
