@@ -1,5 +1,8 @@
 package kotrofejek;
+import funkcionalisElemek.Sav;
+import funkcionalisElemek.Ut;
 
-public class KotroFej{
+public abstract class KotroFej{
 
+    public abstract void takarit(Sav sav, Ut ut);
 }
