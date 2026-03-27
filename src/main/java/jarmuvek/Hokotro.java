@@ -3,6 +3,10 @@ import kotrofejek.KotroFej;
 
 public class Hokotro extends Jarmu {
 
+    public Hokotro(String id) {
+        super(id);
+    }
+
     @Override
     public void kozlekedik() {
 

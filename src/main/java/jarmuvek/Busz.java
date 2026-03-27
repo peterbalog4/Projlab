@@ -1,14 +1,25 @@
 package jarmuvek;
 
+import funkcionalisElemek.Sav;
+import vezerles.Skeleton;
+
 public class Busz extends Jarmu {
 
+    public Busz(String id) {
+        super(id);
+    }
     public void csuszik(){
 
     }
 
     @Override
     public void kozlekedik(){
+        Skeleton.hiv(this.id + ":Busz: kozlekedik()");
 
+        Sav s = new Sav();
+        s.mozgat(this);
+
+        Skeleton.visszater("kozlekedik");
     }
 
     @Override

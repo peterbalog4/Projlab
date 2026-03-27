@@ -1,8 +1,5 @@
 package vezerles;
 
-import kotrofejek.*;
-import funkcionalisElemek.*;
-import jarmuvek.*;
 
 public class Main {
 
@@ -29,11 +26,10 @@ public class Main {
             System.out.print("\n");
             switch (valasz){
                 case 1:
-                    //System.out.print("\n");
-                    tesztElakadas();
+                    TesztFuggvenyek.tesztElakadas();
                     break;
                 case 2:
-                    //tesztUtkozes();
+                    TesztFuggvenyek.tesztUtkozes();
                     break;
                 case 3:
                     //tesztHokotroTakaritas();
@@ -70,17 +66,4 @@ public class Main {
             System.out.print("\n");
         }
     }
-
-    private static void tesztElakadas() {
-        Skeleton.naploz("Inicializálás: Autó elakadása hóban");
-
-        KorSzamlalo k = new KorSzamlalo();
-        Auto a = new Auto();
-        Sav s = new Sav();
-
-        Skeleton.naploz("Teszt indítása");
-
-        k.leptet();
-    }
-    
 }
