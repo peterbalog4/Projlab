@@ -1,11 +1,14 @@
 package funkcionalisElemek;
 import jarmuvek.Jarmu;
+import vezerles.Skeleton;
 
 public class Sav {
 
     public int hoTakarit(){
+
         return 0;
     }
+
     public void jegFeltor(){
 
     }
@@ -21,7 +24,14 @@ public class Sav {
     }
 
     public void mozgat(Jarmu j){
-        
+        Skeleton.hiv("s:Sav: mozgat(a)");
+
+        boolean havasE = Skeleton.kerdez("Mély havas a sáv?");
+        if (havasE){
+            j.megall(2);
+        }
+
+        Skeleton.visszater("mozgat");
     }
     public void allapotFrissit(){
         

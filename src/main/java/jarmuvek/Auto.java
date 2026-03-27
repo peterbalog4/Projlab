@@ -1,6 +1,7 @@
 package jarmuvek;
 
 
+import funkcionalisElemek.*;
 import vezerles.Skeleton;
 
 public class Auto extends Jarmu {
@@ -9,12 +10,15 @@ public class Auto extends Jarmu {
     public void kozlekedik(){
         Skeleton.hiv("a:Auto: kozlekedik()");
 
+        Sav s = new Sav();
+        s.mozgat(this);
+/*
         boolean jegesE = Skeleton.kerdez("Jeges a sáv amin az autó halad?");
 
         if (jegesE) {
             csuszik();
         }
-
+*/
         Skeleton.visszater("kozlekedik");
     }
 
@@ -29,6 +33,12 @@ public class Auto extends Jarmu {
         Skeleton.hiv("a:Auto: utkozik()");
 
         Skeleton.visszater("utkozik");
+    }
+
+    public void megall(int korszam){
+        Skeleton.hiv("a:Auto: megall(" + korszam + ")");
+        Skeleton.naploz("Az autó elakadt a hóban.");
+        Skeleton.visszater("megall");
     }
     
     
