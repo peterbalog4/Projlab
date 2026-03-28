@@ -2,9 +2,20 @@ package vezerles;
 
 import java.util.Scanner;
 
+
+/**
+ * A Skeleton osztály felelős a rendszer tesztelése során a naplózási tevékenység 
+ * elvégzéséért és a felhasználói interakciók kezeléséért.
+ * Ez az osztály valósítja meg a terminálon az esetek közötti navigálást, 
+ * a behúzások kezelését a hívási szintek jelzésére, valamint a tesztelőtől 
+ * érkező igen/nem válaszok beolvasását.
+ */
+
 public class Skeleton {
 
+    /** Az aktuális hívási mélységet tárolja a tabulátoros behúzáshoz. */
     private static int behuzasSzintje = 0;
+    /** A bemeneti válaszok olvasására szolgáló Scanner objektum. */
     private static Scanner scanner = new Scanner(System.in);
 
     /**
