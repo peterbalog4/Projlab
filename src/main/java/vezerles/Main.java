@@ -35,28 +35,28 @@ public class Main {
                     TesztFuggvenyek.tesztHokotroTakaritas();
                     break;
                 case 4:
-                    //tesztJegesedes();
+                    TesztFuggvenyek.tesztJegesedes();
                     break;
                 case 5:
-                    //tesztFejcsere();
+                    TesztFuggvenyek.tesztFejcsere();
                     break;
                 case 6:
-                    //tesztVasarlas();
+                    TesztFuggvenyek.tesztVasarlas();
                     break;
                 case 7:
-                    //tesztBuszFordulas();
+                    TesztFuggvenyek.tesztBuszFordulas();
                     break;
                 case 8:
-                    //tesztFejUjratoltes();
+                    TesztFuggvenyek.tesztFejUjratoltes();
                     break;
                 case 9:
-                    //tesztSavvaltas();
+                    TesztFuggvenyek.tesztSavvaltas();
                     break;
                 case 10:
-                    //tesztHoeses();
+                    TesztFuggvenyek.tesztHoeses();
                     break;
                 case 11:
-                    //tesztPenzValtozas();
+                    TesztFuggvenyek.tesztPenzValtozas();
                     break;
                 case 12:
                     kilepes = true;

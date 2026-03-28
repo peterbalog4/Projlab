@@ -26,11 +26,22 @@ public class Ut {
 
     }
     public void hoNovel(){
-
+        Skeleton.hiv("u:Ut: hoNovel()");
+        for (Sav s : savok) {
+            s.hoNovel(1);
+        }
+        Skeleton.visszater("hoNovel");
     }
 
     public void jarmuSavotValt(Jarmu j, Irany i){
-
+        Skeleton.hiv("u:Ut: jarmuSavotValt(j, i)");
+        
+        if (savok.size() > 1) {
+            Sav celSav = savok.get(1); 
+            celSav.elfogad(j);
+        }
+        
+        Skeleton.visszater("jarmuSavotValt");
     }
 
     public void havatAtad(Sav honnan, Sav hova){

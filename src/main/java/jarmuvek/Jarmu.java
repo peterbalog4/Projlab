@@ -1,6 +1,7 @@
 package jarmuvek;
 
 import funkcionalisElemek.Sav;
+import funkcionalisElemek.Ut;
 import vezerles.Skeleton;
 
 public abstract class Jarmu{
@@ -37,8 +38,17 @@ public abstract class Jarmu{
 
     }
 
-    public void savvaltas(Irany i){ 
-
+    public void savvaltas(Irany i) { // String helyett Irany
+        Skeleton.hiv(this.id + ":Jarmu: savvaltas(irany)");
+        
+        if (aktualisSav != null) {
+            Ut ut = aktualisSav.getUt();
+            if (ut != null) {
+                ut.jarmuSavotValt(this, i); 
+            }
+        }
+        
+        Skeleton.visszater("savvaltas");
     }
 
     public void csuszik(){

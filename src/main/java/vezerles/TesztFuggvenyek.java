@@ -91,4 +91,102 @@ public class TesztFuggvenyek {
         h1.dolgozik();
     }
 
+    public static void tesztSavvaltas() {
+        Skeleton.naploz("Inicializálás: Sávváltás");
+        Ut u = new Ut();
+        Sav s1 = new Sav("s1");
+        Sav s2 = new Sav("s2");
+        u.addSav(s1);
+        u.addSav(s2);
+        Auto a = new Auto("a1");
+        s1.addJarmu(a);
+        Irany i = new Irany();
+
+        Skeleton.naploz("Teszt indítása");
+        u.jarmuSavotValt(a, i);
+    }
+
+    public static void tesztHoeses() {
+        Skeleton.naploz("Inicializálás: Hóesés");
+        KorSzamlalo k = new KorSzamlalo();
+        Ut u = new Ut();
+        Sav s = new Sav("s1");
+        u.addSav(s);
+        k.setUt(u);
+        
+        Skeleton.naploz("Teszt indítása");
+        k.leptet();
+    }
+
+    public static void tesztPenzValtozas() {
+        Skeleton.naploz("Inicializálás: JMF módosítása");
+        Telephely t = new Telephely();
+        int tipus = Skeleton.kerdezOpcio("1: Bevétel, 2: Kiadás", 2);
+        
+        Skeleton.naploz("Teszt indítása");
+        if (tipus == 1) t.JMFmodosit(1000);
+        else t.JMFmodosit(-1000);
+    }
+
+
+    public static void tesztFejUjratoltes() {
+    Skeleton.naploz("Inicializálás: Kotrófej újratöltése");
+    
+    Telephely t = new Telephely();
+    SarkanyFej sf = new SarkanyFej();
+    sf.setTelephely(t);
+    
+    Skeleton.naploz("--- Teszt indítása ---");
+    sf.ujratolt();
+    }
+
+    public static void tesztBuszFordulas() {
+        Skeleton.naploz("Inicializálás: Busz forduló teljesítése");
+        
+        Sav v1 = new Sav("vegallomas1");
+        Sav v2 = new Sav("vegallomas2");
+        Busz b = new Busz("b1");
+        
+        b.setSav(v1);
+        
+        Skeleton.naploz("--- Teszt indítása ---");
+        b.kozlekedik(); 
+    }
+
+    public static void tesztVasarlas() {
+        Skeleton.naploz("Inicializálás: Vásárlás a Boltban");
+        
+        Telephely t = new Telephely();
+        String targy = "Sárkány fej";
+        
+        Skeleton.naploz("--- Teszt indítása ---");
+        t.vasarol(targy);
+    }
+
+    public static void tesztFejcsere() {
+        Skeleton.naploz("Inicializálás: Kotrófej cseréje");
+        
+        Telephely t = new Telephely();
+        Hokotro h = new Hokotro("h1");
+        SoproFej ujFej = new SoproFej();
+        
+        Skeleton.naploz("--- Teszt indítása ---");
+        t.useFej(ujFej, h);
+    }
+
+    public static void tesztJegesedes() {
+        Skeleton.naploz("### Inicializálás: Sáv eljegesedése");
+        
+        KorSzamlalo k = new KorSzamlalo();
+        Sav s = new Sav("s1");
+        
+        for (int i = 1; i <= 5; i++) {
+            Auto a = new Auto("a" + i);
+            s.addJarmu(a);
+            k.addJarmu(a);
+        }
+        
+        Skeleton.naploz("--- Teszt indítása ---");
+        k.leptet();
+    }
 }

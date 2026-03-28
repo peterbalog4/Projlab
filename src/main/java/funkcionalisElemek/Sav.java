@@ -8,6 +8,10 @@ import java.util.List;
 
 public class Sav {
 
+
+    private int athaladtJarmuvek = 0;
+
+    
     private List<Jarmu> jarmuvek = new ArrayList<>();
     private Ut uthozTartozik;
     protected String id;
@@ -30,6 +34,10 @@ public class Sav {
         Skeleton.hiv( this.id + ":Sav: setUt(u)");
         this.uthozTartozik = u;
         Skeleton.visszater("setUt");
+    }
+
+    public Ut getUt() {
+        return this.uthozTartozik;
     }
 
     public Jarmu getMasikJarmu(Jarmu errolVanSzo) {
@@ -87,7 +95,17 @@ public class Sav {
         Skeleton.visszater("lezar");
     }
     public void elfogad(Jarmu j){
+        Skeleton.hiv(this.id + ":Sav: elfogad(j)");
         
+        boolean siker = Skeleton.kerdez("Be tudja fogadni a sáv a járművet?");
+        if (siker) {
+            Skeleton.naploz("A jármű sikeresen sávot váltott.");
+            this.addJarmu(j);
+        } else {
+            Skeleton.naploz("A sávváltás meghiúsult.");
+        }
+        
+        Skeleton.visszater("elfogad");
     }
 
     public void hatasAlkalmaz(Jarmu j){
@@ -97,26 +115,37 @@ public class Sav {
 
     }
 
-    public void mozgat(Jarmu j){
+    public void mozgat(Jarmu j) {
         Skeleton.hiv(this.id + ":Sav: mozgat(a)");
 
-        boolean havasE = Skeleton.kerdez("Mély havas a sáv?");
+        athaladtJarmuvek++;
+        
+        if (athaladtJarmuvek == 5) {
+            this.allapotFrissit();
+        }
 
-        if (havasE){
+        if (Skeleton.kerdez("Jeges a sáv?")) {
+            hatasAlkalmaz(j);
+        } 
+        
+        else if (Skeleton.kerdez("Mély havas a sáv?")) {
             j.megall(2);
-        } else {
-            if(Skeleton.kerdez("Jeges a sáv?")){
-                hatasAlkalmaz(j);
-            }
         }
 
         Skeleton.visszater("mozgat");
     }
-    public void allapotFrissit(){
-        
-    }   
-
-    public void hoNovel(int i){
-        
+   public void hoNovel(int mennyiseg) {
+        Skeleton.hiv(this.id + ":Sav: hoNovel(" + mennyiseg + ")");
+        Skeleton.naploz("A hóréteg vastagsága nőtt a sávon.");
+        Skeleton.visszater("hoNovel");
     }
+
+    public void allapotFrissit() {
+        Skeleton.hiv(this.id + ":Sav: allapotFrissit()");
+        if (Skeleton.kerdez("Ez az ötödik jármű, ami áthalad a havas sávon?")) {
+            Skeleton.naploz("A sáv állapota jegesre változott.");
+        }
+        Skeleton.visszater("allapotFrissit");
+    }
+
 }
