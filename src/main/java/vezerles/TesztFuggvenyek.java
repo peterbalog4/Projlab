@@ -91,6 +91,7 @@ public class TesztFuggvenyek {
         h1.dolgozik();
     }
 
+<<<<<<< HEAD
     public static void tesztSavvaltas() {
         Skeleton.naploz("Inicializálás: Sávváltás");
         Ut u = new Ut();
@@ -189,4 +190,68 @@ public class TesztFuggvenyek {
         Skeleton.naploz("--- Teszt indítása ---");
         k.leptet();
     }
+=======
+    public static void tesztJMFModositas() {
+        Skeleton.naploz("Inicializálás: JMF módosítása telephelyen");
+
+        Telephely t = new Telephely();
+    
+        int valasztas = Skeleton.kerdezOpcio("Mit szeretnél tesztelni a JMF-fel? \n1=Hozzáadás (pozitív érték) \n2=Levonás (negatív érték)", 2);
+        
+        int modositoErtek = 0;
+        if (valasztas == 1) {
+            modositoErtek = 100; 
+        } else if (valasztas == 2) {
+            modositoErtek = -50;
+        }
+
+        Skeleton.naploz("--- Teszt indítása ---");
+        
+        try {
+            t.JMFmodosit(modositoErtek);
+        } catch (Exception e) {
+            Skeleton.naploz("Tranzakció megszakítva. Kivétel elkapva: " + e.getMessage());
+        }
+    }
+
+    public static void tesztFejcsere() {
+        Skeleton.naploz("Inicializálás: Fejcsere a telephelyen");
+
+        Telephely t = new Telephely();
+        Hokotro h = new Hokotro("h1");
+
+        KotroFej regiFej = new HanyoFej();
+        KotroFej ujFej = new SarkanyFej();
+
+        h.setKotrofej(regiFej);
+        
+        Skeleton.naploz("--- Teszt indítása ---");
+        
+        t.useFej(ujFej, h);
+    }
+
+    public static void tesztVasarlas() {
+        Skeleton.naploz("Inicializálás: Vásárlás a boltból");
+        
+        Telephely t = new Telephely();
+        
+        int valasztas = Skeleton.kerdezOpcio("Mit szeretnél vásárolni a boltban? \n1=Hányó fej \n2=Jégtörő fej \n3=Sárkány fej \n4=Söprő fej \n5=Sószóró fej \n6=Biokerozin \n7=Só", 7);
+        
+        String item = "";
+        switch (valasztas) {
+            case 1: item = "Hányó fej"; break;
+            case 2: item = "Jégtörő fej"; break;
+            case 3: item = "Sárkány fej"; break;
+            case 4: item = "Söprő fej"; break;
+            case 5: item = "Sószóró fej"; break;
+            case 6: item = "Biokerozin"; break;
+            case 7: item = "Só"; break;
+        }
+
+        Skeleton.naploz("--- Teszt indítása ---");
+        
+        t.vasarol(item);
+    }
+
+>>>>>>> a2eda4a534e76a41f32e3aec577c862fbb6e3a66
 }

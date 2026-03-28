@@ -56,7 +56,11 @@ public class Main {
                     TesztFuggvenyek.tesztHoeses();
                     break;
                 case 11:
+<<<<<<< HEAD
                     TesztFuggvenyek.tesztPenzValtozas();
+=======
+                    TesztFuggvenyek.tesztJMFModositas();
+>>>>>>> a2eda4a534e76a41f32e3aec577c862fbb6e3a66
                     break;
                 case 12:
                     kilepes = true;
