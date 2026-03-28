@@ -53,12 +53,17 @@ public class Sav {
     public void hoTakarit(){
         Skeleton.hiv(this.id + ":Sav: hoTakarit()");
 
-        Sav s2 = getMasikSav(this);
+        boolean atrakja = Skeleton.kerdez("A hókotrón lévő fej átrakja a havat másik sávra (pl. Hányó/Söprő)?");
 
-        if (s2 != null){
-            uthozTartozik.havatAtad(this, s2);
-        } else{
-            Skeleton.naploz("Nincs másik sáv, amire áttőlná a havat.");
+        if (atrakja){
+            Sav s2 = getMasikSav(this);
+            if (s2 != null){
+                uthozTartozik.havatAtad(this, s2);
+            } else{
+                Skeleton.naploz("Nincs másik sáv, amire áttőlná a havat.");
+            }
+        } else {
+            Skeleton.naploz("A fej elolvasztotta a havat.");
         }
 
 
@@ -68,7 +73,11 @@ public class Sav {
     }
 
     public void jegFeltor(){
+        Skeleton.hiv(this.id + ":Sav: jegFeltor()");
 
+        Skeleton.naploz("A sávon fel lett törve a jég.");
+
+        Skeleton.visszater("jegFeltor");
     }
     public void lezar(int kor){
         Skeleton.hiv(this.id + ":Sav: lezar(" + kor + ")");

@@ -8,7 +8,7 @@ public class SoproFej extends KotroFej{
 
     @Override
     public void takarit(Sav sav, Ut ut) {
-        Skeleton.hiv("sf:SoproFej: tisztit("+ sav.getId() + ", ut)");
+        Skeleton.hiv("sopro:SoproFej: tisztit("+ sav.getId() + ", ut)");
 
         sav.hoTakarit();
 
