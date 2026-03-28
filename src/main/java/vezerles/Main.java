@@ -38,10 +38,10 @@ public class Main {
                     //tesztJegesedes();
                     break;
                 case 5:
-                    //tesztFejcsere();
+                    TesztFuggvenyek.tesztFejcsere();
                     break;
                 case 6:
-                    //tesztVasarlas();
+                    TesztFuggvenyek.tesztVasarlas();
                     break;
                 case 7:
                     //tesztBuszFordulas();
@@ -56,7 +56,7 @@ public class Main {
                     //tesztHoeses();
                     break;
                 case 11:
-                    //tesztPenzValtozas();
+                    TesztFuggvenyek.tesztJMFModositas();
                     break;
                 case 12:
                     kilepes = true;

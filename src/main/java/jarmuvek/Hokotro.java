@@ -45,7 +45,12 @@ public class Hokotro extends Jarmu {
         Skeleton.visszater("kozlekedik");
     }
     public void fejcsere(KotroFej ujfej) {
-
+        Skeleton.hiv(this.id + ":Hokotro: fejcsere(ujfej)");
+        
+        this.aktivFej = ujfej;
+        Skeleton.naploz("A hókotró új fejet kapott.");
+        
+        Skeleton.visszater("fejcsere");
     }
 
     @Override
