@@ -32,7 +32,7 @@ public class Main {
                     TesztFuggvenyek.tesztUtkozes();
                     break;
                 case 3:
-                    //tesztHokotroTakaritas();
+                    TesztFuggvenyek.tesztHokotroTakaritas();
                     break;
                 case 4:
                     //tesztJegesedes();

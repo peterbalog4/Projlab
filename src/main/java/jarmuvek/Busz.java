@@ -16,9 +16,6 @@ public class Busz extends Jarmu {
     public void kozlekedik(){
         Skeleton.hiv(this.id + ":Busz: kozlekedik()");
 
-        Sav s = new Sav();
-        s.mozgat(this);
-
         Skeleton.visszater("kozlekedik");
     }
 

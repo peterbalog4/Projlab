@@ -1,6 +1,7 @@
 package kotrofejek;
 import funkcionalisElemek.Sav;
 import funkcionalisElemek.Ut;
+import vezerles.Skeleton;
 
 public abstract class KotroFej{
 
