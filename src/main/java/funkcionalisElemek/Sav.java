@@ -124,7 +124,7 @@ public class Sav {
 
     /**
      * Lezárja a sávot adott ideig (pl. baleset miatt).
-     * @param korszam A lezárás időtartama körökben.
+     * @param kor A lezárás időtartama körökben.
      */
     public void lezar(int kor){
         Skeleton.hiv(this.id + ":Sav: lezar(" + kor + ")");
@@ -139,7 +139,7 @@ public class Sav {
      * @param j A belépni kívánó jármű.
      */
     public void elfogad(Jarmu j){
-        Skeleton.hiv(this.id + ":Sav: elfogad(j)");
+        Skeleton.hiv(this.id + ":Sav: elfogad(" + j.getId()+ ")");
         
         boolean siker = Skeleton.kerdez("Be tudja fogadni a sáv a járművet?");
         if (siker) {
@@ -157,7 +157,7 @@ public class Sav {
      * @param j Az érintett jármű.
      */
     public void hatasAlkalmaz(Jarmu j){
-        Skeleton.hiv(this.id + ":Sav: hatasAlkalmaz(a)");
+        Skeleton.hiv(this.id + ":Sav: hatasAlkalmaz("+ j.getId()+ ")");
             j.csuszik();
         Skeleton.visszater("hatasAlkalmaz");
 
@@ -171,7 +171,7 @@ public class Sav {
      */
 
     public void mozgat(Jarmu j) {
-        Skeleton.hiv(this.id + ":Sav: mozgat(a)");
+        Skeleton.hiv(this.id + ":Sav: mozgat(" + j.getId() + ")");
 
         athaladtJarmuvek++;
         
@@ -179,12 +179,11 @@ public class Sav {
             this.allapotFrissit();
         }
 
-        if (Skeleton.kerdez("Jeges a sáv?")) {
+        if (Skeleton.kerdez("Mély havas a sáv?")) {
+            j.megall(-1);
+        }
+        else if (Skeleton.kerdez("Jeges a sáv?")) {
             hatasAlkalmaz(j);
-        } 
-        
-        else if (Skeleton.kerdez("Mély havas a sáv?")) {
-            j.megall(2);
         }
 
         Skeleton.visszater("mozgat");

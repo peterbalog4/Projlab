@@ -29,6 +29,15 @@ public abstract class Jarmu{
     }
 
     /**
+     * Visszaadja a jármű azonosítóját.
+     * @return A jármű String formátumú azonosítója.
+     */
+    public String getId(){
+        return this.id;
+    }
+
+
+    /**
      * Beállítja a jármű aktuális sávját.
      * @param s A cél sáv objektum[cite: 1874].
      */
