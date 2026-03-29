@@ -31,6 +31,8 @@ public class SoszoroFej extends KotroFej{
         sav.jegFeltor();
         sav.hoTakarit();
 
+        Skeleton.naploz("A(z) " + sav.getId() + " sáv sós lett.");
+
         Skeleton.visszater("tisztit");
     }
 
