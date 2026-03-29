@@ -175,6 +175,7 @@ public class Sav {
     public void mozgat(Jarmu j) {
         Skeleton.hiv(this.id + ":Sav: mozgat(a)");
 
+
         if (vanHo && !isJeges) {
             athaladtJarmuvek++;
             if (athaladtJarmuvek == 1) {
@@ -182,12 +183,11 @@ public class Sav {
             }
         }
 
-        if (isJeges) {
-            Skeleton.naploz("A sáv jeges, a jármű megcsúszik.");
+        if (Skeleton.kerdez("Mély havas a sáv?")) {
+            j.megall(-1);
+        }
+        else if (Skeleton.kerdez("Jeges a sáv?")) {
             hatasAlkalmaz(j);
-        } else if (vanHo) {
-            Skeleton.naploz("A sáv mély havas, a jármű elakad.");
-            j.megall(2);
         }
 
         Skeleton.visszater("mozgat");
