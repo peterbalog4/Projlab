@@ -19,6 +19,8 @@ public class Sav {
     private int athaladtJarmuvek = 0;
 
     
+    private boolean isJeges = false;
+    private boolean vanHo = false;
     private List<Jarmu> jarmuvek = new ArrayList<>();
     private Ut uthozTartozik;
     protected String id;
@@ -171,19 +173,21 @@ public class Sav {
      */
 
     public void mozgat(Jarmu j) {
-        Skeleton.hiv(this.id + ":Sav: mozgat(" + j.getId() + ")");
+        Skeleton.hiv(this.id + ":Sav: mozgat(a)");
 
-        athaladtJarmuvek++;
-        
-        if (athaladtJarmuvek == 5) {
-            this.allapotFrissit();
+        if (vanHo && !isJeges) {
+            athaladtJarmuvek++;
+            if (athaladtJarmuvek == 1) {
+                this.allapotFrissit();
+            }
         }
 
-        if (Skeleton.kerdez("Mély havas a sáv?")) {
-            j.megall(-1);
-        }
-        else if (Skeleton.kerdez("Jeges a sáv?")) {
+        if (isJeges) {
+            Skeleton.naploz("A sáv jeges, a jármű megcsúszik.");
             hatasAlkalmaz(j);
+        } else if (vanHo) {
+            Skeleton.naploz("A sáv mély havas, a jármű elakad.");
+            j.megall(2);
         }
 
         Skeleton.visszater("mozgat");
@@ -195,7 +199,8 @@ public class Sav {
      */
    public void hoNovel(int mennyiseg) {
         Skeleton.hiv(this.id + ":Sav: hoNovel(" + mennyiseg + ")");
-        Skeleton.naploz("A hóréteg vastagsága nőtt a sávon.");
+        this.vanHo = true;
+        Skeleton.naploz("A sáv havas lett.");
         Skeleton.visszater("hoNovel");
     }
 
@@ -205,9 +210,9 @@ public class Sav {
      */
     public void allapotFrissit() {
         Skeleton.hiv(this.id + ":Sav: allapotFrissit()");
-        if (Skeleton.kerdez("Ez az ötödik jármű, ami áthalad a havas sávon?")) {
-            Skeleton.naploz("A sáv állapota jegesre változott.");
-        }
+        Skeleton.naploz("A hó jéggé fagyott a sávon.");
+        this.isJeges = true; 
+        this.vanHo = false;  
         Skeleton.visszater("allapotFrissit");
     }
 

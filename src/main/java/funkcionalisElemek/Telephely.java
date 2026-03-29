@@ -63,20 +63,22 @@ public class Telephely {
      * Kezdeményezi egy termék megvásárlását a boltból.
      * @param item A megvásárolni kívánt tárgy vagy eszköz neve
      */
-    public void JMFmodosit(int count) {
+    public boolean JMFmodosit(int count) {
         Skeleton.hiv("t:Telephely: JMFmodosit(" + count + ")");
+        boolean siker = true;
         
         if (count < 0) {
             if (Skeleton.kerdez("Van elegendő JMF a vásárláshoz?")) {
                 Skeleton.naploz("A JMF levonása sikeres.");
             } else {
                 Skeleton.naploz("Hiba: Nincs elég JMF, a vásárlás megszakadt.");
+                siker = false;
             }
         } else {
             Skeleton.naploz("JMF hozzáadva.");
         }
         
-        Skeleton.visszater("JMFmodosit");
+        Skeleton.visszater("JMFmodosit", String.valueOf(siker));
+        return siker;
     }
-    
 }

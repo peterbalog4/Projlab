@@ -217,18 +217,22 @@ public class TesztFuggvenyek {
      * Szimulálja a sáv eljegesedésének folyamatát öt jármű áthaladása után.
      */
     public static void tesztJegesedes() {
-        Skeleton.naploz("Inicializálás: Sáv eljegesedése");
-        
-        KorSzamlalo k = new KorSzamlalo();
-        Sav s = new Sav("s1");
-        
-        for (int i = 1; i <= 5; i++) {
-            Auto a = new Auto("a" + i);
-            s.addJarmu(a);
-            k.addJarmu(a);
-        }
-        
-        Skeleton.naploz("--- Teszt indítása ---");
-        k.leptet();
-    }
+    Skeleton.naploz("Inicializálás: Sáv eljegesedése (1 autóval)");
+    
+    KorSzamlalo k = new KorSzamlalo();
+    Ut u = new Ut();
+    Sav s = new Sav("s1");
+    u.addSav(s);
+    s.setUt(u);
+    k.setUt(u);
+
+    u.hoNovel(); 
+
+    Auto a = new Auto("a1");
+    s.addJarmu(a);
+    k.addJarmu(a);
+    
+    Skeleton.naploz("--- Teszt indítása ---");
+    k.leptet();
+}
 }
