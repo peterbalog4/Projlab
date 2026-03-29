@@ -7,7 +7,7 @@ import vezerles.Skeleton;
 
 /**
  * A játékos bázisát és logisztikai központját reprezentáló osztály.
- * Felelős a Játék Magyar Forint (JMF) egyenleg kezeléséért, a raktározott 
+ * Felelős a Jégmentesítési Forint (JMF) egyenleg kezeléséért, a raktározott 
  * kotrófejek nyilvántartásáért, valamint a vásárlási és felszerelési folyamatok 
  * koordinálásáért
  */
