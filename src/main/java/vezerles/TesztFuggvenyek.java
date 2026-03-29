@@ -4,8 +4,17 @@ import funkcionalisElemek.*;
 import jarmuvek.*;
 import kotrofejek.*;
 
+/**
+ * A szkeleton use-case-ek inicializálásáért és futtatásáért felelős osztály.
+ * Tartalmazza az összes tesztelhető forgatókönyv logikáját, beleértve az 
+ * objektumok példányosítását, az asszociációk beállítását és a teszt indítását.
+ */
 public class TesztFuggvenyek {
 
+    /**
+     * Szimulálja egy jármű elakadását mély hóban.
+     * Vizsgálja a Sáv és a Jármű közötti interakciót havas állapot esetén.
+     */
     public static void tesztElakadas() {
         Skeleton.naploz("Inicializálás: Autó elakadása hóban");
 
@@ -21,6 +30,10 @@ public class TesztFuggvenyek {
         k.leptet();
     }
 
+    /**
+     * Szimulálja két jármű ütközését jeges útfelületen.
+     * Bemutatja a megcsúszás, az ütközés és a sáv lezárásának folyamatát.
+     */
     public static void tesztUtkozes(){
         Skeleton.naploz("Inicializálás: Járművek ütközése jégen");
 
@@ -41,6 +54,10 @@ public class TesztFuggvenyek {
         k.leptet();
 
     }
+    /**
+     * Szimulálja a hókotró úttakarítási munkáját különböző kotrófejekkel.
+     * A tesztelő választhatja ki a használni kívánt kotrófej típusát.
+     */
     public static void tesztHokotroTakaritas(){
         Skeleton.naploz("Inicializálás: Hókotró utat takarít");
         int valasztottFej = Skeleton.kerdezOpcio("Milyen fej legyen a Hókotrón? \n1=hányó \n2=Jégtörő \n3=Sárkány \n4=Söprő \n5=Sószóró\n", 5);
@@ -91,6 +108,10 @@ public class TesztFuggvenyek {
         h1.dolgozik();
     }
 
+    /**
+     * Szimulálja egy jármű sávváltási kísérletét.
+     * Vizsgálja az Út koordinációs szerepét és a cél sáv befogadó készségét.
+     */
     public static void tesztSavvaltas() {
         Skeleton.naploz("Inicializálás: Sávváltás");
         Ut u = new Ut();
@@ -106,6 +127,9 @@ public class TesztFuggvenyek {
         u.jarmuSavotValt(a, i);
     }
 
+    /**
+     * Szimulálja a kör végi automatikus hóesést az úthálózaton.
+     */
     public static void tesztHoeses() {
         Skeleton.naploz("Inicializálás: Hóesés");
         KorSzamlalo k = new KorSzamlalo();
@@ -118,6 +142,9 @@ public class TesztFuggvenyek {
         k.leptet();
     }
 
+    /**
+     * Szimulálja a játékos JMF egyenlegének változását (bevétel vagy kiadás).
+     */
     public static void tesztPenzValtozas() {
         Skeleton.naploz("Inicializálás: JMF módosítása");
         Telephely t = new Telephely();
@@ -129,6 +156,9 @@ public class TesztFuggvenyek {
     }
 
 
+    /**
+     * Szimulálja egy kotrófej (pl. Sárkány fej) üzemanyaggal való feltöltését.
+     */
     public static void tesztFejUjratoltes() {
     Skeleton.naploz("Inicializálás: Kotrófej újratöltése");
     
@@ -140,6 +170,9 @@ public class TesztFuggvenyek {
     sf.ujratolt();
     }
 
+    /**
+     * Szimulálja a busz végállomásra érkezését és a forduló teljesítését.
+     */
     public static void tesztBuszFordulas() {
         Skeleton.naploz("Inicializálás: Busz forduló teljesítése");
         
@@ -153,6 +186,9 @@ public class TesztFuggvenyek {
         b.kozlekedik(); 
     }
 
+    /**
+     * Szimulálja egy tárgy megvásárlását a Boltban a Telephelyen keresztül.
+     */
     public static void tesztVasarlas() {
         Skeleton.naploz("Inicializálás: Vásárlás a Boltban");
         
@@ -163,6 +199,9 @@ public class TesztFuggvenyek {
         t.vasarol(targy);
     }
 
+    /**
+     * Szimulálja a hókotró munkaeszközének lecserélését a Telephelyen.
+     */
     public static void tesztFejcsere() {
         Skeleton.naploz("Inicializálás: Kotrófej cseréje");
         
@@ -174,8 +213,11 @@ public class TesztFuggvenyek {
         t.useFej(ujFej, h);
     }
 
+    /**
+     * Szimulálja a sáv eljegesedésének folyamatát öt jármű áthaladása után.
+     */
     public static void tesztJegesedes() {
-        Skeleton.naploz("### Inicializálás: Sáv eljegesedése");
+        Skeleton.naploz("Inicializálás: Sáv eljegesedése");
         
         KorSzamlalo k = new KorSzamlalo();
         Sav s = new Sav("s1");
