@@ -11,41 +11,25 @@ import jarmuvek.Hokotro;
  * koordinálásáért
  */
 public class Telephely {
+    private final int jatekosID;
+    private int biokerozin = 0;
+    private int so = 0;
+    private int zuzalek = 0;
+    private int JMF = 0;
+    private List<KotroFej> kotroFejek = new ArrayList<>();
+    
 
-    /** A telephelyhez kapcsolt bolt referenciája a vásárlásokhoz. */
-    private Bolt bolt = new Bolt();
-
-    /**
-     * Vezényli a hókotró aktuális kotrófejének cseréjét egy raktáron lévőre.
-     * @param ujFej A felszerelni kívánt új kotrófej
-     * @param h A hókotró, amelyen a cserét végre kell hajtani[
-     */
-    public void useFej(KotroFej ujFej, Hokotro h) {
-
+    public void useFej(KotroFej ujFej, Hokotro h) { //kinda nem kell a hokotro
+        kotroFejek.remove(ujFej);
     }
-
-    /**
-     * Eltárolja a leszerelt kotrófejet a telephely raktárában.
-     * @param regiFej A raktárba kerülő kotrófej objektum
-     */
-    public void tarolFej(KotroFej regiFej) {
-
+    public void tarol(Kotrofej fej){
+        kotroFejek.add(fej);
     }
-
-    /**
-     * Kezdeményezi egy termék megvásárlását a boltból.
-     * @param item A megvásárolni kívánt tárgy vagy eszköz neve
-     */
-    public void vasarol(String item) {
-
+    public boolean vasarol(String item){
+        //TODO: milyen boltot hív meg? hol van példányosítva, ha mindenkinek ugyanaz?
+        
     }
-
-    /**
-     * Kezdeményezi egy termék megvásárlását a boltból.
-     * @param item A megvásárolni kívánt tárgy vagy eszköz neve
-     */
-    public boolean JMFmodosit(int count) {
- 
-    return false;
+    public void JMFmodosit(int count){
+       JMF += count;
     }
 }

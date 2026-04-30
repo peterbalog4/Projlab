@@ -23,8 +23,11 @@ public class SarkanyFej extends KotroFej {
     
     
     
-    public void ujratolt() { //!!!! ez még nem jó
-        biokerozin = 10;
+    public void ujratolt(Telephely telephely) { //!!!! ez még nem jó telephely átadása
+        if(telephely.biokerozin>0){
+            biokerozin = 10;
+            telephely.biokerozin --;
+        }
     }
 
     public void bekapcsol(){

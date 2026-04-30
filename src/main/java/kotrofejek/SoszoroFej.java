@@ -29,7 +29,10 @@ public class SoszoroFej extends KotroFej{
     }
 
    
-    public void ujratolt() { //!!!! ez még nem jó
-        so = 10;
+    public void ujratolt(Telephely telephely) { //!!!! ez még nem jó kell valami telephely átadása neki
+        if(telephely.so>0){
+            so = 10;
+            telephely.so --;
+        }
     }
 }

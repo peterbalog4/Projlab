@@ -12,6 +12,8 @@ import kotrofejek.KotroFej;
  */
 public class Hokotro extends Jarmu {
 
+    private final int tulajdonos;
+
     /** A hókotróra aktuálisan felszerelt munkaeszköz. */
     private KotroFej aktivFej;
     /** Az úthálózat referenciája, amelyen a hókotró a takarítást végzi. */
@@ -27,13 +29,7 @@ public class Hokotro extends Jarmu {
         super(id);
     }
 
-    /**
-     * Beállítja vagy lecseréli a hókotrón lévő munkaeszközt.
-     * @param k Az új KotroFej objektum.
-     */
-    public void setKotrofej(KotroFej fej) {
-  
-    }
+    
 
     /**
      * Beállítja az utat, amelyen a hókotró dolgozik.
@@ -64,7 +60,6 @@ public class Hokotro extends Jarmu {
      * @param ujFej Az újonnan felszerelendő KotroFej objektum.
      */
     public void fejcsere(KotroFej ujfej) {
- 
     }
 
     /**
