@@ -59,7 +59,7 @@ public class Ut {
      * @param honnan A forrás sáv, ahonnan a havat eltávolították.
      * @param tavolsag Hány sávval arrébb kerüljön a hó (pozitív érték).
      */
-    public void havatAtad(Sav honnan, Sav hova){
+    public void havatAtad(Sav honnan, int tavolsag, int mennyiseg){
  
 
     }
