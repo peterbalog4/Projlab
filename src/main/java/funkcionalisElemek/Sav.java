@@ -1,6 +1,9 @@
 package funkcionalisElemek;
+import jarmuvek.Hokotro;
 import jarmuvek.Jarmu;
 import kotrofejek.KotroFej;
+import segedOsztalyok.HaladasiIrany;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,13 +17,15 @@ import java.util.List;
 public class Sav {
 
 
-    private int athaladtJarmuvek = 0;
-
-    
-    private boolean isJeges = false;
-    private boolean vanHo = false;
+    private int athaladtJarmuvekSzama = 0; // TODO ez kell nincs a doksiban?
+    private boolean jeg = false;
+    private int ho = 0;
+    private boolean zuzalek = false;
     private List<Jarmu> jarmuvek = new ArrayList<>();
-    private Ut uthozTartozik;
+    private Ut ut;
+    private int sozottIdotartam = 0;
+    private int lezarvaKorig = 0;
+    private HaladasiIrany haladasiIrany;
     protected String id;
 
 
@@ -37,7 +42,7 @@ public class Sav {
      * @return A sáv String formátumú azonosítója.
      */
     public String getId(){
-        return this.id;
+        return id;
     }
 
     /**
@@ -57,7 +62,7 @@ public class Sav {
     }
 
     public Ut getUt() {
-        return this.uthozTartozik;
+        return ut;
     }
 
     /**
@@ -81,13 +86,20 @@ public class Sav {
         return null;
     }
 
-    public void hoTakarit(){
-
-
+    public int hoTakarit(){
+        int eltakaritottMennyiseg = this.ho;
+        ho = 0;
+        athaladtJarmuvekSzama = 0;
+        jarmuvek.forEach(jarmu-> jarmu.megall(0));
+        return eltakaritottMennyiseg;
     }
 
     public void jegFeltor(){
-
+        if(jeg){
+            this.jeg = false;
+            this.ho ++;
+            this.athaladtJarmuvekSzama = 0;
+        }
     }
 
     /**
@@ -95,15 +107,25 @@ public class Sav {
      * @param kor A lezárás időtartama körökben.
      */
     public void lezar(int kor){
-
+        lezarvaKorig = kor;
     }
 
     /**
      * Megvizsgálja, hogy a sáv be tud-e fogadni egy járművet (pl. sávváltásnál).
      * @param j A belépni kívánó jármű.
      */
-    public void elfogad(Jarmu j){
+    public boolean elfogad(Jarmu j){
+        if(lezarvaKorig > 0) return false;
 
+        this.jarmuvek.add(j);
+        athaladtJarmuvekSzama++;
+        hatasAlkalmaz(j);
+        return true;
+
+    }
+
+    public void eltavolit(Jarmu j){
+        jarmuvek.remove(j);
     }
 
     /**
@@ -111,6 +133,15 @@ public class Sav {
      * @param j Az érintett jármű.
      */
     public void hatasAlkalmaz(Jarmu j){
+        if(!(j instanceof Hokotro)){
+            if(ho < 3 && jeg  && !zuzalek){
+                j.csuszik();
+        }
+            else if(ho >= 3){
+                j.megall(-1);
+            }
+    }
+
 
 
     }
@@ -122,7 +153,8 @@ public class Sav {
      * @param j A sávon éppen áthaladó jármű.
      */
 
-    public void mozgat(Jarmu j) {
+    public void jarmuMozgat(Jarmu j) { //ez jó??
+        j.kozlekedik();
 
     }
 
@@ -131,6 +163,9 @@ public class Sav {
      * @param mennyiseg A hóréteg növekedésének mértéke.
      */
    public void hoNovel(int mennyiseg) {
+        if(sozottIdotartam == 0){
+            ho += mennyiseg;
+        }
 
     }
 
@@ -139,7 +174,31 @@ public class Sav {
      * Ha több jármű áthaladt a havas sávon, a letaposott hó jéggé válik.
      */
     public void allapotFrissit() {
+        if(sozottIdotartam > 0){
+            jeg = false;
+            ho = 0;
+            athaladtJarmuvekSzama = 0;
+            sozottIdotartam--;
+        }
+        if(lezarvaKorig > 0){
+            lezarvaKorig --;
+        }
+
+        if(athaladtJarmuvekSzama >= 5 && ho > 0){
+            jeg = true;
+            ho = 0;
+        }
 
     }
+
+    public void soSzor(){
+        sozottIdotartam = 5; //5 ugye?
+    }
+
+    public void zuzalekSzor(){
+        zuzalek = true;
+    }
+
+    
 
 }
