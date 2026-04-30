@@ -46,6 +46,10 @@ public class SarkanyFej extends KotroFej {
      * Ellenőrzi, hogy a Telephelyen rendelkezésre áll-e a szükséges nyersanyag. 
      * Sikeres töltés után a fej ismét működőképessé válik.
      */
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 547a13a (ripped out the skeleton)
     public void ujratolt() {
         Skeleton.hiv("sarkany:SarkanyFej: ujratolt()");
         
