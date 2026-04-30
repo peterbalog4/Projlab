@@ -1,7 +1,7 @@
 package kotrofejek;
 import funkcionalisElemek.Sav;
 import funkcionalisElemek.Ut;
-import vezerles.Skeleton;
+
 
 /**
  * A hókotrókra felszerelhető munkaeszközök absztrakt alaposztálya. 

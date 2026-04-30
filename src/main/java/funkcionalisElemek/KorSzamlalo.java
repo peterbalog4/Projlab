@@ -1,7 +1,7 @@
 package funkcionalisElemek;
 
 import jarmuvek.*;
-import vezerles.Skeleton;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +31,7 @@ public class KorSzamlalo {
      * @param j A hozzáadni kívánt Jármű objektum
      */
     public void addJarmu(Jarmu j) {
-        Skeleton.hiv("k:KorSzamlalo: addJarmu(j)");
-        jarmuvek.add(j);
-        Skeleton.visszater("addJarmu");
+  
     }
 
 
@@ -43,17 +41,6 @@ public class KorSzamlalo {
      * aktiválja az automatikus hóesést, amennyiben az út be van állítva.
      */
     public void leptet(){
-        Skeleton.hiv("k:KorSzamlalo: leptet()");
 
-        for (Jarmu j : jarmuvek) {
-            j.kozlekedik();
-        }
-
-        // Hóesés use-case logikája:
-        if (aktivUt != null && Skeleton.kerdez("Történjen hóesés a kör végén?")) {
-            aktivUt.hoNovel();
-        }
-
-        Skeleton.visszater("leptet");
     }
 }

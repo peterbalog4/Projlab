@@ -3,7 +3,7 @@ package kotrofejek;
 import funkcionalisElemek.Sav;
 import funkcionalisElemek.Telephely;
 import funkcionalisElemek.Ut;
-import vezerles.Skeleton;
+
 
 /**
  * A Sószóró típusú kotrófejet reprezentáló osztály.
@@ -26,14 +26,7 @@ public class SoszoroFej extends KotroFej{
      */
     @Override
     public void takarit(Sav sav, Ut ut) {
-        Skeleton.hiv("soszoro:SoszoroFej: tisztit("+ sav.getId() + ", ut)");
-
-        sav.jegFeltor();
-        sav.hoTakarit();
-
-        Skeleton.naploz("A(z) " + sav.getId() + " sáv sós lett.");
-
-        Skeleton.visszater("tisztit");
+ 
     }
 
     /**
@@ -49,16 +42,6 @@ public class SoszoroFej extends KotroFej{
      * Ellenőrzi, hogy rendelkezésre áll-e elegendő só a Telephelyen az újratöltéshez.
      */
     public void ujratolt() {
-        Skeleton.hiv("sarkany:SarkanyFej: ujratolt()");
-        
-        boolean vanEleg = Skeleton.kerdez("Van elegendő biokerozin a Telephelyen?");
-        
-        if (vanEleg) {
-            Skeleton.naploz("A Sárkány fej feltöltődött és újra működőképes.");
-        } else {
-            Skeleton.naploz("Nincs elég anyag, az újratöltés sikertelen.");
-        }
-        
-        Skeleton.visszater("ujratolt");
+ 
     }
 }

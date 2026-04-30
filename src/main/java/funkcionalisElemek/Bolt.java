@@ -1,5 +1,5 @@
 package funkcionalisElemek;
-import vezerles.Skeleton;
+
 
 
 /**
@@ -18,14 +18,6 @@ public class Bolt {
      * @param item A megvásárolni kívánt tárgy vagy eszköz neve.
      */
     public void vasarol(Telephely t, String item) {
-        Skeleton.hiv("b:Bolt: vasarol(telep, item)");
-        
-        if (t.JMFmodosit(-1000)) {
-            Skeleton.naploz("A megvásárolt " + item + " a Telephely raktárába került.");
-        } else {
-            Skeleton.naploz("A vásárlás meghiúsult a fizetési hiba miatt.");
-        }
-        
-        Skeleton.visszater("vasarol");
+
     }
 }

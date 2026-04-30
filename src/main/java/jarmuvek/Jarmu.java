@@ -2,7 +2,6 @@ package jarmuvek;
 
 import funkcionalisElemek.Sav;
 import funkcionalisElemek.Ut;
-import vezerles.Skeleton;
 
 
 /**
@@ -42,9 +41,7 @@ public abstract class Jarmu{
      * @param s A cél sáv objektum[cite: 1874].
      */
     public void setSav(Sav s){
-        Skeleton.hiv(this.id + ":Jarmu: setSav(s)");
-        this.aktualisSav = s;
-        Skeleton.visszater("setSav");
+  
     }
 
     /**
@@ -68,11 +65,7 @@ public abstract class Jarmu{
      * @param korszam Hány körön keresztül maradjon mozgásképtelen a jármű.
      */
     public void megall(int korszam){
-        Skeleton.hiv(this.id + ":Jarmu: megall(" + korszam + ")");
-
-        this.mozgaskepes = false;
-
-        Skeleton.visszater("megall");
+ 
     }
 
     /**
@@ -89,16 +82,7 @@ public abstract class Jarmu{
      * @param irany A cél sáv iránya az aktuálishoz képest.
      */
     public void savvaltas(Irany i) {
-        Skeleton.hiv(this.id + ":Jarmu: savvaltas(irany)");
-        
-        if (aktualisSav != null) {
-            Ut ut = aktualisSav.getUt();
-            if (ut != null) {
-                ut.jarmuSavotValt(this, i); 
-            }
-        }
-        
-        Skeleton.visszater("savvaltas");
+
     }
 
     /**

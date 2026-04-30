@@ -1,8 +1,6 @@
 package funkcionalisElemek;
 import jarmuvek.Jarmu;
 import kotrofejek.KotroFej;
-import vezerles.Skeleton;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,8 +45,7 @@ public class Sav {
      * @param j A hozzáadni kívánt jármű.
      */
     public void addJarmu(Jarmu j) {
-        jarmuvek.add(j);
-        j.setSav(this);
+
     }
 
     /**
@@ -56,9 +53,7 @@ public class Sav {
      * @return A tartalmazó Út objektum.
      */
     public void setUt(Ut u) {
-        Skeleton.hiv( this.id + ":Sav: setUt(u)");
-        this.uthozTartozik = u;
-        Skeleton.visszater("setUt");
+
     }
 
     public Ut getUt() {
@@ -71,11 +66,7 @@ public class Sav {
      * @return Egy másik Jármű a sávban, vagy null, ha nincs senki más.
      */
     public Jarmu getMasikJarmu(Jarmu errolVanSzo) {
-        for (Jarmu j : jarmuvek) {
-            if (j != errolVanSzo) {
-                return j;
-            }
-        }
+
         return null;
     }
 
@@ -86,42 +77,17 @@ public class Sav {
      * @return Egy másik sáv, vagy null, ha nincs senki más.
      */
     public Sav getMasikSav(Sav errolVanSzo){
-        for (Sav s : uthozTartozik.getSavok()){
-            if (s != errolVanSzo){
-                return s;
-            }
-        }
+
         return null;
     }
 
     public void hoTakarit(){
-        Skeleton.hiv(this.id + ":Sav: hoTakarit()");
 
-        boolean atrakja = Skeleton.kerdez("A hókotrón lévő fej átrakja a havat másik sávra (pl. Hányó/Söprő)?");
-
-        if (atrakja){
-            Sav s2 = getMasikSav(this);
-            if (s2 != null){
-                uthozTartozik.havatAtad(this, s2);
-            } else{
-                Skeleton.naploz("Nincs másik sáv, amire áttőlná a havat.");
-            }
-        } else {
-            Skeleton.naploz("A fej elolvasztotta a havat.");
-        }
-
-
-
-        Skeleton.visszater("hoTakarit");
 
     }
 
     public void jegFeltor(){
-        Skeleton.hiv(this.id + ":Sav: jegFeltor()");
 
-        Skeleton.naploz("A sávon fel lett törve a jég.");
-
-        Skeleton.visszater("jegFeltor");
     }
 
     /**
@@ -129,11 +95,7 @@ public class Sav {
      * @param kor A lezárás időtartama körökben.
      */
     public void lezar(int kor){
-        Skeleton.hiv(this.id + ":Sav: lezar(" + kor + ")");
 
-        Skeleton.naploz("A sáv lezárva " + kor + " körre az ütközés miatt. Akadály alakult ki.");
-
-        Skeleton.visszater("lezar");
     }
 
     /**
@@ -141,17 +103,7 @@ public class Sav {
      * @param j A belépni kívánó jármű.
      */
     public void elfogad(Jarmu j){
-        Skeleton.hiv(this.id + ":Sav: elfogad(" + j.getId()+ ")");
-        
-        boolean siker = Skeleton.kerdez("Be tudja fogadni a sáv a járművet?");
-        if (siker) {
-            Skeleton.naploz("A jármű sikeresen sávot váltott.");
-            this.addJarmu(j);
-        } else {
-            Skeleton.naploz("A sávváltás meghiúsult.");
-        }
-        
-        Skeleton.visszater("elfogad");
+
     }
 
     /**
@@ -159,9 +111,7 @@ public class Sav {
      * @param j Az érintett jármű.
      */
     public void hatasAlkalmaz(Jarmu j){
-        Skeleton.hiv(this.id + ":Sav: hatasAlkalmaz("+ j.getId()+ ")");
-            j.csuszik();
-        Skeleton.visszater("hatasAlkalmaz");
+
 
     }
 
@@ -173,24 +123,7 @@ public class Sav {
      */
 
     public void mozgat(Jarmu j) {
-        Skeleton.hiv(this.id + ":Sav: mozgat(a)");
 
-
-        if (vanHo && !isJeges) {
-            athaladtJarmuvek++;
-            if (athaladtJarmuvek == 1) {
-                this.allapotFrissit();
-            }
-        }
-
-        if (Skeleton.kerdez("Mély havas a sáv?")) {
-            j.megall(-1);
-        }
-        else if (Skeleton.kerdez("Jeges a sáv?")) {
-            hatasAlkalmaz(j);
-        }
-
-        Skeleton.visszater("mozgat");
     }
 
     /**
@@ -198,10 +131,7 @@ public class Sav {
      * @param mennyiseg A hóréteg növekedésének mértéke.
      */
    public void hoNovel(int mennyiseg) {
-        Skeleton.hiv(this.id + ":Sav: hoNovel(" + mennyiseg + ")");
-        this.vanHo = true;
-        Skeleton.naploz("A sáv havas lett.");
-        Skeleton.visszater("hoNovel");
+
     }
 
     /**
@@ -209,11 +139,7 @@ public class Sav {
      * Ha több jármű áthaladt a havas sávon, a letaposott hó jéggé válik.
      */
     public void allapotFrissit() {
-        Skeleton.hiv(this.id + ":Sav: allapotFrissit()");
-        Skeleton.naploz("A hó jéggé fagyott a sávon.");
-        this.isJeges = true; 
-        this.vanHo = false;  
-        Skeleton.visszater("allapotFrissit");
+
     }
 
 }

@@ -3,7 +3,7 @@ package kotrofejek;
 import funkcionalisElemek.Sav;
 import funkcionalisElemek.Telephely;
 import funkcionalisElemek.Ut;
-import vezerles.Skeleton;
+
 
 /**
  * A Sárkány típusú kotrófejet reprezentáló osztály.
@@ -25,12 +25,7 @@ public class SarkanyFej extends KotroFej {
      */
     @Override
     public void takarit(Sav sav, Ut ut) {
-        Skeleton.hiv("sarkany:SarkanyFej: tisztit("+ sav.getId() + ", ut)");
-
-        sav.jegFeltor();
-        sav.hoTakarit();
-
-        Skeleton.visszater("tisztit");
+ 
     }
 
     /**
@@ -46,21 +41,8 @@ public class SarkanyFej extends KotroFej {
      * Ellenőrzi, hogy a Telephelyen rendelkezésre áll-e a szükséges nyersanyag. 
      * Sikeres töltés után a fej ismét működőképessé válik.
      */
-<<<<<<< HEAD
-=======
     
->>>>>>> 547a13a (ripped out the skeleton)
     public void ujratolt() {
-        Skeleton.hiv("sarkany:SarkanyFej: ujratolt()");
-        
-        boolean vanEleg = Skeleton.kerdez("Van elegendő biokerozin a Telephelyen?");
-        
-        if (vanEleg) {
-            Skeleton.naploz("A Sárkány fej feltöltődött és újra működőképes."); 
-        } else {
-            Skeleton.naploz("Nincs elég anyag, az újratöltés sikertelen.");
-        }
-        
-        Skeleton.visszater("ujratolt");
+  
     }
 }
