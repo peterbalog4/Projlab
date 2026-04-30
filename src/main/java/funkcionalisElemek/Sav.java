@@ -199,6 +199,10 @@ public class Sav {
         zuzalek = true;
     }
 
+    public void zuzalekEltakarit(){
+        zuzalek = false;
+    }
+
     
 
 }
