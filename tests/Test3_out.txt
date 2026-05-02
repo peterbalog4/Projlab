@@ -1,10 +1,16 @@
-ERROR: A move parancs csak busszal vagy hokotrovel hasznalhato.
 STAT a1:
 - Pozicio: ut1_vegB_1
 - Varakozas: 0
-- Allapot: CSUSZKAL
+- Allapot: KOZLEKEDIK
 STAT a2:
 - Pozicio: ut2_vegB_1
 - Varakozas: 0
 - Allapot: KOZLEKEDIK
-ERROR: Nem letezik objektum azonositoval: ut2_vegB_2
+STAT ut2_vegB_1:
+- Hoszint: 0
+- Jeges: false
+- Zuzalekos: false
+- Sozott_idotartam: 0
+- Athaladt_jarmuvek_szama: 1
+- Lezarva: 0
+- Jarmuvek_rajta: auto a2

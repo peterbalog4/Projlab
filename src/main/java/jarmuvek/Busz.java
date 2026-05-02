@@ -122,7 +122,7 @@ public class Busz extends Jarmu {
             return;
         }
 
-        if (aktualisSav == null) return;
+        if (aktualisSav == null || pozicio == null) return;
 
         Jarmu masik = aktualisSav.getMasikJarmu(this);
         if (masik != null) {
@@ -130,19 +130,8 @@ public class Busz extends Jarmu {
             return;
         }
 
-        if (savVegenVan()) {
-            if (aktualisSav.getUt().equals(aktualisCel)) {
-                forduloNovel();
-            }
-
-            if (kovetkezoUt != null) {
-                Ut cel = kovetkezoUt;
-                kovetkezoUt = null;
-                kanyarodik(cel);
-            } else {
-                megall(1);
-            }
-        }
+        allapot = Allapot.KOZLEKEDIK;
+        pozicio.halad(this, 1);
     }
 
     /**

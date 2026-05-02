@@ -1,7 +1,8 @@
 load test_map.txt
 random off
-spawn b1 ut1_vegB_1
-set_route b1 ut1_vegB_1 ut2_vegB_1
+spawn busz b1 ut1_vegB_1
+set_route b1 ut1 ut2
 step 1
 move b1 ut2
+step 1
 stat b1

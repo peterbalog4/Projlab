@@ -11,4 +11,4 @@ spawn auto a4 ut1_vegB_1
 step 1
 spawn auto a5 ut1_vegB_1
 step 1
-stat u1
+stat ut1_vegB_1

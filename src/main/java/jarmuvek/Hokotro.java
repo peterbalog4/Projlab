@@ -91,28 +91,18 @@ public class Hokotro extends Jarmu {
             return;
         }
 
-        if (aktualisSav == null) return;
+        if (aktualisSav == null || pozicio == null) return;
 
         dolgozik();
 
-        if (savVegenVan()) {
-            if (kovetkezoUt != null) {
-                Ut cel = kovetkezoUt;
-                kovetkezoUt = null;
-                kanyarodik(cel);
-            } else {
-                megall(1);
-            }
+        Jarmu masik = aktualisSav.getMasikJarmu(this);
+        if (masik != null) {
+            utkozik(masik);
+            return;
         }
-    }
 
-    /**
-     * Megvizsgálja, hogy a hókotró elérte-e az aktuális sáv végét.
-     *
-     * @return {@code true}, ha a sáv végén van, {@code false} egyébként.
-     */
-    private boolean savVegenVan() {
-        return aktualisSav.getMasikJarmu(this) == null;
+        allapot = Allapot.KOZLEKEDIK;
+        pozicio.halad(this, 1);
     }
 
     /**

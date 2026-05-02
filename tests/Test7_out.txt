@@ -1,1 +1,8 @@
-ERROR: Nem letezik objektum azonositoval: ut1
+STAT ut1_vegB_1:
+- Hoszint: 0
+- Jeges: false
+- Zuzalekos: false
+- Sozott_idotartam: 0
+- Athaladt_jarmuvek_szama: 0
+- Lezarva: 0
+- Jarmuvek_rajta: hokotro h

@@ -1,6 +1,6 @@
 load test_map.txt
 random off
-set_surface ut1_sav_1 3 false
+set_surface ut1_vegB_1 3 false
 spawn busz b1 ut1_vegB_1
 step 1
 stat b1

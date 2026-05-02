@@ -205,8 +205,9 @@ public class Commander {
         };
 
         if (j == null) return;
-        j.setSav(sav);
-        sav.elfogad(j);
+        if (sav.elfogad(j)) {
+            j.initSav(sav);
+        }
         jarmuvek.put(id, j);
         korSzamlalo.addJarmu(j);
     }
@@ -330,7 +331,7 @@ public class Commander {
         if (r.length < 3) { hiba("Hibas buy parancs."); return; }
         Telephely t = telephelyek.get(r[1]);
         if (t == null) { hiba("Nem letezik telephely: " + r[1]); return; }
-        if (!t.vasarol(r[2].toLowerCase())) {
+        if (!t.vasarol(r[2].toLowerCase().replace("_", ""))) {
             kimenet.println("ERROR: Nincs eleg JMF a vasarlashoz.");
         }
     }

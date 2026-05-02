@@ -168,8 +168,11 @@ public class Ut {
      * @param s A sáv, amelyre áthajt a jármű
      */
     public void jarmuSavotValt(Jarmu j, Irany i, Sav s){
-        int idx = (i == Irany.BALRA) ? 1 : - 1;
-        savKeres(s, idx).elfogad(j);
+        int idx = (i == Irany.BALRA) ? 1 : -1;
+        Sav celSav = savKeres(s, idx);
+        if (celSav != s && celSav.elfogad(j)) {
+            j.setSav(celSav);
+        }
     }
 
     private Sav savKeres(Sav s, int i){

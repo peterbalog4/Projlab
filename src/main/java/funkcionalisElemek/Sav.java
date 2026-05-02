@@ -54,8 +54,11 @@ public class Sav {
      * @param j A hozzáadni kívánt jármű.
      */
     public void addJarmu(Jarmu j) {
-
+    if (!jarmuvek.contains(j)) {
+        this.jarmuvek.add(j);
+        this.athaladtJarmuvekSzama++;
     }
+}
     public HaladasiIrany getIrany(){
         return haladasiIrany;
     }
@@ -76,15 +79,27 @@ public class Sav {
         hossz = i;
     }
 
+    /**
+     * Visszaadja a sáv hosszát méterben.
+     *
+     * @return A sáv hossza.
+     */
+    public int getHossz() {
+        return hossz;
+    }
+
    
 
     /**
      * Megkeres egy másik járművet a sávban ütközés detektálásához.
+     *
      * @param errolVanSzo A vizsgált jármű, akit ki kell hagyni a keresésből.
-     * @return Egy másik Jármű a sávban, vagy null, ha nincs senki más.
+     * @return Egy másik Jármű a sávban, vagy {@code null}, ha nincs senki más.
      */
     public Jarmu getMasikJarmu(Jarmu errolVanSzo) {
-
+        for (Jarmu j : jarmuvek) {
+            if (j != errolVanSzo) return j;
+        }
         return null;
     }
 
@@ -132,14 +147,12 @@ public class Sav {
      * @param j A belépni kívánó jármű.
      */
 
-    public boolean elfogad(Jarmu j){
-        if(lezarvaKorig > 0) return false;
-        this.jarmuvek.add(j);
-        athaladtJarmuvekSzama++;
-        hatasAlkalmaz(j);
-        
-        j.setPozicio(new Pozicio(this, this.hossz)); 
-        return true;
+    public boolean elfogad(Jarmu j) {
+    if (lezarvaKorig > 0) return false;
+    addJarmu(j);
+    hatasAlkalmaz(j);
+    j.setPozicio(new Pozicio(this, 0)); 
+    return true;
     }
 
 
@@ -202,21 +215,20 @@ public class Sav {
      * Ha több jármű áthaladt a havas sávon, a letaposott hó jéggé válik.
      */
     public void allapotFrissit() {
+        if(lezarvaKorig > 0){
+            lezarvaKorig--;
+        }
+
         if(sozottIdotartam > 0){
             jeg = false;
             ho = 0;
             athaladtJarmuvekSzama = 0;
             sozottIdotartam--;
-        }
-        if(lezarvaKorig > 0){
-            lezarvaKorig --;
-        }
-
-        if(athaladtJarmuvekSzama >= 5 && ho > 0){
+        } else if(athaladtJarmuvekSzama >= 5 && ho > 0){
             jeg = true;
             ho = 0;
+            athaladtJarmuvekSzama = 0;
         }
-
     }
 
     public void soSzor(){

@@ -82,7 +82,7 @@ public class Auto extends Jarmu {
             return;
         }
 
-        if (aktualisSav == null) return;
+        if (aktualisSav == null || pozicio == null) return;
 
         Jarmu masik = aktualisSav.getMasikJarmu(this);
         if (masik != null) {
@@ -90,24 +90,8 @@ public class Auto extends Jarmu {
             return;
         }
 
-        if (savVegenVan()) {
-            Ut kovetkezo = kovetkezoUt();
-            if (kovetkezo != null) {
-                kanyarodik(kovetkezo);
-            }
-        }
-    }
-
-    /**
-     * Megvizsgálja, hogy az autó elérte-e az aktuális sáv végét.
-     * Ez akkor igaz, ha a sávon már nincs előtte jármű és a sáv azonosítója
-     * alapján a következő út következik.
-     *
-     * @return {@code true}, ha a sáv végén van, {@code false} egyébként.
-     */
-    private boolean savVegenVan() {
-        return aktualisSav.getMasikJarmu(this) == null && utvonal.isEmpty()
-                || !utvonal.isEmpty();
+        allapot = Allapot.KOZLEKEDIK;
+        pozicio.halad(this, 1);
     }
 
     /**
@@ -140,9 +124,18 @@ public class Auto extends Jarmu {
      * {@link Allapot#KOZLEKEDIK}-re vált.
      */
     private void probaljSavotValtani() {
+        Sav elotteSav = aktualisSav;
         savvaltas(Irany.BALRA);
-        if (allapot == Allapot.KOZLEKEDIK) return;
+        if (aktualisSav != elotteSav) {
+            varakozasiIdo = 0;
+            allapot = Allapot.KOZLEKEDIK;
+            return;
+        }
         savvaltas(Irany.JOBBRA);
+        if (aktualisSav != elotteSav) {
+            varakozasiIdo = 0;
+            allapot = Allapot.KOZLEKEDIK;
+        }
     }
 
     /**
@@ -154,12 +147,12 @@ public class Auto extends Jarmu {
      */
     @Override
     public void csuszik() {
-        allapot = Allapot.CSUSZKAL;
+        this.allapot = Allapot.CSUSZKAL;
         if (aktualisSav == null) return;
 
         Jarmu masik = aktualisSav.getMasikJarmu(this);
         if (masik != null) {
-            utkozik(masik);
+            this.utkozik(masik);
         }
     }
 

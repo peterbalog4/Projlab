@@ -1,4 +1,5 @@
-ERROR: Hibas spawn parancs.
-ERROR: Nem letezik busz: b1
-ERROR: Nem letezik jarmű: b1
-ERROR: Nem letezik objektum azonositoval: b1
+STAT b1:
+- Pozicio: ut2_vegB_1
+- Varakozas: 0
+- Allapot: KOZLEKEDIK
+- Forduloszam: 0
