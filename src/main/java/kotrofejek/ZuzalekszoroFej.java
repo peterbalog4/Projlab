@@ -11,11 +11,13 @@ public class ZuzalekszoroFej extends KotroFej{
 
 
     @Override
-    public void takarit(Sav sav, Ut ut) {
+    public boolean takarit(Sav sav, Ut ut) {
         if(fejBekapcsolva && zuzalek > 0){
             sav.zuzalekSzor();
             zuzalek--;
+            return true;
         }
+        return false;
     }
 
     public void bekapcsol(){

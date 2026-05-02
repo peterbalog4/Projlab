@@ -28,7 +28,7 @@ public class Telephely {
         this.jatekosID = jatekosID;
     }
 
-    public void useFej(KotroFej ujFej, Hokotro h) { //kinda nem kell a hokotro
+    public void useFej(KotroFej ujFej) { //kinda nem kell a hokotro
         kotroFejek.remove(ujFej);
     }
 

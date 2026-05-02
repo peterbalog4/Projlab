@@ -94,7 +94,7 @@ public class Sav {
         return null;
     }
 
-    public int hoTakarit(int tavolsag){
+    public int hoTakarit(int tavolsag){/// kell visszatérési érték?
         int eltakaritottMennyiseg = this.ho;
         ho = 0;
         athaladtJarmuvekSzama = 0;

@@ -10,10 +10,9 @@ public class HanyoFej extends KotroFej {
 
     
     @Override
-    public void takarit(Sav sav, Ut ut) {
-        int eltakaritottMennyiseg = sav.hoTakarit();
-        ut.havatAtad(sav, 3, eltakaritottMennyiseg);
-        sav.zuzalekEltakarit();
+    public boolean takarit(Sav sav, Ut ut) {
+        int eltakaritottMennyiseg = sav.hoTakarit(3);
+        return true;
     }
 
 }

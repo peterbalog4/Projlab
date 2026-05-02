@@ -10,8 +10,9 @@ public class JegtoroFej extends KotroFej {
 
     
     @Override
-    public void takarit(Sav sav, Ut ut) {
+    public boolean takarit(Sav sav, Ut ut) {
         sav.jegFeltor();
+        return true;
     }
 
 }

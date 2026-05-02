@@ -13,12 +13,14 @@ public class SarkanyFej extends KotroFej {
 
     
     @Override
-    public void takarit(Sav sav, Ut ut) {
+    public boolean takarit(Sav sav, Ut ut) {
         if(fejBekapcsolva && biokerozin > 0){
             sav.jegFeltor();
-            int eltakaritottMennyiseg = sav.hoTakarit();
+            int eltakaritottMennyiseg = sav.hoTakarit(0);
             biokerozin --;
+            return true;
         }
+        return false;
     }
     
     
