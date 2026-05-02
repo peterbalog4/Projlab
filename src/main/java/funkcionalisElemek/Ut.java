@@ -25,7 +25,6 @@ public class Ut {
     private List<Sav> A_bol_B_savok = new ArrayList<>();
     private Map<Ut, String> vegA_kapcsolatok = new HashMap<>();
     private Map<Ut, String> vegB_kapcsolatok = new HashMap<>();
-    
     private int hossz;
 
   public Ut(String id, int hossz, int savokAbolB, int savokBbolA) {
