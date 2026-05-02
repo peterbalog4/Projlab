@@ -51,8 +51,17 @@ public class Auto extends Jarmu {
     }
 
     /**
-     * Az autó haladását megvalósító metódus, amelyet a KörSzámláló hív meg minden körben.
-     *
+     * A sáv végének elérésekor a Pozicio hívja meg.
+     * Az autó kiszámolja a következő utat és kanyarodik.
+     */
+    @Override
+    public void elertSavVeget() {
+        Ut kovetkezo = kovetkezoUt();
+        if (kovetkezo != null) {
+            kanyarodik(kovetkezo);
+        }
+    }
+     /*
      * Ha a jármű vár (varakozasiIdo > 0), csökkenti a számlálót és nem mozdul.
      * Ha elakadt (varakozasiIdo == -1), megpróbál szabad szomszédos sávba váltani.
      * Egyébként előre mozdul a sávon; ha a sáv végére ér, kiszámolja a következő
@@ -205,7 +214,7 @@ public class Auto extends Jarmu {
             for (HaladasiIrany irany : HaladasiIrany.values()) {
                 Map<Ut, String> szomszedok = aktualis.getKapcsolatok(irany);
                 for (Ut szomszed : szomszedok.keySet()) {
-                    int ujTav = aktualisTav + szomszed.getHossz();
+                    int ujTav = aktualisTav + 1;
                     if (ujTav < tavolsag.getOrDefault(szomszed, Integer.MAX_VALUE)) {
                         tavolsag.put(szomszed, ujTav);
                         elozo.put(szomszed, aktualis);

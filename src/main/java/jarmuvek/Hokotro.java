@@ -53,8 +53,20 @@ public class Hokotro extends Jarmu {
     }
 
     /**
-     * Beállítja a következő utat, amelyre a hókotró kanyarodni fog a következő
-     * kereszteződésben. A játékos adja meg a {@code move} paranccsal.
+     * A sáv végének elérésekor a Pozicio hívja meg.
+     * A hókotró kanyarodik ha van megadott következő út, egyébként vár.
+     */
+    @Override
+    public void elertSavVeget() {
+        if (kovetkezoUt != null) {
+            Ut cel = kovetkezoUt;
+            kovetkezoUt = null;
+            kanyarodik(cel);
+        } else {
+            megall(1);
+        }
+    } 
+    /**A játékos adja meg a {@code move} paranccsal.
      *
      * @param ut A kívánt következő {@link Ut}.
      */
@@ -115,7 +127,6 @@ public class Hokotro extends Jarmu {
         if (this.aktivFej != null) {
             telephely.tarol(this.aktivFej);
         }
-        telephely.useFej(ujFej);
         this.aktivFej = ujFej;
     }
 
@@ -132,7 +143,7 @@ public class Hokotro extends Jarmu {
         // A hókotróra nem hat az ütközés, szándékosan üres.
     }
 
-        /**
+    /**
      * Kezdeményezi az úttakarítási folyamatot az aktuális sávon.
      *
      * Ha van felszerelt kotrófej, meghívja annak {@link KotroFej#takarit} metódusát.
@@ -157,8 +168,7 @@ public class Hokotro extends Jarmu {
         return aktivFej;
     }
 
-
-        /**
+    /**
      * Újratölti a felszerelt fejet a telephely készletéből.
      * Ha nincs elegendő anyag a telephelyen, hibaüzenetet ír a kimenetre.
      * A {@code reload} parancs hívja meg.
@@ -181,7 +191,7 @@ public class Hokotro extends Jarmu {
             }
         }
     }
- 
+
     /**
      * Beállítja a felszerelt fej anyagkészletét tesztelési célból.
      * A {@code set_material} parancs hívja meg.
@@ -198,7 +208,7 @@ public class Hokotro extends Jarmu {
             zf.setZuzalek(mennyiseg);
         }
     }
-    
+
     /**
      * Kiírja a hókotró aktuális állapotát a megadott kimenetre.
      * Az alaposztály mezői mellett a fejet és anyagkészleteket is megjeleníti.

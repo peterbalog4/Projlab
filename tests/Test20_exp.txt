@@ -1,0 +1,8 @@
+STAT a:
+- Pozicio: ut3_vegB_1
+- Varakozas: -1
+- Allapot: ELAKADT
+STAT a:
+- Pozicio: ut3_vegB_2
+- Varakozas: 0
+- Allapot: KOZLEKEDIK

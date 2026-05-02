@@ -1,0 +1,4 @@
+STAT a1:
+- Pozicio: ut1_vegB_1
+- Varakozas: -1
+- Allapot: ELAKADT

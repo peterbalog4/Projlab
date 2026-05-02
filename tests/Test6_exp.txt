@@ -1,4 +1,4 @@
-STAT ut3_vegB_1:
+STAT ut4_vegB_1:
 - Hoszint: 2
 - Jeges: false
 - Zuzalekos: false
@@ -6,11 +6,11 @@ STAT ut3_vegB_1:
 - Athaladt_jarmuvek_szama: 0
 - Lezarva: 0
 - Jarmuvek_rajta:
-STAT ut3_vegB_2:
+STAT ut4_vegB_4:
 - Hoszint: 0
 - Jeges: false
 - Zuzalekos: false
 - Sozott_idotartam: 0
 - Athaladt_jarmuvek_szama: 0
 - Lezarva: 0
-- Jarmuvek_rajta:
+- Jarmuvek_rajta: hokotro h

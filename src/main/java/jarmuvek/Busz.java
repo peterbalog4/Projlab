@@ -90,8 +90,23 @@ public class Busz extends Jarmu {
     }
 
     /**
-     * A busz haladását vezérlő metódus, amelyet a KörSzámláló hív meg minden körben.
-     *
+     * A sáv végének elérésekor a Pozicio hívja meg.
+     * A busz ellenőrzi, hogy végállomáson van-e, majd kanyarodik vagy vár.
+     */
+    @Override
+    public void elertSavVeget() {
+        if (aktualisSav != null && aktualisSav.getUt().equals(aktualisCel)) {
+            forduloNovel();
+        }
+        if (kovetkezoUt != null) {
+            Ut cel = kovetkezoUt;
+            kovetkezoUt = null;
+            kanyarodik(cel);
+        } else {
+            megall(1);
+        }
+    }
+     /*
      * Ha a busz vár (varakozasiIdo > 0), csökkenti a számlálót.
      * Egyébként előre mozdul; ha a sáv végére ér és elérte a célállomást,
      * fordulót teljesít. Ha van megadott következő út, arra kanyarodik,
@@ -184,7 +199,7 @@ public class Busz extends Jarmu {
         return forduloSzam;
     }
 
-        /**
+    /**
      * Kiírja a busz aktuális állapotát a megadott kimenetre.
      * Az alaposztály mezői mellett a fordulószámot is megjeleníti.
      *

@@ -13,4 +13,4 @@ STAT ut4_vegB_4:
 - Sozott_idotartam: 0
 - Athaladt_jarmuvek_szama: 0
 - Lezarva: 0
-- Jarmuvek_rajta: hokotro h
+- Jarmuvek_rajta:

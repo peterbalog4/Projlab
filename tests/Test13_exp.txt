@@ -1,6 +1,6 @@
 STAT ut1_vegB_1:
-- Hoszint: 1
-- Jeges: false
+- Hoszint: 0
+- Jeges: true
 - Zuzalekos: false
 - Sozott_idotartam: 0
 - Athaladt_jarmuvek_szama: 0

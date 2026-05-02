@@ -109,7 +109,7 @@ public class Telephely {
                     zuzalek++;
                 }
                 break;
-            case "hokotro": //TODO: ez új object lesz main-ben
+            case "hokotro":
                 if (JMF >= hokotroAr) {
                     JMF -= hokotroAr;
                 }

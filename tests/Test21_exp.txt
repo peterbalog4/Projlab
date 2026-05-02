@@ -1,0 +1,6 @@
+STAT d1:
+- JMF: 10000
+- Biokerozin: 0
+- So: 0
+- Zuzalek: 0
+- Tarolt_fejek:

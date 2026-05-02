@@ -131,15 +131,25 @@ public class Sav {
      * Megvizsgálja, hogy a sáv be tud-e fogadni egy járművet (pl. sávváltásnál).
      * @param j A belépni kívánó jármű.
      */
+
     public boolean elfogad(Jarmu j){
         if(lezarvaKorig > 0) return false;
-
         this.jarmuvek.add(j);
         athaladtJarmuvekSzama++;
         hatasAlkalmaz(j);
+        
+        j.setPozicio(new Pozicio(this, this.hossz)); 
         return true;
-
     }
+
+
+    public void jarmuMozgott(Jarmu mozgottJarmu) {
+    for (Jarmu masik : jarmuvek) {
+        if (masik != mozgottJarmu) {
+            mozgottJarmu.utkozesVizsgalat(masik); // TDA delegálás
+        }
+    }
+}
 
     public void eltavolit(Jarmu j){
         jarmuvek.remove(j);
