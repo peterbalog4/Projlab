@@ -1,0 +1,10 @@
+ERROR: A move parancs csak busszal vagy hokotrovel hasznalhato.
+STAT a1:
+- Pozicio: ut1_vegB_1
+- Varakozas: 0
+- Allapot: CSUSZKAL
+STAT a2:
+- Pozicio: ut2_vegB_1
+- Varakozas: 0
+- Allapot: KOZLEKEDIK
+ERROR: Nem letezik objektum azonositoval: ut2_vegB_2

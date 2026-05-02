@@ -1,0 +1,4 @@
+ERROR: Hibas spawn parancs.
+ERROR: Nem letezik busz: b1
+ERROR: Nem letezik jarmű: b1
+ERROR: Nem letezik objektum azonositoval: b1

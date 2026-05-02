@@ -19,13 +19,39 @@ import java.util.Map;
 public class Ut {
 
     /** Az úthoz tartozó sávok listája.  */
+    String id;
     private List<Sav> savok = new ArrayList<>();
     private List<Sav> B_bol_A_savok= new ArrayList<>();
     private List<Sav> A_bol_B_savok = new ArrayList<>();
     private Map<Ut, String> vegA_kapcsolatok = new HashMap<>();
     private Map<Ut, String> vegB_kapcsolatok = new HashMap<>();
-    
     private int hossz;
+
+  public Ut(String id, int hossz, int savokAbolB, int savokBbolA) {
+        this.id = id;
+        this.hossz = hossz;
+
+        for (int i = 1; i <= savokAbolB; i++) {
+            String savId = id + "_vegB_" + i;
+            Sav ujSav = new Sav(savId, this, HaladasiIrany.A_BOL_B_BE, hossz);
+            this.savok.add(ujSav);
+            this.A_bol_B_savok.add(ujSav);
+        }
+
+        for (int i = 1; i <= savokBbolA; i++) {
+            String savId = id + "_vegA_" + i;
+            Sav ujSav = new Sav(savId, this, HaladasiIrany.B_BOL_A_BA, hossz);
+            this.savok.add(ujSav);
+            this.B_bol_A_savok.add(ujSav);
+        }
+    }
+
+
+    public Sav addSav(String id, HaladasiIrany irany, int hossz){
+        Sav s = new Sav(id, this, irany, hossz);
+        return s;
+    }
+
 
     public void addSav(Sav s) {
         savok.add(s);
@@ -39,6 +65,11 @@ public class Ut {
         }
 
     }
+
+    public void addKapcsolat(String sajatVeg, Ut celUt, String celVeg) {
+        if (sajatVeg.equals("vegA")) vegA_kapcsolatok.put(celUt, celVeg);
+        else vegB_kapcsolatok.put(celUt, celVeg);
+        }
 
     /**
      * Kezeli a jármű kanyarodását az út végén.
@@ -69,6 +100,20 @@ public class Ut {
         if (induloSav.elfogad(j)) {
             j.setSav(induloSav); 
         }
+    }
+
+    public int getHossz(){
+        return hossz;
+    }
+
+    /**
+     * Visszaadja az úthoz tartozó összes sávot.
+     * A {@code Commander} használja a sávok nyilvántartásba vételéhez.
+     *
+     * @return Az összes sáv listája.
+     */
+    public List<Sav> getSavok() {
+        return savok;
     }
 
 
@@ -120,6 +165,7 @@ public class Ut {
      * sáv elfogadó metódusát. 
      * @param j A sávot váltani kívánó Jármű.
      * @param i Az irány, amely felé a jármű váltani szeretne.
+     * @param s A sáv, amelyre áthajt a jármű
      */
     public void jarmuSavotValt(Jarmu j, Irany i, Sav s){
         int idx = (i == Irany.BALRA) ? 1 : - 1;

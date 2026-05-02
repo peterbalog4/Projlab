@@ -122,27 +122,18 @@ public class Commander {
     private void road(String[] r) {
         if (r.length < 5) { hiba("Hibas road parancs."); return; }
         String utId = r[1];
+        int hossz   = Integer.parseInt(r[2]);
         int vegASav = Integer.parseInt(r[3]);
         int vegBSav = Integer.parseInt(r[4]);
 
-        Ut ut = new Ut();
+        Ut ut = new Ut(utId, hossz, vegBSav, vegASav);
         utak.put(utId, ut);
         korSzamlalo.addUt(ut);
 
-        for (int i = 1; i <= vegASav; i++) {
-            String savId = utId + "_vegA_" + i;
-            Sav sav = new Sav(savId);
-            savok.put(savId, sav);
-            ut.addSav(sav);
+        ut.getSavok().forEach(sav -> {
+            savok.put(sav.getId(), sav);
             korSzamlalo.addSav(sav);
-        }
-        for (int i = 1; i <= vegBSav; i++) {
-            String savId = utId + "_vegB_" + i;
-            Sav sav = new Sav(savId);
-            savok.put(savId, sav);
-            ut.addSav(sav);
-            korSzamlalo.addSav(sav);
-        }
+        });
     }
 
     /**

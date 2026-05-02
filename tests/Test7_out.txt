@@ -1,0 +1,1 @@
+ERROR: Nem letezik objektum azonositoval: ut1

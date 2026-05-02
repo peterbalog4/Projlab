@@ -1,0 +1,7 @@
+load test_map.txt
+random off
+set_surface ut1_vegB_1 2 false
+spawn hokotro h ut1_vegB_1
+equip store h sopro
+step 1
+stat ut1_vegB_1

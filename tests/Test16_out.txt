@@ -1,0 +1,7 @@
+ERROR: Nincs eleg JMF a vasarlashoz.
+STAT d1:
+- JMF: 200000
+- Biokerozin: 0
+- So: 0
+- Zuzalek: 0
+- Tarolt_fejek:

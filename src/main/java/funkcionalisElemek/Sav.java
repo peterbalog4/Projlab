@@ -34,8 +34,11 @@ public class Sav {
      * Konstruktor a sáv létrehozásához.
      * @param id A sáv egyedi azonosítója a naplózáshoz.
      */
-    public Sav(String id) {
+    public Sav(String id, Ut ut, HaladasiIrany irany, int hossz) {
         this.id = id;
+        this.ut  = ut;
+        this.haladasiIrany = irany;
+        this.hossz = hossz;
     }
 
     /**
@@ -72,6 +75,8 @@ public class Sav {
     public void setHossz(int i){
         hossz = i;
     }
+
+   
 
     /**
      * Megkeres egy másik járművet a sávban ütközés detektálásához.

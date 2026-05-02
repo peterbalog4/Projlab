@@ -1,0 +1,6 @@
+road ut1 2 0 1
+road ut2 2 0 1
+connect ut1 vegB ut2 vegA
+road ut3 2 0 2
+road ut4 2 0 4
+depot d1 0

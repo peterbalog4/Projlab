@@ -1,0 +1,8 @@
+load test_map.txt
+random off
+set_surface ut4_vegB_4 2 false
+spawn hokotro h ut4_vegB_4
+equip store h hanyo
+step 1
+stat ut4_vegB_1
+stat ut4_vegB_4

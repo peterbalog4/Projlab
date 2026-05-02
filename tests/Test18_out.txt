@@ -1,0 +1,14 @@
+STAT h:
+- Pozicio: ut1_vegB_1
+- Varakozas: 0
+- Allapot: KOZLEKEDIK
+- Felszerelt_fej: SarkanyFej
+- Biokerozin: 10
+- So: 0
+- Zuzalek: 0
+STAT d1:
+- JMF: 0
+- Biokerozin: 4
+- So: 0
+- Zuzalek: 0
+- Tarolt_fejek:

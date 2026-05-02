@@ -1,0 +1,12 @@
+STAT ut1_vegB_1:
+- Hoszint: 0
+- Jeges: true
+- Zuzalekos: true
+- Sozott_idotartam: 0
+- Athaladt_jarmuvek_szama: 2
+- Lezarva: 0
+- Jarmuvek_rajta: hokotro h auto a
+STAT a:
+- Pozicio: ut1_vegB_1
+- Varakozas: 0
+- Allapot: KOZLEKEDIK

@@ -1,0 +1,16 @@
+STAT ut1_vegB_1:
+- Hoszint: 0
+- Jeges: false
+- Zuzalekos: false
+- Sozott_idotartam: 0
+- Athaladt_jarmuvek_szama: 0
+- Lezarva: 0
+- Jarmuvek_rajta: hokotro h
+STAT h:
+- Pozicio: ut1_vegB_1
+- Varakozas: 1
+- Allapot: OSSZECSUSZOTT
+- Felszerelt_fej: SarkanyFej
+- Biokerozin: 99
+- So: 0
+- Zuzalek: 0

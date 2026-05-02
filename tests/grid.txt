@@ -1,0 +1,16 @@
+road ut_0_0 2 0 1
+road ut_0_1 2 0 1
+road ut_0_2 2 0 1
+road ut_1_0 2 0 1
+road ut_1_1 2 0 1
+road ut_1_2 2 0 1
+
+connect ut_0_0 vegB ut_0_1 vegA
+connect ut_0_1 vegB ut_0_2 vegA
+connect ut_1_0 vegB ut_1_1 vegA
+connect ut_1_1 vegB ut_1_2 vegA
+connect ut_0_0 vegB ut_1_0 vegA
+connect ut_0_1 vegB ut_1_1 vegA
+connect ut_0_2 vegB ut_1_2 vegA
+
+depot d1 0
