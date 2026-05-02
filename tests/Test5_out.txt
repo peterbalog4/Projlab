@@ -3,6 +3,6 @@ STAT ut1_vegB_1:
 - Jeges: false
 - Zuzalekos: false
 - Sozott_idotartam: 0
-- Athaladt_jarmuvek_szama: 0
+- Athaladt_jarmuvek_szama: 1
 - Lezarva: 0
 - Jarmuvek_rajta: hokotro h

@@ -8,8 +8,8 @@ STAT ut1_vegB_1:
 - Jarmuvek_rajta: hokotro h
 STAT h:
 - Pozicio: ut1_vegB_1
-- Varakozas: 1
-- Allapot: ELAKADT
+- Varakozas: 0
+- Allapot: KOZLEKEDIK
 - Felszerelt_fej: SarkanyFej
 - Biokerozin: 0
 - So: 0

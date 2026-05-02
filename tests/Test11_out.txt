@@ -4,9 +4,9 @@ STAT ut1_vegB_1:
 - Zuzalekos: true
 - Sozott_idotartam: 0
 - Athaladt_jarmuvek_szama: 2
-- Lezarva: 10
-- Jarmuvek_rajta: hokotro h auto a
+- Lezarva: 0
+- Jarmuvek_rajta: auto a
 STAT a:
 - Pozicio: ut1_vegB_1
-- Varakozas: 10
-- Allapot: OSSZECSUSZOTT
+- Varakozas: 0
+- Allapot: KOZLEKEDIK
