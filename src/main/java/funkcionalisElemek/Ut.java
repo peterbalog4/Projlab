@@ -79,24 +79,18 @@ public class Ut {
      * A hókotró takarítási folyamata során hívódik meg, a kotrófej típusától 
      * függő távolságra helyezi át a havat. 
      * @param honnan A forrás sáv, ahonnan a havat eltávolították.
-     * @param tavolsag Hány sávval arrébb kerüljön a hó (pozitív érték).
+     * @param tavolsag Hány sávval arrébb kerüljön a hó és zuzalék (ha van) (pozitív érték).
      */
-    public void havatAtad(Sav honnan, int tavolsag, int mennyiseg){
+    public void havatAtad(Sav honnan, int tavolsag, int mennyiseg, boolean zuzalek){
 
     List<Sav> lista = A_bol_B.contains(honnan) ? A_bol_B : B_bol_A;
-    int ujIndex = lista.indexOf(honnan) - tavolsag;
+        int ujIndex = lista.indexOf(honnan) - tavolsag;
 
-    if (ujIndex >= 0 && ujIndex < lista.size()) {
-        Sav celsav =  lista.get(ujIndex);
-        celsav.hoNovel(mennyiseg);
-        if(honnan.isZuzalek()) 
-            celsav.zuzalekSzor();
-    } 
-    
-    honnan.hoTakarit(); 
-    honnan.zuzalekEltakarit();
-
-
+        if (ujIndex >= 0 && ujIndex < lista.size()) {
+            Sav celsav =  lista.get(ujIndex);
+            celsav.hoNovel(mennyiseg);
+            if(zuzalek) 
+                celsav.zuzalekSzor();
+        } 
     }
-
 }

@@ -94,11 +94,15 @@ public class Sav {
         return null;
     }
 
-    public int hoTakarit(){
+    public int hoTakarit(int tavolsag){
         int eltakaritottMennyiseg = this.ho;
         ho = 0;
         athaladtJarmuvekSzama = 0;
         jarmuvek.forEach(jarmu-> jarmu.megall(0));
+        if (tavolsag > 0 && (eltakaritottMennyiseg > 0 || zuzalek)) {
+            this.ut.havatAtad(this, tavolsag, eltakaritottMennyiseg, zuzalek);
+            zuzalekEltakarit();
+        }
         return eltakaritottMennyiseg;
     }
 

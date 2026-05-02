@@ -2,6 +2,7 @@ package jarmuvek;
 
 import funkcionalisElemek.Sav;
 import funkcionalisElemek.Ut;
+import segedOsztalyok.Irany;
 
 
 /**
@@ -38,7 +39,7 @@ public abstract class Jarmu{
 
     /**
      * Beállítja a jármű aktuális sávját.
-     * @param s A cél sáv objektum[cite: 1874].
+     * @param s A cél sáv objektum.
      */
     public void setSav(Sav s){
   
@@ -49,7 +50,7 @@ public abstract class Jarmu{
      * @param i Az irány, amerre a jármű kanyarodni kíván.
      */
     public void kanyarodik(Irany i){
-
+        
     }
 
     /**
@@ -82,12 +83,12 @@ public abstract class Jarmu{
      * @param irany A cél sáv iránya az aktuálishoz képest.
      */
     public void savvaltas(Irany i) {
-
+        aktualisSav.savValtas(this, i);
     }
 
     /**
      * Megvalósítja a jármű megcsúszását jeges útfelületen.
-     * Csúszás közben a jármű kontrollálatlanul mozoghat és ütközhet[cite: 1553, 1653].
+     * Csúszás közben a jármű kontrollálatlanul mozoghat és ütközhet.
      */
     public void csuszik(){
 
