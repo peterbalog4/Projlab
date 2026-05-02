@@ -58,6 +58,7 @@ public class Auto extends Jarmu {
      * Egyébként előre mozdul a sávon; ha a sáv végére ér, kiszámolja a következő
      * utat Dijkstrával és kanyarodik.
      */
+    /* 
     @Override
     public void kozlekedik() {
         if (varakozasiIdo > 0) {
@@ -88,6 +89,22 @@ public class Auto extends Jarmu {
             }
         }
     }
+    */
+    @Override
+    public void kozlekedik() {
+        if (varakozasiIdo > 0) {
+            varakozasiIdo--;
+            if (varakozasiIdo == 0) allapot = Allapot.KOZLEKEDIK;
+            return;
+        }
+        if (allapot == Allapot.ELAKADT) {
+            probaljSavotValtani();
+            return;
+        }
+        if (pozicio != null) {
+            pozicio.halad(this, 10); // 10 a sebesség, halad előre
+        }
+    }
 
     /**
      * Megvizsgálja, hogy az autó elérte-e az aktuális sáv végét.
@@ -99,6 +116,14 @@ public class Auto extends Jarmu {
     private boolean savVegenVan() {
         return aktualisSav.getMasikJarmu(this) == null && utvonal.isEmpty()
                 || !utvonal.isEmpty();
+    }
+
+    @Override
+    public void elertSavVeget() {
+        Ut kovetkezo = kovetkezoUt(); // A meglévő útvonalválasztód
+        if (kovetkezo != null) {
+            kanyarodik(kovetkezo);
+        }
     }
 
     /**

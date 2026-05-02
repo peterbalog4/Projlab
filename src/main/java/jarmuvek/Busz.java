@@ -97,6 +97,8 @@ public class Busz extends Jarmu {
      * fordulót teljesít. Ha van megadott következő út, arra kanyarodik,
      * egyébként vár a játékos utasítására.
      */
+
+    /* 
     @Override
     public void kozlekedik() {
         if (varakozasiIdo > 0) {
@@ -129,6 +131,19 @@ public class Busz extends Jarmu {
             }
         }
     }
+        */
+
+    @Override
+    public void kozlekedik() {
+        if (varakozasiIdo > 0) {
+            varakozasiIdo--;
+            if (varakozasiIdo == 0) allapot = Allapot.KOZLEKEDIK;
+            return;
+        }
+        if (pozicio != null) {
+            pozicio.halad(this, 8); // A busz kicsit lassabb
+        }
+    }
 
     /**
      * Megvizsgálja, hogy a busz elérte-e az aktuális sáv végét.
@@ -139,6 +154,19 @@ public class Busz extends Jarmu {
         return aktualisSav.getMasikJarmu(this) == null;
     }
 
+    @Override
+    public void elertSavVeget() {
+        if (pozicio.getSav().getUt().equals(aktualisCel)) {
+            forduloNovel();
+        }
+        if (kovetkezoUt != null) {
+            Ut cel = kovetkezoUt;
+            kovetkezoUt = null;
+            kanyarodik(cel);
+        } else {
+            megall(1);
+        }
+    }
     /**
      * Kezeli a más járművel való ütközés eseményét.
      *

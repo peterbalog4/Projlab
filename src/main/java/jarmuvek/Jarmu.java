@@ -3,6 +3,7 @@ package jarmuvek;
 import funkcionalisElemek.Sav;
 import funkcionalisElemek.Ut;
 import segedOsztalyok.Irany;
+import segedOsztalyok.Pozicio;
 
 /**
  * A játékban közlekedő járművek általános absztrakt alaposztálya.
@@ -26,6 +27,9 @@ public abstract class Jarmu {
      * {@code null}, ha a jármű még nincs pályán.
      */
     protected Sav aktualisSav;
+
+
+    protected Pozicio pozicio;
 
     /**
      * Hátralévő várakozási körök száma.
@@ -121,6 +125,22 @@ public abstract class Jarmu {
         }
         this.aktualisSav = ujSav;
     }
+
+    public void setPozicio(Pozicio p) {
+        if (this.pozicio != null && this.pozicio.getSav() != null) {
+            this.pozicio.getSav().eltavolit(this);
+        }
+        this.pozicio = p;
+    }
+
+    public void utkozesVizsgalat(Jarmu masik) {
+        if (this.pozicio.utkozikE(masik.pozicio)) {
+            this.utkozik(masik); // A meglévő metódusod, ami megállítja őket
+        }
+    }
+
+
+    public abstract void elertSavVeget();
 
     /**
      * Végrehajtja a jármű kanyarodását a megadott célútra.

@@ -69,6 +69,7 @@ public class Hokotro extends Jarmu {
      * Ha a sáv végére ér és van megadott következő út, arra kanyarodik.
      * Ha nincs megadott irány, egy kört vár a kereszteződésben.
      */
+    /* 
     @Override
     public void kozlekedik() {
         if (varakozasiIdo > 0) {
@@ -93,6 +94,22 @@ public class Hokotro extends Jarmu {
             }
         }
     }
+        */
+
+    @Override
+    public void kozlekedik() {
+        if (varakozasiIdo > 0) {
+            varakozasiIdo--;
+            if (varakozasiIdo == 0) allapot = Allapot.KOZLEKEDIK;
+            return;
+        }
+        
+        dolgozik(); // Havat takarít menet közben
+        
+        if (pozicio != null) {
+            pozicio.halad(this, 5); // A hókotró a leglassabb
+        }
+    }
 
     /**
      * Megvizsgálja, hogy a hókotró elérte-e az aktuális sáv végét.
@@ -101,6 +118,17 @@ public class Hokotro extends Jarmu {
      */
     private boolean savVegenVan() {
         return aktualisSav.getMasikJarmu(this) == null;
+    }
+
+    @Override
+    public void elertSavVeget() {
+        if (kovetkezoUt != null) {
+            Ut cel = kovetkezoUt;
+            kovetkezoUt = null;
+            kanyarodik(cel);
+        } else {
+            megall(1);
+        }
     }
 
     /**
