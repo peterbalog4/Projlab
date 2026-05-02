@@ -1,0 +1,7 @@
+load test_map.txt
+random off
+spawn hokotro h ut1_vegB_1
+equip store h sopro
+equip d1 h hanyo
+stat h
+stat d1

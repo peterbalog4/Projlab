@@ -1,0 +1,10 @@
+load test_map.txt
+random off
+set_surface ut1_vegB_1 0 true
+spawn auto a1 ut1_vegB_1
+spawn auto a2 ut2_vegB_1
+step 1
+move a1 ut2
+stat a1
+stat a2
+stat ut2_vegB_2

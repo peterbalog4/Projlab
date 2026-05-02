@@ -1,0 +1,5 @@
+load test_map.txt
+random off
+add d1 JMF 200000
+buy d1 hanyo_fej
+stat d1

@@ -1,0 +1,8 @@
+load test_map.txt
+random off
+spawn hokotro h ut1_vegB_1
+equip store h sarkany 0
+add d1 biokerozin 5
+reload h d1
+stat h
+stat d1
