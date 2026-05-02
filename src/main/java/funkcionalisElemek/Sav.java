@@ -167,7 +167,7 @@ public class Sav {
 
     public boolean elfogad(Jarmu j) {
     if (lezarvaKorig > 0) return false;
-    
+
     addJarmu(j); // Sáv felveszi a listába
     
     // 1. TDA: Szólunk a járműnek. A Jarmu.setSav() elintézi a Pozíció létrehozását!
@@ -324,6 +324,10 @@ public class Sav {
                                 .append(" ")
                                 .append(j.getId()));
         kimenet.println(sb);
+    }
+
+    public int getHo(){
+        return ho;
     }
 
 }

@@ -69,6 +69,7 @@ public class Auto extends Jarmu {
      */
     @Override
     public void kozlekedik() {
+
         if (varakozasiIdo > 0) {
             varakozasiIdo--;
             if (varakozasiIdo == 0) {
