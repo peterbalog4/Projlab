@@ -19,6 +19,7 @@ import java.util.Map;
 public class Ut {
 
     /** Az úthoz tartozó sávok listája.  */
+    String id;
     private List<Sav> savok = new ArrayList<>();
     private List<Sav> B_bol_A_savok= new ArrayList<>();
     private List<Sav> A_bol_B_savok = new ArrayList<>();
@@ -26,6 +27,32 @@ public class Ut {
     private Map<Ut, String> vegB_kapcsolatok = new HashMap<>();
     
     private int hossz;
+
+  public Ut(String id, int hossz, int savokAbolB, int savokBbolA) {
+        this.id = id;
+        this.hossz = hossz;
+
+        for (int i = 1; i <= savokAbolB; i++) {
+            String savId = id + "_vegB_" + i;
+            Sav ujSav = new Sav(savId, this, HaladasiIrany.A_BOL_B_BE, hossz);
+            this.savok.add(ujSav);
+            this.A_bol_B_savok.add(ujSav);
+        }
+
+        for (int i = 1; i <= savokBbolA; i++) {
+            String savId = id + "_vegA_" + i;
+            Sav ujSav = new Sav(savId, this, HaladasiIrany.B_BOL_A_BA, hossz);
+            this.savok.add(ujSav);
+            this.B_bol_A_savok.add(ujSav);
+        }
+    }
+
+
+    public Sav addSav(String id, HaladasiIrany irany, int hossz){
+        Sav s = new Sav(id, this, irany, hossz);
+        return s;
+    }
+
 
     public void addSav(Sav s) {
         savok.add(s);
