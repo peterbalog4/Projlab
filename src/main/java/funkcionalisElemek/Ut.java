@@ -1,7 +1,8 @@
 package funkcionalisElemek;
 
-import jarmuvek.Irany;
 import jarmuvek.Jarmu;
+import segedOsztalyok.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,8 +18,21 @@ public class Ut {
 
     /** Az úthoz tartozó sávok listája.  */
     private List<Sav> savok = new ArrayList<>();
+    private List<Sav> B_bol_A= new ArrayList<>();
+    private List<Sav> A_bol_B = new ArrayList<>();
+    
+    private int hossz;
 
     public void addSav(Sav s) {
+        savok.add(s);
+        s.setUt(this);
+        s.setHossz(hossz);
+        if(s.getIrany() == HaladasiIrany.A_BOL_B_BE){
+            A_bol_B.add(s);
+        }
+        else{
+            B_bol_A.add(s);
+        }
 
     }
 
@@ -37,7 +51,7 @@ public class Ut {
      * Minden sávján meghívja a hóréteg növelését végző függvényt. 
      */
     public void hoNovel(){
-
+        savok.forEach(sav -> sav.hoNovel(1));
     }
 
     /**
@@ -47,10 +61,18 @@ public class Ut {
      * @param j A sávot váltani kívánó Jármű.
      * @param i Az irány, amely felé a jármű váltani szeretne.
      */
-    public void jarmuSavotValt(Jarmu j, Irany i){
-
+    public void jarmuSavotValt(Jarmu j, Irany i, Sav s){
+        int idx = (i == Irany.BALRA) ? 1 : - 1;
+        savKeres(s, idx).elfogad(j);
     }
 
+    private Sav savKeres(Sav s, int i){
+        List<Sav> celLista = A_bol_B.contains(s) ? A_bol_B : B_bol_A;
+        int idx = celLista.indexOf(s);
+        int biztonsagosIDX = Math.max(0, Math.min(idx + i, celLista.size() - 1));
+        return celLista.get(biztonsagosIDX);
+        
+    }
 
     /**
      * A havat mozgatja sávok között vagy az útról lefelé.
@@ -60,7 +82,20 @@ public class Ut {
      * @param tavolsag Hány sávval arrébb kerüljön a hó (pozitív érték).
      */
     public void havatAtad(Sav honnan, int tavolsag, int mennyiseg){
- 
+
+    List<Sav> lista = A_bol_B.contains(honnan) ? A_bol_B : B_bol_A;
+    int ujIndex = lista.indexOf(honnan) - tavolsag;
+
+    if (ujIndex >= 0 && ujIndex < lista.size()) {
+        Sav celsav =  lista.get(ujIndex);
+        celsav.hoNovel(mennyiseg);
+        if(honnan.isZuzalek()) 
+            celsav.zuzalekSzor();
+    } 
+    
+    honnan.hoTakarit(); 
+    honnan.zuzalekEltakarit();
+
 
     }
 

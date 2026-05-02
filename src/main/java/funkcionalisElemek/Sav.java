@@ -2,7 +2,7 @@ package funkcionalisElemek;
 import jarmuvek.Hokotro;
 import jarmuvek.Jarmu;
 import kotrofejek.KotroFej;
-import segedOsztalyok.HaladasiIrany;
+import segedOsztalyok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.List;
 public class Sav {
 
 
-    private int athaladtJarmuvekSzama = 0; // TODO ez kell nincs a doksiban?
+    private int athaladtJarmuvekSzama = 0; 
     private boolean jeg = false;
     private int ho = 0;
     private boolean zuzalek = false;
@@ -27,6 +27,7 @@ public class Sav {
     private int lezarvaKorig = 0;
     private HaladasiIrany haladasiIrany;
     protected String id;
+    private int hossz;
 
 
     /**
@@ -52,17 +53,24 @@ public class Sav {
     public void addJarmu(Jarmu j) {
 
     }
+    public HaladasiIrany getIrany(){
+        return haladasiIrany;
+    }
 
     /**
      * Visszaadja az utat, amelyhez a sáv tartozik.
      * @return A tartalmazó Út objektum.
      */
     public void setUt(Ut u) {
-
+        ut = u;
     }
 
     public Ut getUt() {
         return ut;
+    }
+
+    public void setHossz(int i){
+        hossz = i;
     }
 
     /**
@@ -203,6 +211,13 @@ public class Sav {
         zuzalek = false;
     }
 
+    public boolean isZuzalek(){
+        return zuzalek;
+    }
+
+    public void savValtas(Jarmu j, Irany i){
+        ut.jarmuSavotValt(j, i, this);
+    }
     
 
 }
