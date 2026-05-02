@@ -129,6 +129,9 @@ public class Busz extends Jarmu {
 
         if (aktualisSav == null || pozicio == null) return;
 
+        if (allapot == Allapot.ELAKADT) {
+            return; 
+        }
 
         allapot = Allapot.KOZLEKEDIK;
         pozicio.halad(this, 1);

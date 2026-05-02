@@ -168,8 +168,9 @@ public class Ut {
     public void jarmuSavotValt(Jarmu j, Irany i, Sav s){
         int idx = (i == Irany.BALRA) ? 1 : -1;
         Sav celSav = savKeres(s, idx);
-        if (celSav != s && celSav.elfogad(j)) {
-            j.setSav(celSav);
+
+        if (celSav != s && celSav.tisztaE(j)) {
+            celSav.elfogad(j);
         }
     }
 

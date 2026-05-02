@@ -233,6 +233,10 @@ public class Sav {
             ho += mennyiseg;
         }
 
+        if (ho >= 3) {
+            jarmuvek.forEach(this::hatasAlkalmaz);
+        }
+
     }
 
     /**
@@ -289,7 +293,15 @@ public class Sav {
      public void setAllapot(int ho, boolean jeg) {
         this.ho  = ho;
         this.jeg = jeg;
+        jarmuvek.forEach(this::hatasAlkalmaz);
     }
+
+    public boolean tisztaE(Jarmu j) {
+        if (lezarvaKorig > 0) return false; // Ha lezárták (baleset), nem mehet oda
+        if (!(j instanceof Hokotro) && ho >= 3) return false; // Ha mély hó van, csak a hókotró mehet
+        return true;
+    }
+
     /**
      * Kiírja a sáv aktuális állapotát a megadott kimenetre.
      * A {@code stat} parancs hívja meg – a sáv maga felelős a saját

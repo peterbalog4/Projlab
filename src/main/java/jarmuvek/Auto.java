@@ -122,17 +122,20 @@ public class Auto extends Jarmu {
      */
     private void probaljSavotValtani() {
         Sav elotteSav = aktualisSav;
-        savvaltas(Irany.BALRA);
-        if (aktualisSav != elotteSav) {
-            varakozasiIdo = 0;
-            allapot = Allapot.KOZLEKEDIK;
-            return;
-        }
-        savvaltas(Irany.JOBBRA);
-        if (aktualisSav != elotteSav) {
-            varakozasiIdo = 0;
-            allapot = Allapot.KOZLEKEDIK;
-        }
+            
+            // 1. Ideiglenesen "kiszabadítjuk", hogy az új sáv hatásai érvényesüljenek
+            this.varakozasiIdo = 0;
+            this.allapot = Allapot.KOZLEKEDIK;
+
+            savvaltas(Irany.BALRA);
+            if (aktualisSav != elotteSav) return; // Sikerült, az új sáv beállította az állapotot!
+
+            savvaltas(Irany.JOBBRA);
+            if (aktualisSav != elotteSav) return; // Sikerült
+
+            // 2. Ha egyik irányba se sikerült váltani, újra elakad
+            this.varakozasiIdo = -1;
+            this.allapot = Allapot.ELAKADT;
     }
 
     /**

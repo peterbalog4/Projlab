@@ -1,5 +1,6 @@
 package funkcionalisElemek;
 
+import jarmuvek.Hokotro;
 import jarmuvek.Jarmu;
 
 import java.util.ArrayList;
@@ -105,19 +106,21 @@ public class KorSzamlalo {
      * (jégképződés, só elolvadás, lezárás lejárta), végül mozgatja
      * az összes mozgásképes járművet.
      */
-    public void leptet() {
-        kor++;
-
-        if (hoesik) {
-            utak.forEach(Ut::hoNovel);
-        }
-
-        savok.forEach(Sav::allapotFrissit);
-
-        jarmuvek.forEach(j -> {
-            if (j.getVarakozasiIdo() == 0) {
-                j.kozlekedik();
-            }
-        });
+public void leptet() {
+    kor++;
+    if (hoesik) {
+        utak.forEach(Ut::hoNovel);
     }
+    savok.forEach(Sav::allapotFrissit);
+
+    // 1. TDA: A hókotrók lépnek és takarítanak először
+    jarmuvek.stream()
+            .filter(j -> j instanceof Hokotro)
+            .forEach(Jarmu::kozlekedik);
+            
+    // 2. TDA: Utána léphet mindenki más
+    jarmuvek.stream()
+            .filter(j -> !(j instanceof Hokotro))
+            .forEach(Jarmu::kozlekedik);
+}
 }
