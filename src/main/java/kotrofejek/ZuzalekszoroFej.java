@@ -28,9 +28,7 @@ public class ZuzalekszoroFej extends KotroFej{
 
    
     public void ujratolt(Telephely telephely) { //!!!! ez még nem jó kell valami telephely átadása neki
-        if(telephely.zuzalek>0){
-            zuzalek = 10;
-            telephely.zuzalek --;
-        }
+        if(telephely.zuzalekUjratolt())
+            zuzalek=10;
     }
 }
