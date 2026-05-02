@@ -73,6 +73,18 @@ public class Ut {
 
 
     /**
+     * Visszaadja az út adott végéhez csatlakozó utakat és a csatlakozás végét.
+     * A Dijkstra-algoritmus számára szükséges szomszédsági információt szolgáltatja.
+     *
+     * @param irany Ha {@code A_BOL_B_BE}, a B végnél lévő kapcsolatokat adja vissza,
+     *              ha {@code B_BOL_A_BA}, az A végnél lévőket.
+     * @return Az adott véghez tartozó szomszédos utak és érkezési végük.
+     */
+    public Map<Ut, String> getKapcsolatok(HaladasiIrany irany) {
+        return irany == HaladasiIrany.A_BOL_B_BE ? vegB_kapcsolatok : vegA_kapcsolatok;
+    }
+
+    /**
      * Végrehajtja a globális hóesést az úton.
      * Minden sávján meghívja a hóréteg növelését végző függvényt. 
      */
