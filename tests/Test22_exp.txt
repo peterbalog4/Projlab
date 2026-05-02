@@ -1,5 +1,5 @@
 STAT b1:
-- Pozicio: ut1_vegB_1
+- Pozicio: ut2_vegB_1
 - Varakozas: 0
 - Allapot: KOZLEKEDIK
 - Forduloszam: 1

@@ -209,7 +209,8 @@ public abstract class Jarmu {
      */
     public void utkozik(Jarmu masikJarmu) {
         if (this.allapot != Allapot.OSSZECSUSZOTT) {
-            this.megall(10);
+            this.varakozasiIdo = 10;
+            this.allapot = Allapot.OSSZECSUSZOTT;
             if (this.aktualisSav != null) {
                 this.aktualisSav.lezar(10);
             }
