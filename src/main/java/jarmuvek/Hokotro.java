@@ -131,13 +131,6 @@ public class Hokotro extends Jarmu {
         // A hókotróra nem hat az ütközés, szándékosan üres.
     }
 
-    /**
-     * Kezdeményezi az úttakarítási folyamatot az aktuális sávon.
-     *
-     * Ha van felszerelt kotrófej, meghívja annak {@link KotroFej#takarit} metódusát.
-     * Ha a takarítás eredményes volt (a sáv hószintje csökkent vagy a jég eltűnt),
-     * a tulajdonos telephelyének JMF egyenlege 10 000-rel nő.
-     */
         /**
      * Kezdeményezi az úttakarítási folyamatot az aktuális sávon.
      *

@@ -1,46 +1,123 @@
 package funkcionalisElemek;
 
-import jarmuvek.*;
-
+import jarmuvek.Jarmu;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * A játék belső időzítéséért és a körök eszkalációjáért felelős osztály.
- * Nyilvántartja a pályán lévő járműveket, és minden körben kezdeményezi azok mozgatását,
- * valamint az automatikus környezeti eseményeket, például a hóesést.
+ * A játék belső időzítéséért és a körök léptetéséért felelős osztály.
+ *
+ * Nyilvántartja a pályán lévő összes járművet, sávot és utat.
+ * Minden körben elvégzi a következő lépéseket sorban:
+ * a hóesés szimulálása az utakon, a sávok belső állapotának frissítése,
+ * végül az összes jármű mozgatása.
  */
 public class KorSzamlalo {
 
-    /** A körben érintett járművek listája. */
-    private List<Jarmu> jarmuvek = new ArrayList<>();
-
-    /** Az úthálózat referenciája az időjárási effektusok alkalmazásához. */
-    private Ut aktivUt;
+    /**
+     * A játék kezdete óta eltelt körök száma.
+     */
+    private int kor = 0;
 
     /**
-     * Beállítja a körszámlálóhoz tartozó utat.
-     * @param u Az Út objektum, amelyen a hóesés effektus végrehajtódik.
+     * A pályán található összes jármű listája.
      */
-    public void setUt(Ut u) { this.aktivUt = u; }
+    private List<Jarmu> jarmuvek = new ArrayList<>();
+
+    /**
+     * A pályán található összes út listája.
+     * A hóesés szimulálásához szükséges.
+     */
+    private List<Ut> utak = new ArrayList<>();
+
+    /**
+     * A pályán található összes sáv listája.
+     * Az állapotfrissítéshez szükséges.
+     */
+    private List<Sav> savok = new ArrayList<>();
+
+    /**
+     * Jelzi, hogy ebben a körben esik-e hó.
+     */
+    private boolean hoesik = false;
 
     /**
      * Új járművet ad a szimulációhoz.
-     * @param j A hozzáadni kívánt Jármű objektum
+     *
+     * @param j A hozzáadni kívánt {@link Jarmu} objektum.
      */
     public void addJarmu(Jarmu j) {
-  
+        jarmuvek.add(j);
     }
 
+    /**
+     * Eltávolít egy járművet a szimulációból.
+     *
+     * @param j Az eltávolítandó {@link Jarmu} objektum.
+     */
+    public void removeJarmu(Jarmu j) {
+        jarmuvek.remove(j);
+    }
+
+    /**
+     * Új utat ad a szimulációhoz.
+     *
+     * @param u A hozzáadni kívánt {@link Ut} objektum.
+     */
+    public void addUt(Ut u) {
+        utak.add(u);
+    }
+
+    /**
+     * Új sávot ad a szimulációhoz.
+     *
+     * @param s A hozzáadni kívánt {@link Sav} objektum.
+     */
+    public void addSav(Sav s) {
+        savok.add(s);
+    }
+
+    /**
+     * Beállítja, hogy a következő körben esik-e hó.
+     *
+     * @param hoesik {@code true}, ha hóesés lesz, {@code false} egyébként.
+     */
+    public void setHoesik(boolean hoesik) {
+        this.hoesik = hoesik;
+    }
+
+    /**
+     * Visszaadja az eltelt körök számát.
+     *
+     * @return Az eddigi körök száma.
+     */
+    public int getKor() {
+        return kor;
+    }
 
     /**
      * Végrehajtja a kör léptetését.
-     * Sorban meghívja minden aktív jármű közlekedik metódusát, majd a kör végén
-     * aktiválja az automatikus hóesést, amennyiben az út be van állítva.
+     *
+     * A következő sorrendben hajtja végre a műveleteket:
+     * először növeli a körszámlálót, majd ha esik a hó, minden úton
+     * meghívja a hónovelést, ezután frissíti minden sáv belső állapotát
+     * (jégképződés, só elolvadás, lezárás lejárta), végül mozgatja
+     * az összes mozgásképes járművet.
      */
-    public void leptet(){
+    public void leptet() {
+        kor++;
 
+        if (hoesik) {
+            utak.forEach(Ut::hoNovel);
+        }
+
+        savok.forEach(Sav::allapotFrissit);
+
+        jarmuvek.forEach(j -> {
+            if (j.getVarakozasiIdo() == 0) {
+                j.kozlekedik();
+            }
+        });
     }
 }
