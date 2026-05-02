@@ -1,9 +1,7 @@
 package funkcionalisElemek;
 import jarmuvek.Hokotro;
 import jarmuvek.Jarmu;
-import kotrofejek.KotroFej;
 import segedOsztalyok.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +30,12 @@ public class Sav {
 
     /**
      * Konstruktor a sáv létrehozásához.
-     * @param id A sáv egyedi azonosítója a naplózáshoz.
+     * Inicializálja a sáv alapvető tulajdonságait és a befoglaló utat.
+     *
+     * @param id    A sáv egyedi szöveges azonosítója.
+     * @param ut    Az a {@link Ut}, amelyhez a sáv tartozik.
+     * @param irany A sáv haladási iránya a hálózaton belül.
+     * @param hossz A sáv fizikai hossza méterben.
      */
     public Sav(String id, Ut ut, HaladasiIrany irany, int hossz) {
         this.id = id;
@@ -42,16 +45,20 @@ public class Sav {
     }
 
     /**
-     * Visszaadja a sáv azonosítóját.
-     * @return A sáv String formátumú azonosítója.
+     * Visszaadja a sáv egyedi szöveges azonosítóját.
+     * Ezt az azonosítót használjuk a parancsfeldolgozóban és a naplózáshoz.
+     *
+     * @return A sáv {@code String} formátumú azonosítója.
      */
     public String getId(){
         return id;
     }
 
-    /**
-     * Járművet ad a sávhoz (pl. inicializáláskor vagy sikeres sávváltáskor).
-     * @param j A hozzáadni kívánt jármű.
+   /**
+     * Felveszi a megadott járművet a sáv belső nyilvántartásába.
+     * Növeli a sávon áthaladt járművek számlálóját az eljegesedés méréséhez.
+     *
+     * @param j A hozzáadni kívánt {@link Jarmu}.
      */
     public void addJarmu(Jarmu j) {
         if (!jarmuvek.contains(j)) {
@@ -59,30 +66,53 @@ public class Sav {
             this.athaladtJarmuvekSzama++;
         }
     }
+
+    /**
+     * Lekérdezi a sáv hálózati haladási irányát.
+     * Az út ez alapján dönti el, hogy a jármű az út melyik végpontja felé tart.
+     *
+     * @return A sáv aktuális {@link HaladasiIrany}-a.
+     */
     public HaladasiIrany getIrany(){
         return haladasiIrany;
     }
 
     /**
-     * Visszaadja az utat, amelyhez a sáv tartozik.
-     * @return A tartalmazó Út objektum.
+     * Hozzárendeli a sávhoz azt az utat, amelynek a részét képezi.
+     * A hivatkozáson keresztül éri el a sáv a globális útszintű metódusokat.
+     *
+     * @param u A befogadó {@link Ut} objektum.
      */
     public void setUt(Ut u) {
         ut = u;
     }
 
+    /**
+     * Visszaadja a sávot magába foglaló út objektumot.
+     * Ezt a referenciát használjuk a kanyarodások delegálásakor.
+     *
+     * @return Az útszakasz, amelyhez a sáv tartozik.
+     */
     public Ut getUt() {
         return ut;
     }
 
+    /**
+     * Módosítja a sáv fizikai hosszát.
+     * Ez a távolság határozza meg, hogy a járművek mikor érik el a sáv végét.
+     *
+     * @param i A sáv új hossza.
+     */
     public void setHossz(int i){
         hossz = i;
     }
 
+    
     /**
-     * Visszaadja a sáv hosszát méterben.
+     * Visszaadja a sáv fizikai kiterjedését.
+     * A pozíció objektumok ezt használják a határellenőrzéshez.
      *
-     * @return A sáv hossza.
+     * @return A sáv hossza méterben.
      */
     public int getHossz() {
         return hossz;
@@ -103,28 +133,27 @@ public class Sav {
         return null;
     }
 
+    /**
+     * Eltakarítja a sávon lévő havat és átadja azt a szomszédos sávoknak.
+     *
+     * @param tavolsag Hány sávval arrébb kell tolni a havat (pozitív egész szám).
+     * @return A sikeresen eltakarított hómennyiség.
+     */
+    public int hoTakarit(int tavolsag) {
+        int eltakaritottMennyiseg = this.ho;
+        this.ho = 0;
+        this.jarmuvek.forEach(jarmu -> jarmu.megall(0));
+        if (tavolsag > 0 && (eltakaritottMennyiseg > 0 || zuzalek)) {
+            this.ut.havatAtad(this, tavolsag, eltakaritottMennyiseg, zuzalek);
+            zuzalekEltakarit();
+        }
+        return eltakaritottMennyiseg;
+    }
 
     /**
-     * Megkeres egy másik sávot a sávban ütközés detektálásához.
-     * @param errolVanSzo A vizsgált sáv, akit ki kell hagyni a keresésből.
-     * @return Egy másik sáv, vagy null, ha nincs senki más.
+     * Feltöri a jeget a sávon, ezáltal a jég normál, letaposatlan hóvá alakul.
+     * Jégtörő fejjel felszerelt hókotrók használják.
      */
-    public Sav getMasikSav(Sav errolVanSzo){
-
-        return null;
-    }
-
-    public int hoTakarit(int tavolsag) {
-    int eltakaritottMennyiseg = this.ho;
-    this.ho = 0;
-    this.jarmuvek.forEach(jarmu -> jarmu.megall(0));
-    if (tavolsag > 0 && (eltakaritottMennyiseg > 0 || zuzalek)) {
-        this.ut.havatAtad(this, tavolsag, eltakaritottMennyiseg, zuzalek);
-        zuzalekEltakarit();
-    }
-    return eltakaritottMennyiseg;
-}
-
     public void jegFeltor() {
         if (jeg) {
             this.jeg = false;
@@ -141,61 +170,52 @@ public class Sav {
     }
 
     /**
-     * Megvizsgálja, hogy a sáv be tud-e fogadni egy járművet (pl. sávváltásnál).
-     * @param j A belépni kívánó jármű.
+     * Fogadja a belépő járművet a sávba.
+     *
+     * Regisztrálja a listában, értesíti a járművet az új sávjáról,
+     * lekezeli az esetleges ütközéseket és alkalmazza a környezeti hatásokat.
+     *
+     * @param j A belépni kívánó {@link Jarmu}.
+     * @return {@code true}, ha a jármű sikeresen belépett, {@code false}, ha a sáv lezárt.
      */
-
-    /*
     public boolean elfogad(Jarmu j) {
         if (lezarvaKorig > 0) return false;
         
-        if (j.getAktualisSav() != null && j.getAktualisSav() != this) {
-            j.getAktualisSav().eltavolit(j);
-        }
-        j.initSav(this);
-        
-        if (!this.jarmuvek.contains(j)) {
-            this.jarmuvek.add(j);
-            this.athaladtJarmuvekSzama++;
-        }
-        
+        addJarmu(j); 
+        j.setSav(this);
+        jarmuMozgott(j);
         hatasAlkalmaz(j);
-        j.setPozicio(new segedOsztalyok.Pozicio(this, this.hossz));
+        
         return true;
     }
-        */
 
-    public boolean elfogad(Jarmu j) {
-    if (lezarvaKorig > 0) return false;
-
-    addJarmu(j); // Sáv felveszi a listába
-    
-    // 1. TDA: Szólunk a járműnek. A Jarmu.setSav() elintézi a Pozíció létrehozását!
-    j.setSav(this);
-    jarmuMozgott(j);
-    
-    // 2. Csak ezután alkalmazzuk a hatást, amikor a jármű már "tudja", hol van.
-    hatasAlkalmaz(j);
-    
-    return true;
-}
-
-
+    /**
+     * Végigkérdezi a sávban lévő többi járművet a pozícióegyezésről.
+     *
+     * @param mozgottJarmu A jármű, amelyik éppen helyzetet változtatott a sávon belül.
+     */
     public void jarmuMozgott(Jarmu mozgottJarmu) {
-    for (Jarmu masik : jarmuvek) {
-        if (masik != mozgottJarmu) {
-            mozgottJarmu.utkozesVizsgalat(masik); // TDA delegálás
+        for (Jarmu masik : jarmuvek) {
+            if (masik != mozgottJarmu) {
+                mozgottJarmu.utkozesVizsgalat(masik); 
+            }
         }
     }
-}
 
+    /**
+     * Eltávolítja a járművet a sáv belső nyilvántartásából sávváltás vagy lekanyarodás esetén.
+     *
+     * @param j Az eltávolítandó {@link Jarmu}.
+     */
     public void eltavolit(Jarmu j){
         jarmuvek.remove(j);
     }
 
     /**
-     * Kiváltja a jármű megcsúszását jeges sáv esetén.
-     * @param j Az érintett jármű.
+     * Alkalmazza a jég vagy a mély hó hatásait a sávban tartózkodó járműveken.
+     * Hókotrók esetében ezek a hatások figyelmen kívül maradnak.
+     *
+     * @param j A vizsgált {@link Jarmu}.
      */
     public void hatasAlkalmaz(Jarmu j){
         if(!(j instanceof Hokotro)){
@@ -205,20 +225,25 @@ public class Sav {
             else if(ho >= 3){
                 j.megall(-1);
             }
-    }
+        }
 
     }
+
+    /**
+     * Delegálja a kanyarodási szándékot az útnak a saját irányával kiegészítve.
+     *
+     * @param j     A kanyarodást végrehajtó {@link Jarmu}.
+     * @param celUt A célként kiszemelt {@link Ut}.
+     */
     public void jarmuKanyarodik(Jarmu j, Ut celUt) {
         this.ut.kanyarodik(j, celUt, this, this.haladasiIrany);
     }
 
-    /**
-     * Kezeli a jármű áthaladását a sávon. 
-     * Számolja az áthaladásokat az eljegesedéshez, és alkalmazza a sáv aktuális 
-     * állapotából adódó hatásokat a járműre.
-     * @param j A sávon éppen áthaladó jármű.
+   /**
+     * Felszólítja a járművet a saját mozgási logikájának végrehajtására.
+     *
+     * @param j A mozgatni kívánt {@link Jarmu}.
      */
-
     public void jarmuMozgat(Jarmu j) { //ez jó??
         j.kozlekedik();
 
@@ -241,7 +266,7 @@ public class Sav {
 
     /**
      * Frissíti a sáv belső állapotát. 
-     * Ha több jármű áthaladt a havas sávon, a letaposott hó jéggé válik.
+     * Ha 5 jármű áthaladt a havas sávon, a letaposott hó jéggé válik.
      */
     public void allapotFrissit() {
         if(lezarvaKorig > 0){
@@ -260,45 +285,83 @@ public class Sav {
         }
     }
 
+    /**
+     * Sót juttat a sávra, ami 5 kör erejéig meggátolja a hó felgyülemlését és a jegesedést.
+     */
     public void soSzor(){
         sozottIdotartam = 5; //5 ugye?
     }
 
+
+    /**
+     * Érdesítő zúzalékot szór a sávra, meggátolva a járművek jégen való megcsúszását.
+     */
     public void zuzalekSzor(){
         zuzalek = true;
     }
 
+
+    /**
+     * Eltakarítja a sávra korábban kiszórt érdesítő zúzalékot.
+     */
     public void zuzalekEltakarit(){
         zuzalek = false;
     }
 
+
+    /**
+     * Lekérdezi, hogy a sáv felülete jelenleg be van-e szórva zúzalékkal.
+     *
+     * @return {@code true}, ha zúzalékos, {@code false} egyébként.
+     */
     public boolean isZuzalek(){
         return zuzalek;
     }
 
+
+    /**
+     * TDA: Kéri az út objektumot a jármű megfelelő irányba történő átmozgatására.
+     *
+     * @param j A sávot váltó {@link Jarmu}.
+     * @param i A sávváltás kívánt {@link Irany}-a.
+     */
     public void savValtas(Jarmu j, Irany i){
         ut.jarmuSavotValt(j, i, this);
     }
     
-        /**
-     * Beállítja a sózott időtartamot tesztelési célból.
-     * A {@code set_material} parancs hívja meg.
+    /**
+     * Közvetlenül felülírja a sáv sózott állapotának hátralévő idejét (teszteléshez).
      *
-     * @param idotartam A beállítandó körök száma.
+     * @param idotartam A beállítandó sózási időtartam körökben.
      */
     public void setSozottIdotartam(int idotartam) {
         this.sozottIdotartam = idotartam;
     }
 
+
+    /**
+     * Közvetlenül beállítja a hó szintjét és a jegesedést a sávon (teszteléshez).
+     * A változásokat azonnal érvényesíti a bent álló járműveken is.
+     *
+     * @param ho  A beállítandó hószint.
+     * @param jeg {@code true}, ha jeges legyen a pálya.
+     */
      public void setAllapot(int ho, boolean jeg) {
         this.ho  = ho;
         this.jeg = jeg;
         jarmuvek.forEach(this::hatasAlkalmaz);
     }
 
+
+    /**
+     * Biztonsági ellenőrzés, hogy a sáv szabad-e a megadott jármű számára sávváltáskor.
+     *
+     * @param j A sávba belépni kívánó {@link Jarmu}.
+     * @return {@code true}, ha a sáv tiszta és fogadóképes, {@code false} egyébként.
+     */
     public boolean tisztaE(Jarmu j) {
-        if (lezarvaKorig > 0) return false; // Ha lezárták (baleset), nem mehet oda
-        if (!(j instanceof Hokotro) && ho >= 3) return false; // Ha mély hó van, csak a hókotró mehet
+        if (lezarvaKorig > 0) return false; 
+        if (!(j instanceof Hokotro) && ho >= 3) return false; 
         return true;
     }
 
@@ -319,15 +382,8 @@ public class Sav {
         kimenet.println("- Athaladt_jarmuvek_szama: " + athaladtJarmuvekSzama);
         kimenet.println("- Lezarva: " + lezarvaKorig);
         StringBuilder sb = new StringBuilder("- Jarmuvek_rajta:");
-        jarmuvek.forEach(j -> sb.append(" ")
-                                .append(j.getClass().getSimpleName().toLowerCase())
-                                .append(" ")
-                                .append(j.getId()));
+        jarmuvek.forEach(j -> sb.append(" ").append(j.getClass().getSimpleName().toLowerCase()).append(" ").append(j.getId()));
         kimenet.println(sb);
-    }
-
-    public int getHo(){
-        return ho;
     }
 
 }

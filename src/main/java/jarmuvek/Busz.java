@@ -129,7 +129,7 @@ public class Busz extends Jarmu {
 
         if (aktualisSav == null || pozicio == null) return;
 
-        if (allapot == Allapot.ELAKADT) {
+        if (allapot == Allapot.ELAKADT) { //TODO ezt átgondolni
             return; 
         }
 
