@@ -154,8 +154,9 @@ public class Sav {
             }
     }
 
-
-
+    }
+    public void jarmuKanyarodik(Jarmu j, Ut celUt) {
+        this.ut.kanyarodik(j, celUt, this, this.haladasiIrany);
     }
 
     /**

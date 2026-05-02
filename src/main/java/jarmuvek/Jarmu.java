@@ -3,13 +3,14 @@ package jarmuvek;
 import funkcionalisElemek.Sav;
 import funkcionalisElemek.Ut;
 import segedOsztalyok.Irany;
+import segedOsztalyok.Pozicio;
 
 
 /**
  * A játékban közlekedő járművek általános absztrakt alaposztálya.
  * Közös interfészt és alapvető állapotfelügyeletet biztosít minden járműtípus számára.
  * Felelős a jármű pozíciójának (Sáv), mozgásképességének és az alapvető 
- * manővereknek (megállás, sávváltás) a kezeléséért[cite: 1548, 1569].
+ * manővereknek (megállás, sávváltás) a kezeléséért.
  */
 public abstract class Jarmu{
 
@@ -19,6 +20,7 @@ public abstract class Jarmu{
     protected Sav aktualisSav;
     /** Jelzi, hogy a jármű képes-e a mozgásra, vagy elakadt/ütközött */
     protected boolean mozgaskepes = true;
+    protected Pozicio pozicio;
 
     /**
      * Konstruktor a Jármű osztályhoz.
@@ -41,21 +43,27 @@ public abstract class Jarmu{
      * Beállítja a jármű aktuális sávját.
      * @param s A cél sáv objektum.
      */
-    public void setSav(Sav s){
-  
+    public void setSav(Sav ujSav) {
+   
+    if (this.aktualisSav != null) {
+        this.aktualisSav.eltavolit(this); 
     }
+    this.aktualisSav = ujSav;
+}
 
     /**
      * Kezeli a jármű kanyarodását az út végén.
      * @param i Az irány, amerre a jármű kanyarodni kíván.
      */
-    public void kanyarodik(Irany i){
-        
+    public void kanyarodik(Ut celUt) { //új paraméter, eddig irány volt
+    if (aktualisSav != null) {
+        aktualisSav.jarmuKanyarodik(this, celUt);
     }
+}
 
     /**
      * Absztrakt metódus a körönkénti haladás megvalósításához.
-     * Minden járműtípus a saját szabályai szerint hajtja végre[cite: 1548, 1553].
+     * Minden járműtípus a saját szabályai szerint hajtja végre
      */
     public abstract void kozlekedik();
 

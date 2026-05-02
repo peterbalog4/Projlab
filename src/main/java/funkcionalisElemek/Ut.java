@@ -5,7 +5,9 @@ import segedOsztalyok.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -18,8 +20,10 @@ public class Ut {
 
     /** Az úthoz tartozó sávok listája.  */
     private List<Sav> savok = new ArrayList<>();
-    private List<Sav> B_bol_A= new ArrayList<>();
-    private List<Sav> A_bol_B = new ArrayList<>();
+    private List<Sav> B_bol_A_savok= new ArrayList<>();
+    private List<Sav> A_bol_B_savok = new ArrayList<>();
+    private Map<Ut, String> vegA_kapcsolatok = new HashMap<>();
+    private Map<Ut, String> vegB_kapcsolatok = new HashMap<>();
     
     private int hossz;
 
@@ -28,10 +32,10 @@ public class Ut {
         s.setUt(this);
         s.setHossz(hossz);
         if(s.getIrany() == HaladasiIrany.A_BOL_B_BE){
-            A_bol_B.add(s);
+            A_bol_B_savok.add(s);
         }
         else{
-            B_bol_A.add(s);
+            B_bol_A_savok.add(s);
         }
 
     }
@@ -40,11 +44,33 @@ public class Ut {
      * Kezeli a jármű kanyarodását az út végén.
      * A járművet a megadott irányban lévő következő útszakaszra tereli.
      * @param j A kanyarodni kívánó Jármű.
-     * @param i A kanyarodás iránya.
+     * @param celUt Az út amire kanyarodni akarunk
      */
-    public void kanyarodik(Jarmu j, Irany i){
+    public void kanyarodik(Jarmu j, Ut celUt, Sav honnanSav, HaladasiIrany honnanIrany) {
+        Map<Ut, String> kapcsolatok = (honnanIrany == HaladasiIrany.A_BOL_B_BE) ? vegB_kapcsolatok : vegA_kapcsolatok;
+        
+        String erkezesiVeg = kapcsolatok.get(celUt);
+        
+        if (erkezesiVeg != null) {
 
+            List<Sav> forrasLista = (honnanIrany == HaladasiIrany.A_BOL_B_BE) ? A_bol_B_savok : B_bol_A_savok;
+            int savIndex = forrasLista.indexOf(honnanSav);
+            
+            celUt.befogad(j, erkezesiVeg, savIndex);
+        }
     }
+
+
+    public void befogad(Jarmu j, String erkezesiVeg, int erkezesiIndex) {
+        List<Sav> celLista = erkezesiVeg.equals("vegA") ? A_bol_B_savok : B_bol_A_savok;
+        int biztonsagosIndex = Math.max(0, Math.min(erkezesiIndex, celLista.size() - 1));
+        Sav induloSav = celLista.get(biztonsagosIndex);
+        
+        if (induloSav.elfogad(j)) {
+            j.setSav(induloSav); 
+        }
+    }
+
 
     /**
      * Végrehajtja a globális hóesést az úton.
@@ -67,7 +93,7 @@ public class Ut {
     }
 
     private Sav savKeres(Sav s, int i){
-        List<Sav> celLista = A_bol_B.contains(s) ? A_bol_B : B_bol_A;
+        List<Sav> celLista = A_bol_B_savok.contains(s) ? A_bol_B_savok : B_bol_A_savok;
         int idx = celLista.indexOf(s);
         int biztonsagosIDX = Math.max(0, Math.min(idx + i, celLista.size() - 1));
         return celLista.get(biztonsagosIDX);
@@ -83,7 +109,7 @@ public class Ut {
      */
     public void havatAtad(Sav honnan, int tavolsag, int mennyiseg, boolean zuzalek){
 
-    List<Sav> lista = A_bol_B.contains(honnan) ? A_bol_B : B_bol_A;
+    List<Sav> lista = A_bol_B_savok.contains(honnan) ? A_bol_B_savok : B_bol_A_savok;
         int ujIndex = lista.indexOf(honnan) - tavolsag;
 
         if (ujIndex >= 0 && ujIndex < lista.size()) {
