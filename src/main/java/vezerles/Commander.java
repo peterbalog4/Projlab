@@ -214,7 +214,7 @@ public class Commander {
 
         if (j == null) return;
         if (sav.elfogad(j)) {
-            j.initSav(sav);
+            //j.initSav(sav);
         }
         jarmuvek.put(id, j);
         korSzamlalo.addJarmu(j);

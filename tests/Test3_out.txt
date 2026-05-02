@@ -1,5 +1,5 @@
 STAT a1:
-- Pozicio: ut1_vegB_1
+- Pozicio: ut2_vegB_1
 - Varakozas: 10
 - Allapot: OSSZECSUSZOTT
 STAT a2:
