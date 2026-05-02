@@ -130,7 +130,7 @@ public abstract class Jarmu {
      * @param ujSav A cél {@link Sav} objektum.
      */
     public void setSav(Sav ujSav) {
-        if (this.aktualisSav != null) {
+        if (this.aktualisSav != null && this.aktualisSav != ujSav) {
             this.aktualisSav.eltavolit(this);
         }
         this.aktualisSav = ujSav;
@@ -139,10 +139,7 @@ public abstract class Jarmu {
         }
     }
 
-    public void setPozicio(Pozicio p) {
-        if (this.aktualisSav != null) {
-            this.aktualisSav.eltavolit(this);
-        }
+    public void setPozicio(segedOsztalyok.Pozicio p) {
         this.pozicio = p;
     }
 
@@ -190,15 +187,15 @@ public abstract class Jarmu {
      *                ({@code -1} = határozatlan, {@code 0} = azonnali felszabadítás).
      */
     public void megall(int korszam) {
-    this.varakozasiIdo = korszam;
-    if (korszam >= 10) {
-        this.allapot = Allapot.OSSZECSUSZOTT;
-    } else if (korszam == -1 || korszam > 0) {
-        this.allapot = Allapot.ELAKADT;
-    } else {
-        this.allapot = Allapot.KOZLEKEDIK;
+        this.varakozasiIdo = korszam;
+        if (korszam >= 10) {
+            this.allapot = Allapot.OSSZECSUSZOTT;
+        } else if (korszam == -1 || korszam > 0) {
+            this.allapot = Allapot.ELAKADT;
+        } else {
+            this.allapot = Allapot.KOZLEKEDIK;
+        }
     }
-}
 
 
     /**
@@ -211,15 +208,15 @@ public abstract class Jarmu {
      * @param masikJarmu Az az {@link Jarmu}, amellyel a jármű összeütközött.
      */
     public void utkozik(Jarmu masikJarmu) {
-    if (this.varakozasiIdo < 10) {
-        this.megall(10);
-        if (this.aktualisSav != null) {
-            this.aktualisSav.lezar(10);
+        if (this.allapot != Allapot.OSSZECSUSZOTT) {
+            this.megall(10);
+            if (this.aktualisSav != null) {
+                this.aktualisSav.lezar(10);
+            }
+            if (masikJarmu != null && masikJarmu.getAllapot() != Allapot.OSSZECSUSZOTT) {
+                masikJarmu.utkozik(this);
+            }
         }
-        if (masikJarmu.getVarakozasiIdo() < 10) {
-            masikJarmu.utkozik(this);
-        }
-    }
     }
 
     /**

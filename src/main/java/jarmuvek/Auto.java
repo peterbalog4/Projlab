@@ -149,7 +149,6 @@ public class Auto extends Jarmu {
     public void csuszik() {
         this.allapot = Allapot.CSUSZKAL;
         if (aktualisSav == null) return;
-
         Jarmu masik = aktualisSav.getMasikJarmu(this);
         if (masik != null) {
             this.utkozik(masik);

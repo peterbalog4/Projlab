@@ -63,9 +63,9 @@ public class Hokotro extends Jarmu {
             kovetkezoUt = null;
             kanyarodik(cel);
         } else {
-            megall(1);
+            megall(0);
         }
-    } 
+    }
     /**A játékos adja meg a {@code move} paranccsal.
      *
      * @param ut A kívánt következő {@link Ut}.

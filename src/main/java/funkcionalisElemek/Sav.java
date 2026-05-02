@@ -54,11 +54,11 @@ public class Sav {
      * @param j A hozzáadni kívánt jármű.
      */
     public void addJarmu(Jarmu j) {
-    if (!jarmuvek.contains(j)) {
-        this.jarmuvek.add(j);
-        this.athaladtJarmuvekSzama++;
+        if (!jarmuvek.contains(j)) {
+            this.jarmuvek.add(j);
+            this.athaladtJarmuvekSzama++;
+        }
     }
-}
     public HaladasiIrany getIrany(){
         return haladasiIrany;
     }
@@ -114,23 +114,21 @@ public class Sav {
         return null;
     }
 
-    public int hoTakarit(int tavolsag){/// kell visszatérési érték?
-        int eltakaritottMennyiseg = this.ho;
-        ho = 0;
-        athaladtJarmuvekSzama = 0;
-        jarmuvek.forEach(jarmu-> jarmu.megall(0));
-        if (tavolsag > 0 && (eltakaritottMennyiseg > 0 || zuzalek)) {
-            this.ut.havatAtad(this, tavolsag, eltakaritottMennyiseg, zuzalek);
-            zuzalekEltakarit();
-        }
-        return eltakaritottMennyiseg;
+    public int hoTakarit(int tavolsag) {
+    int eltakaritottMennyiseg = this.ho;
+    this.ho = 0;
+    this.jarmuvek.forEach(jarmu -> jarmu.megall(0));
+    if (tavolsag > 0 && (eltakaritottMennyiseg > 0 || zuzalek)) {
+        this.ut.havatAtad(this, tavolsag, eltakaritottMennyiseg, zuzalek);
+        zuzalekEltakarit();
     }
+    return eltakaritottMennyiseg;
+}
 
-    public void jegFeltor(){
-        if(jeg){
+    public void jegFeltor() {
+        if (jeg) {
             this.jeg = false;
-            this.ho ++;
-            this.athaladtJarmuvekSzama = 0;
+            this.ho++;
         }
     }
 
@@ -148,11 +146,21 @@ public class Sav {
      */
 
     public boolean elfogad(Jarmu j) {
-    if (lezarvaKorig > 0) return false;
-    addJarmu(j);
-    hatasAlkalmaz(j);
-    j.setPozicio(new Pozicio(this, 0)); 
-    return true;
+        if (lezarvaKorig > 0) return false;
+        
+        if (j.getAktualisSav() != null && j.getAktualisSav() != this) {
+            j.getAktualisSav().eltavolit(j);
+        }
+        j.initSav(this);
+        
+        if (!this.jarmuvek.contains(j)) {
+            this.jarmuvek.add(j);
+            this.athaladtJarmuvekSzama++;
+        }
+        
+        hatasAlkalmaz(j);
+        j.setPozicio(new segedOsztalyok.Pozicio(this, 0));
+        return true;
     }
 
 

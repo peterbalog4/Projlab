@@ -3,13 +3,13 @@ STAT ut1_vegB_1:
 - Jeges: false
 - Zuzalekos: false
 - Sozott_idotartam: 0
-- Athaladt_jarmuvek_szama: 0
+- Athaladt_jarmuvek_szama: 1
 - Lezarva: 0
 - Jarmuvek_rajta: hokotro h
 STAT h:
 - Pozicio: ut1_vegB_1
-- Varakozas: 1
-- Allapot: ELAKADT
+- Varakozas: 0
+- Allapot: KOZLEKEDIK
 - Felszerelt_fej: SarkanyFej
 - Biokerozin: 99
 - So: 0
