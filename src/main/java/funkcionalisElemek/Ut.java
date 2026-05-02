@@ -72,6 +72,28 @@ public class Ut {
     }
 
 
+    
+    /**
+     * Összekapcsol két utat a megadott végeken.
+     * A {@code connect} pályaleíró parancs hívja meg.
+     *
+     * @param sajatVeg  Az aktuális út érintett vége ({@code "vegA"} vagy {@code "vegB"}).
+     * @param masikUt   A másik út objektum.
+     * @param masikVeg  A másik út érintett vége ({@code "vegA"} vagy {@code "vegB"}).
+     */
+    public void connect(String sajatVeg, Ut masikUt, String masikVeg) {
+        if (sajatVeg.equalsIgnoreCase("vegA")) {
+            vegA_kapcsolatok.put(masikUt, masikVeg);
+        } else {
+            vegB_kapcsolatok.put(masikUt, masikVeg);
+        }
+        if (masikVeg.equalsIgnoreCase("vegA")) {
+            masikUt.vegA_kapcsolatok.put(this, sajatVeg);
+        } else {
+            masikUt.vegB_kapcsolatok.put(this, sajatVeg);
+        }
+    }
+
     /**
      * Visszaadja az út adott végéhez csatlakozó utakat és a csatlakozás végét.
      * A Dijkstra-algoritmus számára szükséges szomszédsági információt szolgáltatja.

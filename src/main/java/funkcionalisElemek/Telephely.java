@@ -28,6 +28,17 @@ public class Telephely {
         this.jatekosID = jatekosID;
     }
 
+    /**
+     * Konstruktor kezdőtőkével, a {@code depot} parancshoz.
+     *
+     * @param jatekosID A tulajdonos játékos azonosítója.
+     * @param kezdoJMF  A telephely kezdő JMF egyenlege.
+     */
+    public Telephely(final int jatekosID, int kezdoJMF) {
+        this.jatekosID = jatekosID;
+        this.JMF       = kezdoJMF;
+    }
+
     public void useFej(KotroFej ujFej) { //kinda nem kell a hokotro
         kotroFejek.remove(ujFej);
     }
@@ -135,5 +146,79 @@ public class Telephely {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Felszerel egy kotrófejet a megadott hókotróra a telephely készletéből.
+     * Ha a kért típusú fej nem található, hibaüzenetet ír a kimenetre.
+     *
+     * @param fejTipus A felszerelni kívánt fej típusa (pl. {@code "hanyo"}).
+     * @param hokotro  A célhókotró.
+     * @param kimenet  A hibaüzenetek célstreame.
+     */
+    public void equipHokotro(String fejTipus, Hokotro hokotro, java.io.PrintStream kimenet) {
+        KotroFej talalt = null;
+        for (KotroFej f : kotroFejek) {
+            if (f.getClass().getSimpleName().toLowerCase().replace("fej", "").equals(fejTipus)) {
+                talalt = f;
+                break;
+            }
+        }
+        if (talalt == null) {
+            kimenet.println("ERROR: A kert '" + fejTipus + "' fej nem talalhato a telephelyen, a csere sikertelen.");
+            return;
+        }
+        kotroFejek.remove(talalt);
+        hokotro.fejcsere(talalt);
+    }
+
+
+        /**
+     * Beállítja a telephely egy anyagkészletét tesztelési célból.
+     * A {@code set_material} parancs hívja meg.
+     *
+     * @param anyag     Az anyag neve ({@code "biokerozin"}, {@code "so"}, {@code "zuzalek"}).
+     * @param mennyiseg A beállítandó mennyiség.
+     */
+    public void setKeszlet(String anyag, int mennyiseg) {
+        switch (anyag) {
+            case "biokerozin" -> biokerozin = mennyiseg;
+            case "so"         -> so         = mennyiseg;
+            case "zuzalek"    -> zuzalek    = mennyiseg;
+        }
+    }
+
+        /**
+     * Hozzáad egy megadott mennyiséget a telephely anyagkészletéhez.
+     * Az {@code add} parancs hívja meg a vásárlást megkerülve.
+     *
+     * @param anyag     Az anyag neve ({@code "biokerozin"}, {@code "so"}, {@code "zuzalek"}).
+     * @param mennyiseg A hozzáadandó mennyiség.
+     */
+    public void addKeszlet(String anyag, int mennyiseg) {
+        switch (anyag) {
+            case "biokerozin" -> biokerozin += mennyiseg;
+            case "so"         -> so         += mennyiseg;
+            case "zuzalek"    -> zuzalek    += mennyiseg;
+        }
+    }
+
+        /**
+     * Kiírja a telephely aktuális állapotát a megadott kimenetre.
+     * A {@code stat} parancs hívja meg – a telephely maga felelős a saját
+     * állapotának megjelenítéséért.
+     *
+     * @param id      A telephely azonosítója a kimenetben.
+     * @param kimenet A célstream.
+     */
+    public void statKiir(String id, java.io.PrintStream kimenet) {
+        kimenet.println("STAT " + id + ":");
+        kimenet.println("- JMF: " + JMF);
+        kimenet.println("- Biokerozin: " + biokerozin);
+        kimenet.println("- So: " + so);
+        kimenet.println("- Zuzalek: " + zuzalek);
+        StringBuilder sb = new StringBuilder("- Tarolt_fejek:");
+        kotroFejek.forEach(f -> sb.append(" ").append(f.getClass().getSimpleName()));
+        kimenet.println(sb);
     }
 }

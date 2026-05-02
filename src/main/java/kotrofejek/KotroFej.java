@@ -15,4 +15,10 @@ public abstract class KotroFej {
      *         {@code false}, ha nem történt változás (pl. üres tartály).
      */
     public abstract boolean takarit(Sav sav, Ut ut);
+
+    public void kiirKeszlet(java.io.PrintStream kimenet) {
+        kimenet.println("- Biokerozin: 0");
+        kimenet.println("- So: 0");
+        kimenet.println("- Zuzalek: 0");
+    }
 }

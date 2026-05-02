@@ -212,4 +212,19 @@ public abstract class Jarmu {
     public void csuszik() {
         // A leszármazottak (Auto, Busz) felülírják saját logikával.
     }
+
+    /**
+     * Kiírja a jármű aktuális állapotát a megadott kimenetre.
+     * A {@code stat} parancs hívja meg – a jármű maga felelős a saját
+     * állapotának megjelenítéséért.
+     *
+     * @param id      A jármű azonosítója a kimenetben.
+     * @param kimenet A célstream.
+     */
+    public void statKiir(String id, java.io.PrintStream kimenet) {
+        kimenet.println("STAT " + id + ":");
+        kimenet.println("- Pozicio: " + (aktualisSav != null ? aktualisSav.getId() : "null"));
+        kimenet.println("- Varakozas: " + varakozasiIdo);
+        kimenet.println("- Allapot: " + allapot.name());
+    }
 }

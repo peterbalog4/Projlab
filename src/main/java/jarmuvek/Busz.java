@@ -183,4 +183,17 @@ public class Busz extends Jarmu {
     public int getForduloSzam() {
         return forduloSzam;
     }
+
+        /**
+     * Kiírja a busz aktuális állapotát a megadott kimenetre.
+     * Az alaposztály mezői mellett a fordulószámot is megjeleníti.
+     *
+     * @param id      A busz azonosítója a kimenetben.
+     * @param kimenet A célstream.
+     */
+    @Override
+    public void statKiir(String id, java.io.PrintStream kimenet) {
+        super.statKiir(id, kimenet);
+        kimenet.println("- Forduloszam: " + forduloSzam);
+    }
 }

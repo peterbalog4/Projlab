@@ -224,5 +224,42 @@ public class Sav {
         ut.jarmuSavotValt(j, i, this);
     }
     
+        /**
+     * Beállítja a sózott időtartamot tesztelési célból.
+     * A {@code set_material} parancs hívja meg.
+     *
+     * @param idotartam A beállítandó körök száma.
+     */
+    public void setSozottIdotartam(int idotartam) {
+        this.sozottIdotartam = idotartam;
+    }
+
+     public void setAllapot(int ho, boolean jeg) {
+        this.ho  = ho;
+        this.jeg = jeg;
+    }
+    /**
+     * Kiírja a sáv aktuális állapotát a megadott kimenetre.
+     * A {@code stat} parancs hívja meg – a sáv maga felelős a saját
+     * állapotának megjelenítéséért.
+     *
+     * @param id      A sáv azonosítója a kimenetben.
+     * @param kimenet A célstream.
+     */
+    public void statKiir(String id, java.io.PrintStream kimenet) {
+        kimenet.println("STAT " + id + ":");
+        kimenet.println("- Hoszint: " + ho);
+        kimenet.println("- Jeges: " + jeg);
+        kimenet.println("- Zuzalekos: " + zuzalek);
+        kimenet.println("- Sozott_idotartam: " + sozottIdotartam);
+        kimenet.println("- Athaladt_jarmuvek_szama: " + athaladtJarmuvekSzama);
+        kimenet.println("- Lezarva: " + lezarvaKorig);
+        StringBuilder sb = new StringBuilder("- Jarmuvek_rajta:");
+        jarmuvek.forEach(j -> sb.append(" ")
+                                .append(j.getClass().getSimpleName().toLowerCase())
+                                .append(" ")
+                                .append(j.getId()));
+        kimenet.println(sb);
+    }
 
 }

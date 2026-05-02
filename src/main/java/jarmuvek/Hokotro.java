@@ -156,4 +156,68 @@ public class Hokotro extends Jarmu {
     public KotroFej getAktivFej() {
         return aktivFej;
     }
+
+
+        /**
+     * Újratölti a felszerelt fejet a telephely készletéből.
+     * Ha nincs elegendő anyag a telephelyen, hibaüzenetet ír a kimenetre.
+     * A {@code reload} parancs hívja meg.
+     *
+     * @param telephely A készletet biztosító telephely.
+     * @param kimenet   A hibaüzenetek célstreame.
+     */
+    public void ujratolt(Telephely telephely, java.io.PrintStream kimenet) {
+        if (aktivFej instanceof kotrofejek.SarkanyFej sf) {
+            if (!sf.ujratoltEllenorzott(telephely)) {
+                kimenet.println("ERROR: Nincs eleg biokerozin a telephelyen az ujratolteshez.");
+            }
+        } else if (aktivFej instanceof kotrofejek.SoszoroFej sf) {
+            if (!sf.ujratoltEllenorzott(telephely)) {
+                kimenet.println("ERROR: Nincs eleg so a telephelyen az ujratolteshez.");
+            }
+        } else if (aktivFej instanceof kotrofejek.ZuzalekszoroFej zf) {
+            if (!zf.ujratoltEllenorzott(telephely)) {
+                kimenet.println("ERROR: Nincs eleg zuzalek a telephelyen az ujratolteshez.");
+            }
+        }
+    }
+ 
+    /**
+     * Beállítja a felszerelt fej anyagkészletét tesztelési célból.
+     * A {@code set_material} parancs hívja meg.
+     *
+     * @param anyag     Az anyag neve ({@code "biokerozin"}, {@code "so"}, {@code "zuzalek"}).
+     * @param mennyiseg A beállítandó mennyiség.
+     */
+    public void setFejKeszlet(String anyag, int mennyiseg) {
+        if (aktivFej instanceof kotrofejek.SarkanyFej sf && anyag.equals("biokerozin")) {
+            sf.setBiokerozin(mennyiseg);
+        } else if (aktivFej instanceof kotrofejek.SoszoroFej sf && anyag.equals("so")) {
+            sf.setSo(mennyiseg);
+        } else if (aktivFej instanceof kotrofejek.ZuzalekszoroFej zf && anyag.equals("zuzalek")) {
+            zf.setZuzalek(mennyiseg);
+        }
+    }
+    
+    /**
+     * Kiírja a hókotró aktuális állapotát a megadott kimenetre.
+     * Az alaposztály mezői mellett a fejet és anyagkészleteket is megjeleníti.
+     * Az anyagkészlet kiírását a fej maga végzi a {@code kiirKeszlet} metóduson át.
+     *
+     * @param id      A hókotró azonosítója a kimenetben.
+     * @param kimenet A célstream.
+     */
+    @Override
+    public void statKiir(String id, java.io.PrintStream kimenet) {
+        super.statKiir(id, kimenet);
+        String fejNev = aktivFej != null ? aktivFej.getClass().getSimpleName() : "null";
+        kimenet.println("- Felszerelt_fej: " + fejNev);
+        if (aktivFej != null) {
+            aktivFej.kiirKeszlet(kimenet);
+        } else {
+            kimenet.println("- Biokerozin: 0");
+            kimenet.println("- So: 0");
+            kimenet.println("- Zuzalek: 0");
+        }
+    }
 }
