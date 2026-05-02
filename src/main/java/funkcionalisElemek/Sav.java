@@ -145,6 +145,7 @@ public class Sav {
      * @param j A belépni kívánó jármű.
      */
 
+    /*
     public boolean elfogad(Jarmu j) {
         if (lezarvaKorig > 0) return false;
         
@@ -162,6 +163,21 @@ public class Sav {
         j.setPozicio(new segedOsztalyok.Pozicio(this, 0));
         return true;
     }
+        */
+
+    public boolean elfogad(Jarmu j) {
+    if (lezarvaKorig > 0) return false;
+    
+    addJarmu(j); // Sáv felveszi a listába
+    
+    // 1. TDA: Szólunk a járműnek. A Jarmu.setSav() elintézi a Pozíció létrehozását!
+    j.setSav(this);
+    
+    // 2. Csak ezután alkalmazzuk a hatást, amikor a jármű már "tudja", hol van.
+    hatasAlkalmaz(j);
+    
+    return true;
+}
 
 
     public void jarmuMozgott(Jarmu mozgottJarmu) {

@@ -1,16 +1,16 @@
 STAT a1:
 - Pozicio: ut1_vegB_1
-- Varakozas: 0
-- Allapot: KOZLEKEDIK
+- Varakozas: 10
+- Allapot: OSSZECSUSZOTT
 STAT a2:
 - Pozicio: ut2_vegB_1
-- Varakozas: 0
-- Allapot: KOZLEKEDIK
+- Varakozas: 10
+- Allapot: OSSZECSUSZOTT
 STAT ut2_vegB_1:
 - Hoszint: 0
 - Jeges: false
 - Zuzalekos: false
 - Sozott_idotartam: 0
-- Athaladt_jarmuvek_szama: 1
-- Lezarva: 0
-- Jarmuvek_rajta: auto a2
+- Athaladt_jarmuvek_szama: 2
+- Lezarva: 10
+- Jarmuvek_rajta: auto a1 auto a2

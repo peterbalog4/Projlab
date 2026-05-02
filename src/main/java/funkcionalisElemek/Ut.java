@@ -97,9 +97,7 @@ public class Ut {
         int biztonsagosIndex = Math.max(0, Math.min(erkezesiIndex, celLista.size() - 1));
         Sav induloSav = celLista.get(biztonsagosIndex);
         
-        if (induloSav.elfogad(j)) {
-            j.setSav(induloSav); 
-        }
+        induloSav.elfogad(j);
     }
 
     public int getHossz(){

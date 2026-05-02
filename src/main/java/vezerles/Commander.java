@@ -193,7 +193,15 @@ public class Commander {
         if (sav == null) { hiba("Nem letezik sav: " + savId); return; }
 
         Jarmu j = switch (tipus) {
-            case "auto"    -> new Auto(id, sav.getUt(), sav.getUt());
+            case "auto"    -> {
+            Ut induloUt = sav.getUt();
+            // Keresünk egy másik utat a térképen célként
+            Ut celUt = utak.values().stream()
+                        .filter(u -> u != induloUt)
+                        .findFirst()
+                        .orElse(induloUt); 
+            yield new Auto(id, induloUt, celUt);
+        }
             case "busz"    -> new Busz(id);
             case "hokotro" -> {
                 String telepId = r.length > 4 ? r[4] : telephelyek.keySet().iterator().next();

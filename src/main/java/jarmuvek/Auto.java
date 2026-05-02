@@ -90,8 +90,10 @@ public class Auto extends Jarmu {
             return;
         }
 
-        allapot = Allapot.KOZLEKEDIK;
-        pozicio.halad(this, 1);
+       if (this.allapot != Allapot.CSUSZKAL) {
+            this.allapot = Allapot.KOZLEKEDIK;
+            pozicio.halad(this, 1);
+        }
     }
 
     /**
@@ -145,13 +147,11 @@ public class Auto extends Jarmu {
      * Az autó irányíthatatlanul 10 métert csúszik előre; ha ütközési
      * partnert talál a sávon, ütközést kezdeményez.
      */
-    @Override
+   @Override
     public void csuszik() {
         this.allapot = Allapot.CSUSZKAL;
-        if (aktualisSav == null) return;
-        Jarmu masik = aktualisSav.getMasikJarmu(this);
-        if (masik != null) {
-            this.utkozik(masik);
+        if (pozicio != null) {
+            pozicio.halad(this, 10); // ennyit????
         }
     }
 
