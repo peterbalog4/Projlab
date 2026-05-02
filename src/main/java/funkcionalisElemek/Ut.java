@@ -4,7 +4,6 @@ import jarmuvek.Jarmu;
 import segedOsztalyok.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,17 @@ public class Ut {
     private Map<Ut, String> vegB_kapcsolatok = new HashMap<>();
     private int hossz;
 
-  public Ut(String id, int hossz, int savokAbolB, int savokBbolA) {
+
+    /**
+     * Konstruktor az út létrehozásához.
+     * Legenerálja és irány szerint beköti az úthoz tartozó sávokat.
+     *
+     * @param id         Az út egyedi szöveges azonosítója.
+     * @param hossz      Az út (és ezáltal a sávok) fizikai hossza.
+     * @param savokAbolB Az 'A' végből 'B' végbe tartó sávok száma.
+     * @param savokBbolA A 'B' végből 'A' végbe tartó sávok száma.
+     */
+    public Ut(String id, int hossz, int savokAbolB, int savokBbolA) {
         this.id = id;
         this.hossz = hossz;
 
@@ -47,12 +56,26 @@ public class Ut {
     }
 
 
+    /**
+     * Létrehoz egy új sáv objektumot a megadott paraméterekkel.
+     *
+     * @param id    A sáv azonosítója.
+     * @param irany A sáv haladási iránya.
+     * @param hossz A sáv hossza.
+     * @return A frissen létrehozott {@link Sav} példány.
+     */
     public Sav addSav(String id, HaladasiIrany irany, int hossz){
         Sav s = new Sav(id, this, irany, hossz);
         return s;
     }
 
 
+
+    /**
+     * Felveszi a sávot az út nyilvántartásába, és irány alapján besorolja azt.
+     *
+     * @param s A hozzáadni kívánt {@link Sav}.
+     */
     public void addSav(Sav s) {
         savok.add(s);
         s.setUt(this);
@@ -66,16 +89,26 @@ public class Ut {
 
     }
 
+
+    /**
+     * Egyirányú kapcsolatot regisztrál az út egyik vége és egy célút között.
+     *
+     * @param sajatVeg Az út saját végpontja ({@code "vegA"} vagy {@code "vegB"}).
+     * @param celUt    A csatlakozó cél {@link Ut}.
+     * @param celVeg   A célút érintett végpontja.
+     */
     public void addKapcsolat(String sajatVeg, Ut celUt, String celVeg) {
         if (sajatVeg.equals("vegA")) vegA_kapcsolatok.put(celUt, celVeg);
         else vegB_kapcsolatok.put(celUt, celVeg);
         }
 
     /**
-     * Kezeli a jármű kanyarodását az út végén.
-     * A járművet a megadott irányban lévő következő útszakaszra tereli.
-     * @param j A kanyarodni kívánó Jármű.
-     * @param celUt Az út amire kanyarodni akarunk
+     * Átnavigálja a járművet a szomszédos célútra, kiszámítva a cél-sávindexet.
+     *
+     * @param j           A kanyarodó {@link Jarmu}.
+     * @param celUt       A célállomásként megjelölt {@link Ut}.
+     * @param honnanSav   A sáv, amiből a manőver megindult.
+     * @param honnanIrany Az indulási sáv haladási iránya.
      */
     public void kanyarodik(Jarmu j, Ut celUt, Sav honnanSav, HaladasiIrany honnanIrany) {
         Map<Ut, String> kapcsolatok = (honnanIrany == HaladasiIrany.A_BOL_B_BE) ? vegB_kapcsolatok : vegA_kapcsolatok;
@@ -92,6 +125,15 @@ public class Ut {
     }
 
 
+
+    /**
+     * Lefordítja a kanyarodás során kapott adatokat sávra, és befogadja a járművet.
+     * Ha a célút keskenyebb, a járművet biztonságosan a legszélső elérhető sávba sorolja.
+     *
+     * @param j             A befogadandó {@link Jarmu}.
+     * @param erkezesiVeg   A végpont, amin keresztül a jármű megérkezik.
+     * @param erkezesiIndex Az eredeti úton elfoglalt sávindexe.
+     */
     public void befogad(Jarmu j, String erkezesiVeg, int erkezesiIndex) {
         List<Sav> celLista = erkezesiVeg.equals("vegA") ? A_bol_B_savok : B_bol_A_savok;
         int biztonsagosIndex = Math.max(0, Math.min(erkezesiIndex, celLista.size() - 1));
@@ -100,6 +142,13 @@ public class Ut {
         induloSav.elfogad(j);
     }
 
+
+
+    /**
+     * Visszaadja az út fizikai hosszát.
+     *
+     * @return Az út hossza méterben.
+     */
     public int getHossz(){
         return hossz;
     }
@@ -138,12 +187,10 @@ public class Ut {
     }
 
     /**
-     * Visszaadja az út adott végéhez csatlakozó utakat és a csatlakozás végét.
-     * A Dijkstra-algoritmus számára szükséges szomszédsági információt szolgáltatja.
+     * Visszaadja a haladási iránynak megfelelő végponthoz csatlakozó szomszédos utakat.
      *
-     * @param irany Ha {@code A_BOL_B_BE}, a B végnél lévő kapcsolatokat adja vissza,
-     *              ha {@code B_BOL_A_BA}, az A végnél lévőket.
-     * @return Az adott véghez tartozó szomszédos utak és érkezési végük.
+     * @param irany A jármű aktuális {@link HaladasiIrany}-a.
+     * @return A csatlakozó utakat és érkezési végeket tartalmazó térkép.
      */
     public Map<Ut, String> getKapcsolatok(HaladasiIrany irany) {
         return irany == HaladasiIrany.A_BOL_B_BE ? vegB_kapcsolatok : vegA_kapcsolatok;
@@ -174,6 +221,15 @@ public class Ut {
         }
     }
 
+
+    /**
+     * Megkeresi a szomszédos sávot a haladási irány és egy eltolási érték alapján.
+     * Automatikus határellenőrzéssel akadályozza meg a túlindexelést.
+     *
+     * @param s A kiinduló sáv.
+     * @param i Az eltolás mértéke (1 vagy -1).
+     * @return A kiszámolt szomszédos {@link Sav}.
+     */
     private Sav savKeres(Sav s, int i){
         List<Sav> celLista = A_bol_B_savok.contains(s) ? A_bol_B_savok : B_bol_A_savok;
         int idx = celLista.indexOf(s);
@@ -183,11 +239,13 @@ public class Ut {
     }
 
     /**
-     * A havat mozgatja sávok között vagy az útról lefelé.
-     * A hókotró takarítási folyamata során hívódik meg, a kotrófej típusától 
-     * függő távolságra helyezi át a havat. 
-     * @param honnan A forrás sáv, ahonnan a havat eltávolították.
-     * @param tavolsag Hány sávval arrébb kerüljön a hó és zuzalék (ha van) (pozitív érték).
+     * Szétosztja a hókotró által letolt havat és zúzalékot a szomszédos sávokra.
+     * Ha az eltolt mennyiség a legszélső sávon túlra kerülne, az anyag eltűnik a pályáról.
+     *
+     * @param honnan    A sáv, ahonnan a hótakarítás megindult.
+     * @param tavolsag  A sávok száma, amennyivel arrébb kell tolni az anyagot.
+     * @param mennyiseg Az áthelyezendő hó mennyisége.
+     * @param zuzalek   {@code true}, ha zúzalékot is tolni kell a hóval.
      */
     public void havatAtad(Sav honnan, int tavolsag, int mennyiseg, boolean zuzalek){
 
