@@ -3,7 +3,7 @@ STAT ut1_vegB_1:
 - Jeges: true
 - Zuzalekos: true
 - Sozott_idotartam: 0
-- Athaladt_jarmuvek_szama: 1
+- Athaladt_jarmuvek_szama: 2
 - Lezarva: 0
 - Jarmuvek_rajta: auto a
 STAT a:

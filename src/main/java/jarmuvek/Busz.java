@@ -95,15 +95,20 @@ public class Busz extends Jarmu {
      */
     @Override
     public void elertSavVeget() {
-        if (aktualisSav != null && aktualisSav.getUt().equals(aktualisCel)) {
-            forduloNovel();
+        if (aktualisSav != null) {
+            Ut jelenlegi = aktualisSav.getUt();
+            if (jelenlegi.equals(aktualisCel) || (forduloSzam == 0 && (jelenlegi.equals(vegallomas1) || jelenlegi.equals(vegallomas2)))) {
+                forduloNovel();
+            }
         }
+        
         if (kovetkezoUt != null) {
             Ut cel = kovetkezoUt;
             kovetkezoUt = null;
             kanyarodik(cel);
         } else {
-            megall(1);
+            this.varakozasiIdo = 0;
+            this.allapot = Allapot.KOZLEKEDIK;
         }
     }
      /*

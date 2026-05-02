@@ -160,7 +160,7 @@ public class Sav {
         }
         
         hatasAlkalmaz(j);
-        j.setPozicio(new segedOsztalyok.Pozicio(this, 0));
+        j.setPozicio(new segedOsztalyok.Pozicio(this, this.hossz));
         return true;
     }
         */
