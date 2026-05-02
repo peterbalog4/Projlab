@@ -48,7 +48,7 @@ public class Telephely {
             case "jegtorofej":
                 if (JMF >= jegtorofej) {
                     JMF-=jegtorofej;
-                    kotroFejek.add(new JegToroFej());
+                    kotroFejek.add(new JegtoroFej());
                     return true;
                 }
                 break;
@@ -69,14 +69,14 @@ public class Telephely {
             case "soszorofej":
                 if (JMF >= soszorofej) {
                     JMF-=soszorofej;
-                    kotroFejek.add(new SoSzorFej());
+                    kotroFejek.add(new SoszorFej());
                     return true;
                 }
                 break;
             case "zuzalekszorofej":
                 if (JMF >= zuzalekszorofej) {
                     JMF-=zuzalekszorofej;
-                    kotroFejek.add(new ZuzalekSzorFej());
+                    kotroFejek.add(new ZuzalekszoroFej());
                     return true;
                 }
                 break;

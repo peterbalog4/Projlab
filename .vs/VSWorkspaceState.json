@@ -6,8 +6,10 @@
     "\\src\\main\\java",
     "\\src\\main\\java\\funkcionalisElemek",
     "\\src\\main\\java\\jarmuvek",
-    "\\src\\main\\java\\kotrofejek"
+    "\\src\\main\\java\\kotrofejek",
+    "\\src\\main\\java\\segedOsztalyok",
+    "\\src\\main\\java\\vezerles"
   ],
-  "SelectedNode": "\\src\\main\\java\\jarmuvek\\Jarmu.java",
+  "SelectedNode": "\\src\\main\\java\\funkcionalisElemek\\Telephely.java",
   "PreviewInSolutionExplorer": false
 }
