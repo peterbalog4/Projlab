@@ -205,7 +205,7 @@ public class Auto extends Jarmu {
             for (HaladasiIrany irany : HaladasiIrany.values()) {
                 Map<Ut, String> szomszedok = aktualis.getKapcsolatok(irany);
                 for (Ut szomszed : szomszedok.keySet()) {
-                    int ujTav = aktualisTav + 1;
+                    int ujTav = aktualisTav + szomszed.getHossz();
                     if (ujTav < tavolsag.getOrDefault(szomszed, Integer.MAX_VALUE)) {
                         tavolsag.put(szomszed, ujTav);
                         elozo.put(szomszed, aktualis);

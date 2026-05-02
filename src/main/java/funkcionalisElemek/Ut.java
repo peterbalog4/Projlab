@@ -66,6 +66,11 @@ public class Ut {
 
     }
 
+    public void addKapcsolat(String sajatVeg, Ut celUt, String celVeg) {
+        if (sajatVeg.equals("vegA")) vegA_kapcsolatok.put(celUt, celVeg);
+        else vegB_kapcsolatok.put(celUt, celVeg);
+        }
+
     /**
      * Kezeli a jármű kanyarodását az út végén.
      * A járművet a megadott irányban lévő következő útszakaszra tereli.
@@ -97,6 +102,10 @@ public class Ut {
         }
     }
 
+     public int getHossz(){
+        return hossz;
+    }
+
 
     /**
      * Visszaadja az út adott végéhez csatlakozó utakat és a csatlakozás végét.
@@ -124,6 +133,7 @@ public class Ut {
      * sáv elfogadó metódusát. 
      * @param j A sávot váltani kívánó Jármű.
      * @param i Az irány, amely felé a jármű váltani szeretne.
+     * @param s A sáv, amelyre áthajt a jármű
      */
     public void jarmuSavotValt(Jarmu j, Irany i, Sav s){
         int idx = (i == Irany.BALRA) ? 1 : - 1;
