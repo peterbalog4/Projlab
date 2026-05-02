@@ -37,68 +37,67 @@ public class Telephely {
         kotroFejek.add(fej);
     }
     public boolean vasarol(String item){
-        //TODO: milyen boltot hív meg? hol van példányosítva, ha mindenkinek ugyanaz?
         switch (item) {
             case "soprofej":
                 if (JMF >= soprofej) {
-                    t.JMFmodosit(-soprofej);
-                    t.tarol(new kotrofejek.SoproFej());
+                    JMF-=soprofej;
+                    kotroFejek.add(new SoproFej());
                     return true;
                 }
                 break;
             case "jegtorofej":
                 if (JMF >= jegtorofej) {
-                    t.JMFmodosit(-jegtorofej);
-                    t.tarol(new kotrofejek.JegToroFej());
+                    JMF-=jegtorofej;
+                    kotroFejek.add(new JegToroFej());
                     return true;
                 }
                 break;
             case "hanyofej":
                 if (JMF >= hanyofej) {
-                    t.JMFmodosit(-hanyofej);
-                    t.tarol(new kotrofejek.HanyoFej());
+                    JMF-=hanyofej;
+                    kotroFejek.add(new HanyoFej());
                     return true;
                 }
                 break;
             case "sarkanyfej":
                 if (JMF >= sarkanyfej) {
-                    t.JMFmodosit(-sarkanyfej);
-                    t.tarol(new kotrofejek.SarkanyFej());
+                    JMF-=sarkanyfej;
+                    kotroFejek.add(new SarkanyFej());
                     return true;
                 }
                 break;
             case "soszorofej":
                 if (JMF >= soszorofej) {
-                    t.JMFmodosit(-soszorofej);
-                    t.tarol(new kotrofejek.SoSzorFej());
+                    JMF-=soszorofej;
+                    kotroFejek.add(new SoSzorFej());
                     return true;
                 }
                 break;
             case "zuzalekszorofej":
                 if (JMF >= zuzalekszorofej) {
-                    t.JMFmodosit(-zuzalekszorofej);
-                    t.tarol(new kotrofejek.ZuzalekSzorFej());
+                    JMF-=zuzalekszorofej;
+                    kotroFejek.add(new ZuzalekSzorFej());
                     return true;
                 }
                 break;
             case "biokerozin":
                 if (JMF >= biokerozin) {
-                    t.JMFmodosit(-biokerozin);
+                    JMF-=biokerozin;
                 }
                 break;
             case "so":
                 if (JMF >= so) {
-                    t.JMFmodosit(-so);
+                    JMF-=so;
                 }
                 break;
             case "zuzalek":
                 if (JMF >= zuzalek) {
-                    t.JMFmodosit(-zuzalek);
+                    JMF-=zuzalek;
                 }
                 break;
             case "hokotro": //TODO: ez új object lesz main-ben
                 if (JMF >= hokotro) {
-                    t.JMFmodosit(-hokotro);
+                    JMF-=hokotro;
                 }
                 break;
         }
