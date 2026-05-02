@@ -172,6 +172,7 @@ public class Sav {
     
     // 1. TDA: Szólunk a járműnek. A Jarmu.setSav() elintézi a Pozíció létrehozását!
     j.setSav(this);
+    jarmuMozgott(j);
     
     // 2. Csak ezután alkalmazzuk a hatást, amikor a jármű már "tudja", hol van.
     hatasAlkalmaz(j);

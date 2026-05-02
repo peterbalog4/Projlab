@@ -31,6 +31,6 @@ public class Pozicio {
     
     public boolean utkozikE(Pozicio masikPozicio) {
         // Egyszerű távolságalapú ütközésvizsgálat (pl. 5 méteren belül vannak)
-        return Math.abs(this.megtettTavolsag - masikPozicio.megtettTavolsag) <= 5;
+        return this.megtettTavolsag == masikPozicio.megtettTavolsag;
     }
 }

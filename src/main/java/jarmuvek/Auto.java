@@ -84,11 +84,6 @@ public class Auto extends Jarmu {
 
         if (aktualisSav == null || pozicio == null) return;
 
-        Jarmu masik = aktualisSav.getMasikJarmu(this);
-        if (masik != null) {
-            utkozik(masik);
-            return;
-        }
 
        if (this.allapot != Allapot.CSUSZKAL) {
             this.allapot = Allapot.KOZLEKEDIK;
