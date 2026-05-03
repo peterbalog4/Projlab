@@ -111,6 +111,7 @@ public class Hokotro extends Jarmu {
         if (this.aktivFej != null) {
             telephely.tarol(this.aktivFej);
         }
+        telephely.useFej(ujFej);
         this.aktivFej = ujFej;
     }
 

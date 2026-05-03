@@ -154,7 +154,8 @@ public class Commander {
      */
     private void depot(String[] r) {
         if (r.length < 3) { hiba("Hibas depot parancs."); return; }
-        Telephely t = new Telephely(telephelyek.size(), Integer.parseInt(r[2]));
+        Telephely t = new Telephely(telephelyek.size());
+        t.JMFmodosit(Integer.parseInt(r[2]));
         telephelyek.put(r[1], t);
     }
 
