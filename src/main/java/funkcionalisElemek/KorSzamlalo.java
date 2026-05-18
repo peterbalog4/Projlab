@@ -1,5 +1,6 @@
 package funkcionalisElemek;
 
+import grafika.AbstractObservable;
 import jarmuvek.Hokotro;
 import jarmuvek.Jarmu;
 
@@ -14,7 +15,7 @@ import java.util.List;
  * a hóesés szimulálása az utakon, a sávok belső állapotának frissítése,
  * végül az összes jármű mozgatása.
  */
-public class KorSzamlalo {
+public class KorSzamlalo extends AbstractObservable {
 
     /**
      * A játék kezdete óta eltelt körök száma.
@@ -122,5 +123,7 @@ public void leptet() {
     jarmuvek.stream()
             .filter(j -> !(j instanceof Hokotro))
             .forEach(Jarmu::kozlekedik);
-}
+    //3. PUSH FÁZIS: Miután minden állapot megváltozott, értesítjük a feliratkozott View-kat (pl. JatekAblak)
+    notifyObservers();
+    }
 }

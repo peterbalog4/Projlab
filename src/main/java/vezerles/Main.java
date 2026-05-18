@@ -1,5 +1,9 @@
 package vezerles;
 
+import funkcionalisElemek.KorSzamlalo;
+import grafika.JatekAblak;
+
+import javax.swing.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -49,6 +53,28 @@ public class Main {
      * @param args Opcionálisan egy bemeneti szkript fájl elérési útja.
      */
     public static void main(String[] args) {
+
+        // 1. A háttérbeli logikai modell példányosítása (A korábbi prototípus kód alapján)
+        KorSzamlalo kozpontiModell = new KorSzamlalo();
+
+        // TODO: Pályabeolvasás (pl. test_map.txt) és kezdeti inicializálás [cite: 117]
+
+        // 2. A grafikus motor és ablak indítása a Swing eseménykezelő szálán (EDT) [cite: 17]
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                // Főablak létrehozása és a modell átadása
+                JatekAblak ablak = new JatekAblak(kozpontiModell);
+
+                // Az ablak feliratkoztatása a körszámlálóra, mint megfigyelő
+                kozpontiModell.addObserver(ablak);
+
+                // Innentől az ablak készen áll az események fogadására és a renderelésre
+            }
+        });
+
+
+
         if (args.length > 0) {
             futtasFajlbol(args[0]);
         } else {

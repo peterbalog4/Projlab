@@ -1,5 +1,6 @@
 package funkcionalisElemek;
 
+import grafika.AbstractObservable;
 import kotrofejek.*;
 import jarmuvek.Hokotro;
 
@@ -10,7 +11,7 @@ import java.util.*;
  * anyagait, illetve ezen keresztül tud kapcsolatba lépni a Bolttal, tárolni a JMF-ét.(Kicsit gyakorlatiasabban ez a
  * játékos inventory-ja). Megtalálhatók benne static változóként az egyes termékek állandó árai.
  */
-public class Telephely {
+public class Telephely extends AbstractObservable {
     /**
      * Egy Söprőfej árát tárolja.
      */
@@ -76,6 +77,23 @@ public class Telephely {
      * A játékos által megvásárolt, éppen nem használatban lévő Kotrófejeket tárolja.
      */
     private List<KotroFej> kotroFejek = new ArrayList<>();
+
+    public int getJMF(){
+        return JMF;
+    }
+
+    public int getBiokerozin() {
+        return biokerozin;
+    }
+
+    public int getSo() {
+        return so;
+    }
+
+    public int getZuzalek() {
+        return zuzalek;
+    }
+
 
     public Telephely(final int jatekosID) {
         this.jatekosID = jatekosID;
@@ -184,6 +202,8 @@ public class Telephely {
      */
     public void JMFmodosit(int count) {
         JMF += count;
+        // PUSH FÁZIS: Mivel megváltozott az egyenleg, értesítjük a felületet!
+        notifyObservers();
     }
 
     /**

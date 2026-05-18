@@ -1,4 +1,5 @@
 package funkcionalisElemek;
+import grafika.AbstractObservable;
 import jarmuvek.Hokotro;
 import jarmuvek.Jarmu;
 import segedOsztalyok.*;
@@ -12,7 +13,7 @@ import java.util.List;
  * (hómennyiség, jegesedés) kezeléséért, valamint a járművekre gyakorolt hatások 
  * (megállás, megcsúszás) kiváltásáért.
  */
-public class Sav {
+public class Sav extends AbstractObservable {
 
 
     private int athaladtJarmuvekSzama = 0; 
@@ -283,6 +284,8 @@ public class Sav {
             ho = 0;
             athaladtJarmuvekSzama = 0;
         }
+        // Ha valami megváltozott (pl. elolvadt a hó, lefagyott az út), értesítjük a View-t:
+        notifyObservers();
     }
 
     /**
