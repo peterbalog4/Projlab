@@ -28,7 +28,6 @@ public class Sav extends AbstractObservable {
     protected String id;
     private int hossz;
 
-
     /**
      * Konstruktor a sáv létrehozásához.
      * Inicializálja a sáv alapvető tulajdonságait és a befoglaló utat.

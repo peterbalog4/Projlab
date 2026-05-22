@@ -2,6 +2,7 @@ package grafika.view;
 
 import funkcionalisElemek.Ut;
 import grafika.Observer;
+import funkcionalisElemek.Sav;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
@@ -20,6 +21,11 @@ public class UtView implements Observer {
     public UtView(Ut modell) {
         this.modell = modell;
         this.savNezetek = new ArrayList<>();
+        modell.addObserver(this);
+        for(Sav s : modell.getSavok()){
+            SavView sv = new SavView(s, 100, 100); //TODO reális koordináták kiszámolása a sáv helyétől függően
+            savNezetek.add(sv);
+        }
 
         // TODO a csapatnak: Végigiterálni a modell.getSavok() listán,
         // és mindegyikhez példányosítani egy SavView-t a megfelelő X, Y koordinátákkal,

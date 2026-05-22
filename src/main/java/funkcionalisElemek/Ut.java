@@ -2,6 +2,7 @@ package funkcionalisElemek;
 
 import jarmuvek.Jarmu;
 import segedOsztalyok.*;
+import grafika.AbstractObservable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +16,7 @@ import java.util.Map;
  * a környezeti hatások (hóesés) globális menedzseléséért, valamint a hó sávok 
  * közötti mozgatásáért.
  */
-public class Ut {
+public class Ut extends AbstractObservable {
 
     /** Az úthoz tartozó sávok listája.  */
     String id;
