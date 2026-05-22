@@ -19,13 +19,13 @@ import java.util.Map;
 public class Ut extends AbstractObservable {
 
     /** Az úthoz tartozó sávok listája.  */
-    String id;
+    public final String id; // Az út egyedi azonosítója
     private List<Sav> savok = new ArrayList<>();
     private List<Sav> B_bol_A_savok= new ArrayList<>();
     private List<Sav> A_bol_B_savok = new ArrayList<>();
     private Map<Ut, String> vegA_kapcsolatok = new HashMap<>();
     private Map<Ut, String> vegB_kapcsolatok = new HashMap<>();
-    private int hossz;
+    private final int hossz;
 
 
     /**

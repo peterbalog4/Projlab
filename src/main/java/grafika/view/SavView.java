@@ -12,9 +12,11 @@ import java.awt.Graphics;
  */
 public class SavView implements Observer {
 
+    
+
     private Sav modell; // Referencia a megfigyelt logikai sávra
-    private int xKord;  // Statikus X koordináta a képernyőn
-    private int yKord;  // Statikus Y koordináta a képernyőn
+    private final int xKord;  // Statikus X koordináta a képernyőn, ezek igazából egy úton belül megegyeznek
+    private final int yKord;  // Statikus Y koordináta a képernyőn
     private int homennyiseg;
     private boolean jeges;
     private boolean zuzalekos;
@@ -48,22 +50,25 @@ public class SavView implements Observer {
         // Itt kell vizuálisan megkülönböztetni az állapotokat (pl. kék szín a jégnek,
         // fehér vastagodó téglalap a hónak).
 
-        if(modell.isJeges()) {
-            g.setColor(Color.CYAN); // Jég szín
-        } else if (modell.getHo() > 0) {
-            g.setColor(Color.WHITE); // Hó szín
-        } else {
-            g.setColor(Color.GRAY); // Alap aszfalt szín
+        g.setColor(Color.DARK_GRAY);
+        g.fillRect(xKord, yKord, 60, 60);
+
+        // Fizikai állapotok vizualizációja a letárolt adatok alapján
+        if (this.jeges) {
+            g.setColor(Color.CYAN);
+            g.fillRect(xKord, yKord, 60, 60);
+        } else if (this.homennyiseg > 0) {
+            g.setColor(Color.WHITE);
+            g.fillRect(xKord, yKord, 60, 60);
         }
-        // Példa váz:
-        g.setColor(Color.DARK_GRAY); // Alap aszfalt szín
-        if(modell.getIrany() == HaladasiIrany.A_BOL_B_BE){
-            g.fillRect(xKord, yKord, 5, modell.getHossz()*5);
+
+        if (this.zuzalekos) {
+            g.setColor(Color.GRAY);
+            g.fillOval(xKord + 10, yKord + 10, 10, 10);
         }
-        else{
-            g.fillRect(xKord, yKord-modell.getHossz()*5, 5, modell.getHossz()*5); //TODO: rendes grafika importálása
-        }
-        // g.fillRect(xKord, yKord, szelesseg, magassag);
-        // if (modell.isJeges()) { ... }
+        
+        g.setColor(Color.BLACK);
+        g.drawRect(xKord, yKord, 60, 60); // Keret
+        
     }
 }

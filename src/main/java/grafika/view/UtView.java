@@ -22,15 +22,15 @@ public class UtView implements Observer {
         this.modell = modell;
         this.savNezetek = new ArrayList<>();
         modell.addObserver(this);
-        for(Sav s : modell.getSavok()){
-            SavView sv = new SavView(s, 100, 100); //TODO reális koordináták kiszámolása a sáv helyétől függően
-            savNezetek.add(sv);
-        }
+        update();
 
         // TODO a csapatnak: Végigiterálni a modell.getSavok() listán,
         // és mindegyikhez példányosítani egy SavView-t a megfelelő X, Y koordinátákkal,
         // majd hozzáadni a savNezetek listához.
     }
+
+
+   
 
     /**
      * Frissíti a nézetet, ha az út állapota globálisan megváltozik.
@@ -38,6 +38,20 @@ public class UtView implements Observer {
     @Override
     public void update() {
         // Ha valami egész utat érintő változás van, itt kezeljük le.
+        List<Sav> frissSavok = modell.getSavok();
+        
+        // Tisztítjuk az eddigi nézeteket, majd újra felépítjük őket
+        // (Ha a sávok száma statikus, akkor elég lenne a meglévő SavView-kon végigmenni és frissíteni őket)
+        savNezetek.clear();
+        
+        int currentX = 50;  // Kezdőpozíció
+        int currentY = 200; // Fix magasság
+        int savSzelesseg = 60;
+
+        for (Sav sav : frissSavok) {
+            savNezetek.add(new SavView(sav, currentX, currentY));
+            currentX += savSzelesseg; 
+        }
     }
 
     /**
