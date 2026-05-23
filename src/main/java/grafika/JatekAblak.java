@@ -79,7 +79,7 @@ public class JatekAblak extends JFrame implements Observer {
         
         //map betöltése
         Map_generator map = new Map_generator(modell);
-        map.load("tests/test_map.txt", jatekter);
+        map.load("src/main/java/vezerles/test_map.txt", jatekter);
 
         // 5. Vezérlő panel alulra
         JPanel vezerloPanel = new JPanel();
