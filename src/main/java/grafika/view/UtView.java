@@ -63,7 +63,7 @@ public class UtView implements Observer {
                 case FEL:
                     // Függőleges út, felfelé haladó. A sáv téglalapja: szélesség=SAV_SZELLESEG, magasság=hossz.
                     // A sávok vízszintesen (X irányban) sorakoznak.
-                    savNezetek.add(new SavView(sav, currentX, currentY));
+                    savNezetek.add(new SavView(sav, currentX, currentY+sav.getHossz()));
                     currentX += SAV_SZELLESEG;
                     break;
  
@@ -81,9 +81,9 @@ public class UtView implements Observer {
                     break;
  
                 case BALRA:
-                    // Vízszintes út, balra haladó. Az út jobb széle startX+hossz-nál van,
+                    // Vízszintes út, balra haladó. Az út jobb széle startX-nál van,
                     // de a SavView-nak a bal felső sarokot adjuk át (startX).
-                    savNezetek.add(new SavView(sav, currentX, currentY));
+                    savNezetek.add(new SavView(sav, currentX-SAV_SZELLESEG, currentY));
                     currentY += SAV_SZELLESEG;
                     break;
             }
