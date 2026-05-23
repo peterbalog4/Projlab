@@ -4,6 +4,8 @@ package segedOsztalyok;
 
 public enum Irany {
     BALRA,
-    JOBBRA
+    JOBBRA,
+    FEL,
+    LE
 
 }
