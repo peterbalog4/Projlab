@@ -388,4 +388,13 @@ public class Sav extends AbstractObservable {
         kimenet.println(sb);
     }
 
+
+    public int getHo() {
+        return ho;
+    }
+
+    public boolean isJeg() {
+        return jeg;
+    }
+    
 }

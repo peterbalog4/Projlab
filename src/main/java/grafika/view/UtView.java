@@ -9,6 +9,8 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO: bekérésben megcsinálni, hogy adjon az utaknak irányt és kapcsolódjanak a végpontok mentén
+
 /**
  * Az egész út globális megjelenítését és a sávok összefogását reprezentáló nézet.
  */
@@ -18,16 +20,12 @@ public class UtView implements Observer {
 
     // A váz-építő jó tanácsa: Érdemes itt tárolni az úthoz tartozó sávok nézeteit
     private List<SavView> savNezetek;
-    private int startX;                 //ezek mindig a baloldali végállomás koordinátái
-    private int startY;                 //ezek mindig a lentildali végállomás koordinátái
     private Irany utIrany;              //ez az út iránya a térképen, nem a haladási irány
     public final int SAV_SZELLESEG = 60; // Egy sáv szélessége a grafikus megjelenítésben
 
     public UtView(Ut modell, int startX, int startY, Irany utIrany) {
         this.modell = modell;
         this.savNezetek = new ArrayList<>();
-        this.startX = startX;
-        this.startY = startY;
         this.utIrany = utIrany;
         modell.addObserver(this);
         // TODO a csapatnak: Végigiterálni a modell.getSavok() listán,
@@ -40,8 +38,8 @@ public class UtView implements Observer {
         // (Ha a sávok száma statikus, akkor elég lenne a meglévő SavView-kon végigmenni és frissíteni őket)
         savNezetek.clear();
         
-        int currentX = startX;
-        int currentY = startY;
+        int currentX = startX;              //ezek mindig a baloldali végállomás koordinátái
+        int currentY = startY;              //ezek mindig a lenti végállomás koordinátái
 
         for (Sav sav : frissSavok) {
             savNezetek.add(new SavView(sav, currentX, currentY));

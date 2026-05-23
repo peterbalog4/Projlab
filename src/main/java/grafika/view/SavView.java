@@ -39,9 +39,9 @@ public class SavView implements Observer {
         // int hoMennyiseg = modell.getHo();
         // boolean jegesE = modell.isJeges();
         // boolean zuzalekosE = modell.isZuzalekos();
-        int homennyiseg = modell.getHo();
-        boolean jeges = modell.isJeg();
-        boolean zuzalekos = modell.isZuzalek();
+        homennyiseg = modell.getHo();
+        jeges = modell.isJeg();
+        zuzalekos = modell.isZuzalek();
 
     }
 
@@ -54,37 +54,32 @@ public class SavView implements Observer {
 
         Graphics2D g2d = (Graphics2D) g.create();
 
-        // Kiszámoljuk a sáv középpontját
-        int kozepX = xKord + MERET / 2;
-        int kozepY = yKord + MERET / 2;
+        
         
         // Elforgatjuk a rajzteret a középpont körül az irány szöge alapján
-        g2d.rotate(Math.toRadians(irany.getSzog()), kozepX, kozepY);
 
         // --- INNEN MINDENT ÚGY RAJZOLUNK, MINTHA ALAPÉRTELMEZETTEN KELETRE (JOBBRA) NÉZNE ---
         // Alap sáv útburkolata
         g2d.setColor(Color.DARK_GRAY);
-        g2d.fillRect(xKord, yKord, MERET, modell.getHossz());
 
-        if (this.jeges) {
+        if (this.jeges) {               //TODO: ide a rendes képeket beszúrni
             g2d.setColor(Color.CYAN);
-            g2d.fillRect(xKord, yKord, MERET, modell.getHossz());
-        } else if (this.ho > 0) {
+        } else if (this.homennyiseg > 2) {
             g2d.setColor(Color.WHITE);
-            g2d.fillRect(xKord, yKord, MERET, modell.getHossz());
         }
-
-        if (this.zuzalekos) {
+        else if (this.zuzalekos) {
             g2d.setColor(Color.GRAY);
-            g2d.fillOval(xKord + 20, yKord + 20, 10, 10);
         }
-
-        // Egy sárga vonal a sáv alján, ami segít látni az út orientációját kanyarokban
-        g2d.setColor(Color.YELLOW);
-        g2d.fillRect(xKord, yKord + MERET - 4, modell.getHossz(), 4);
+        else {
+            g2d.setColor(Color.DARK_GRAY);
+        }
+        g2d.fillRect(xKord, yKord, MERET, modell.getHossz());
+        // TODO: kanyarodást megcsinálni
+        // g2d.setColor(Color.YELLOW);
+        // g2d.fillRect(xKord, yKord + MERET - 4, modell.getHossz(), 4);
 
         // Fekete keret a sáv szélének
-        g2d.setColor(Color.BLACK);
+        g2d.setColor(Color.YELLOW);
         g2d.drawRect(xKord, yKord, MERET, modell.getHossz());
 
         // Erőforrás felszabadítása
