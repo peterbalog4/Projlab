@@ -35,10 +35,6 @@ public class SavView implements Observer {
      */
     @Override
     public void update() {
-        // PULL fázis: Lekérdezzük a sáv fizikai tulajdonságait
-        // int hoMennyiseg = modell.getHo();
-        // boolean jegesE = modell.isJeges();
-        // boolean zuzalekosE = modell.isZuzalekos();
         homennyiseg = modell.getHo();
         jeges = modell.isJeg();
         zuzalekos = modell.isZuzalek();
