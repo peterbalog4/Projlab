@@ -3,6 +3,7 @@ package grafika.view;
 import funkcionalisElemek.Sav;
 import grafika.Observer;
 import segedOsztalyok.HaladasiIrany;
+import segedOsztalyok.Irany;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -22,12 +23,15 @@ public class SavView implements Observer {
     private boolean jeges;
     private boolean zuzalekos;
     private final int MERET = 60; // Egy sáv négyzet alakú, ennek az oldalhossza
+    private final Irany irany;
 
-    public SavView(Sav modell, int xKord, int yKord) {
+    public SavView(Sav modell, int xKord, int yKord, Irany irany) {
         this.modell = modell;
         this.xKord = xKord;
         this.yKord = yKord;
+        this.irany = irany;
         modell.addObserver(this);
+        update(); // Kezdeti állapot lekérése a megjelenítéshez
     }
 
     /**
@@ -69,14 +73,23 @@ public class SavView implements Observer {
         else {
             g2d.setColor(Color.DARK_GRAY);
         }
-        g2d.fillRect(xKord, yKord, MERET, modell.getHossz());
+        switch(irany){
+            case FEL:
+            case LE:
+                g2d.fillRect(xKord, yKord, MERET, modell.getHossz());
+                g2d.setColor(Color.YELLOW);
+                g2d.drawRect(xKord, yKord, MERET, modell.getHossz());
+                break;
+            case JOBBRA:
+            case BALRA:
+                 g2d.fillRect(xKord, yKord, modell.getHossz(), MERET);
+                 g2d.setColor(Color.YELLOW);
+                 g2d.drawRect(xKord, yKord, modell.getHossz(), MERET);
+                 break;
+        }
         // TODO: kanyarodást megcsinálni
         // g2d.setColor(Color.YELLOW);
         // g2d.fillRect(xKord, yKord + MERET - 4, modell.getHossz(), 4);
-
-        // Fekete keret a sáv szélének
-        g2d.setColor(Color.YELLOW);
-        g2d.drawRect(xKord, yKord, MERET, modell.getHossz());
 
         // Erőforrás felszabadítása
         g2d.dispose();
