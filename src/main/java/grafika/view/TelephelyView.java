@@ -2,10 +2,12 @@ package grafika.view;
 
 import funkcionalisElemek.Telephely;
 import grafika.Observer;
+import kotrofejek.KotroFej;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.List;
 import java.awt.event.ActionListener;
 
 /**
@@ -27,6 +29,7 @@ public class TelephelyView extends JPanel implements Observer {
 
     /**
      * Konstruktor, amely inicializálja a panelt és a UI elemeket.
+     * 
      * @param modell A megfigyelendő Telephely modell.
      */
     public TelephelyView(Telephely modell) {
@@ -62,17 +65,12 @@ public class TelephelyView extends JPanel implements Observer {
         boltGomb.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Ideiglenes vizuális visszajelzés a gombnyomásról
-                JOptionPane.showMessageDialog(
-                        TelephelyView.this,
-                        "Ide jön majd a Bolt ablak!\n\n(A csapat feladata lesz ide egy JDialog-ot írni a vásárlásokhoz.)",
-                        "Bolt Megnyitása",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
+                // Megkeressük a szülő ablakot (JFrame / JatekAblak) a dialogushoz
+                Window parentWindow = SwingUtilities.getWindowAncestor(TelephelyView.this);
 
-                // TODO: A végleges verzióban valami ilyesmi lesz:
-                // BoltDialog boltAblak = new BoltDialog(modell);
-                // boltAblak.setVisible(true);
+                // Példányosítjuk és megjelenítjük a boltot
+                BoltDialog boltAblak = new BoltDialog(parentWindow, modell);
+                boltAblak.setVisible(true);
             }
         });
     }
@@ -96,9 +94,18 @@ public class TelephelyView extends JPanel implements Observer {
         soLabel.setText("Só: " + frissSo + " kg");
         zuzalekLabel.setText("Zúzalék: " + frissZuzalek + " kg");
 
-        // TODO: A csapat implementálhatja a kotrófejek listájának stringgé fűzését
-        // kotrofejekLabel.setText("Elérhető kotrófejek: " + ...);
-
+        List<KotroFej> frissFejek = modell.getKotrofejek();
+        StringBuilder fejekSzoveg = new StringBuilder("<html><b>Elérhető kotrófejek:</b><br>");
+        if (frissFejek == null || frissFejek.isEmpty()) {
+            fejekSzoveg.append("<i>- Nincs raktáron</i>");
+        } else {
+            for (KotroFej fej : frissFejek) {
+                // A getClass().getSimpleName() kiveszi az osztály nevét (pl. "SoproFej")
+                fejekSzoveg.append("- ").append(fej.getClass().getSimpleName()).append("<br>");
+            }
+        }
+        fejekSzoveg.append("</html>");
+        kotrofejekLabel.setText(fejekSzoveg.toString());
         // Újrarajzolás kérése a Swing keretrendszertől
         repaint();
     }

@@ -2,6 +2,8 @@ package grafika.view;
 
 import grafika.Observer;
 import jarmuvek.Jarmu;
+import jarmuvek.Auto;
+import jarmuvek.Busz;
 import jarmuvek.Hokotro; // Hókotró importálása a típusvizsgálathoz
 
 import javax.imageio.ImageIO;
@@ -15,8 +17,8 @@ import java.io.IOException;
  */
 public class JarmuView implements Observer {
 
-    private Jarmu modell; // Referencia a megfigyelt logikai modellre [cite: 557]
-    private Image sprite; // A járművet reprezentáló kép [cite: 558]
+    private Jarmu modell; // Referencia a megfigyelt logikai modellre
+    private Image sprite; // A járművet reprezentáló kép 
     
     // Ideiglenes változók a kirajzolás helyének
     private int xKalkulalt = 100; 
@@ -38,6 +40,14 @@ public class JarmuView implements Observer {
                 
                 // Opcionális: Kép átméretezése, ha túl nagy lenne a játéktérhez
                 // sprite = sprite.getScaledInstance(64, 64, Image.SCALE_SMOOTH);
+            }
+            else if (modell instanceof Auto) {
+                // Az Auto típusú jármű képének betöltése
+                sprite = ImageIO.read(new File("auto.png"));
+            }
+            else if (modell instanceof Busz) {
+                // A Busz típusú jármű képének betöltése 
+                sprite = ImageIO.read(new File("busz.png"));
             }
             // Később ide jöhet a Busz típusú jármű képe is
         } catch (IOException e) {

@@ -313,4 +313,9 @@ public class Telephely extends AbstractObservable {
         kotroFejek.forEach(f -> sb.append(" ").append(f.getClass().getSimpleName()));
         kimenet.println(sb);
     }
+
+    public List<KotroFej> getKotrofejek() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getKotrofejek'");
+    }
 }
