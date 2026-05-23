@@ -104,7 +104,7 @@ public class Sav extends AbstractObservable {
      * @param i A sáv új hossza.
      */
     public void setHossz(int i){
-        hossz = i;
+        hossz = i; //TODO ez miért nem a konstruktorban van? Nem lehetne final?
     }
 
     

@@ -2,6 +2,7 @@ package grafika.view;
 
 import funkcionalisElemek.Ut;
 import grafika.Observer;
+import segedOsztalyok.Irany;
 import funkcionalisElemek.Sav;
 
 import java.awt.Graphics;
@@ -17,16 +18,57 @@ public class UtView implements Observer {
 
     // A váz-építő jó tanácsa: Érdemes itt tárolni az úthoz tartozó sávok nézeteit
     private List<SavView> savNezetek;
+    private int startX;                 //ezek mindig a baloldali végállomás koordinátái
+    private int startY;                 //ezek mindig a lentildali végállomás koordinátái
+    private Irany utIrany;              //ez az út iránya a térképen, nem a haladási irány
+    public final int SAV_SZELLESEG = 60; // Egy sáv szélessége a grafikus megjelenítésben
 
-    public UtView(Ut modell) {
+    public UtView(Ut modell, int startX, int startY, Irany utIrany) {
         this.modell = modell;
         this.savNezetek = new ArrayList<>();
+        this.startX = startX;
+        this.startY = startY;
+        this.utIrany = utIrany;
         modell.addObserver(this);
-        update();
-
         // TODO a csapatnak: Végigiterálni a modell.getSavok() listán,
         // és mindegyikhez példányosítani egy SavView-t a megfelelő X, Y koordinátákkal,
         // majd hozzáadni a savNezetek listához.
+
+        List<Sav> frissSavok = modell.getSavok();
+        
+        // Tisztítjuk az eddigi nézeteket, majd újra felépítjük őket
+        // (Ha a sávok száma statikus, akkor elég lenne a meglévő SavView-kon végigmenni és frissíteni őket)
+        savNezetek.clear();
+        
+        int currentX = startX;
+        int currentY = startY;
+
+        for (Sav sav : frissSavok) {
+            savNezetek.add(new SavView(sav, currentX, currentY));
+
+            // A haladási irányra MERŐLEGESEN toljuk el a következő sáv koordinátáját,
+            // hiszen egy úton belül a sávok párhuzamosan, egymás mellett vannak.
+            switch (utIrany) {
+                case FEL:
+                    savNezetek.add(new SavView(sav, currentX, currentY)); //már úgy adjuk át, hogy csak ki kelljen rajzolni
+                    currentX += SAV_SZELLESEG; 
+                    break;
+                case LE :
+                    // Függőleges haladásnál a sávok vízszintesen vannak egymás mellett
+                    savNezetek.add(new SavView(sav, currentX, currentY-modell.getHossz())); //már úgy adjuk át, hogy csak ki kelljen rajzolni
+                    currentX += SAV_SZELLESEG; 
+                    break;
+                case JOBBRA:
+                    savNezetek.add(new SavView(sav, currentX, currentY)); //már úgy adjuk át, hogy csak ki kelljen rajzolni
+                    currentY += SAV_SZELLESEG; 
+                    break;
+                case BALRA:
+                    // Vízszintes haladásnál a sávok függőlegesen vannak egymás alatt/felett
+                    savNezetek.add(new SavView(sav, currentX-SAV_SZELLESEG, currentY)); //már úgy adjuk át, hogy csak ki kelljen rajzolni
+                    currentY += SAV_SZELLESEG; 
+                    break;
+            }
+        }
     }
 
 
@@ -38,20 +80,8 @@ public class UtView implements Observer {
     @Override
     public void update() {
         // Ha valami egész utat érintő változás van, itt kezeljük le.
-        List<Sav> frissSavok = modell.getSavok();
+        //TODO szerintem ilyen nem lehet, csak a sávokban
         
-        // Tisztítjuk az eddigi nézeteket, majd újra felépítjük őket
-        // (Ha a sávok száma statikus, akkor elég lenne a meglévő SavView-kon végigmenni és frissíteni őket)
-        savNezetek.clear();
-        
-        int currentX = 50;  // Kezdőpozíció
-        int currentY = 200; // Fix magasság
-        int savSzelesseg = 60;
-
-        for (Sav sav : frissSavok) {
-            savNezetek.add(new SavView(sav, currentX, currentY));
-            currentX += savSzelesseg; 
-        }
     }
 
     /**

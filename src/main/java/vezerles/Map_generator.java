@@ -82,4 +82,6 @@ public class Map_generator {
     public Map<String, Telephely> getTelephelyek() {
         return telephelyek;
     }
+
+    //TODO utak irányának meghatározása
 }

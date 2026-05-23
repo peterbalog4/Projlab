@@ -6,6 +6,7 @@ import segedOsztalyok.HaladasiIrany;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 /**
  * A játéktér egy sávjának megjelenítéséért felelős nézet.
@@ -15,11 +16,12 @@ public class SavView implements Observer {
     
 
     private Sav modell; // Referencia a megfigyelt logikai sávra
-    private final int xKord;  // Statikus X koordináta a képernyőn, ezek igazából egy úton belül megegyeznek
+    private final int xKord;  // Statikus X koordináta a képernyőn
     private final int yKord;  // Statikus Y koordináta a képernyőn
     private int homennyiseg;
     private boolean jeges;
     private boolean zuzalekos;
+    private final int MERET = 60; // Egy sáv négyzet alakú, ennek az oldalhossza
 
     public SavView(Sav modell, int xKord, int yKord) {
         this.modell = modell;
@@ -50,25 +52,43 @@ public class SavView implements Observer {
         // Itt kell vizuálisan megkülönböztetni az állapotokat (pl. kék szín a jégnek,
         // fehér vastagodó téglalap a hónak).
 
-        g.setColor(Color.DARK_GRAY);
-        g.fillRect(xKord, yKord, 60, 60);
+        Graphics2D g2d = (Graphics2D) g.create();
 
-        // Fizikai állapotok vizualizációja a letárolt adatok alapján
+        // Kiszámoljuk a sáv középpontját
+        int kozepX = xKord + MERET / 2;
+        int kozepY = yKord + MERET / 2;
+        
+        // Elforgatjuk a rajzteret a középpont körül az irány szöge alapján
+        g2d.rotate(Math.toRadians(irany.getSzog()), kozepX, kozepY);
+
+        // --- INNEN MINDENT ÚGY RAJZOLUNK, MINTHA ALAPÉRTELMEZETTEN KELETRE (JOBBRA) NÉZNE ---
+        // Alap sáv útburkolata
+        g2d.setColor(Color.DARK_GRAY);
+        g2d.fillRect(xKord, yKord, MERET, modell.getHossz());
+
         if (this.jeges) {
-            g.setColor(Color.CYAN);
-            g.fillRect(xKord, yKord, 60, 60);
-        } else if (this.homennyiseg > 0) {
-            g.setColor(Color.WHITE);
-            g.fillRect(xKord, yKord, 60, 60);
+            g2d.setColor(Color.CYAN);
+            g2d.fillRect(xKord, yKord, MERET, modell.getHossz());
+        } else if (this.ho > 0) {
+            g2d.setColor(Color.WHITE);
+            g2d.fillRect(xKord, yKord, MERET, modell.getHossz());
         }
 
         if (this.zuzalekos) {
-            g.setColor(Color.GRAY);
-            g.fillOval(xKord + 10, yKord + 10, 10, 10);
+            g2d.setColor(Color.GRAY);
+            g2d.fillOval(xKord + 20, yKord + 20, 10, 10);
         }
-        
-        g.setColor(Color.BLACK);
-        g.drawRect(xKord, yKord, 60, 60); // Keret
+
+        // Egy sárga vonal a sáv alján, ami segít látni az út orientációját kanyarokban
+        g2d.setColor(Color.YELLOW);
+        g2d.fillRect(xKord, yKord + MERET - 4, modell.getHossz(), 4);
+
+        // Fekete keret a sáv szélének
+        g2d.setColor(Color.BLACK);
+        g2d.drawRect(xKord, yKord, MERET, modell.getHossz());
+
+        // Erőforrás felszabadítása
+        g2d.dispose();
         
     }
 }
