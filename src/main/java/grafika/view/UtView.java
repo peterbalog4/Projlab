@@ -28,9 +28,7 @@ public class UtView implements Observer {
         this.savNezetek = new ArrayList<>();
         this.utIrany = utIrany;
         modell.addObserver(this);
-        // TODO a csapatnak: Végigiterálni a modell.getSavok() listán,
-        // és mindegyikhez példányosítani egy SavView-t a megfelelő X, Y koordinátákkal,
-        // majd hozzáadni a savNezetek listához.
+
 
         List<Sav> frissSavok = modell.getSavok();
         
@@ -91,6 +89,5 @@ public class UtView implements Observer {
             sv.draw(g);
         }
 
-        // TODO a csapatnak: Esetleges út-specifikus grafikák (pl. út széle, padka) kirajzolása.
     }
 }
