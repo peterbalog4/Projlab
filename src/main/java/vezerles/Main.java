@@ -57,6 +57,9 @@ public class Main {
         // 1. A háttérbeli logikai modell példányosítása (A korábbi prototípus kód alapján)
         KorSzamlalo kozpontiModell = new KorSzamlalo();
 
+
+        
+
         // TODO: Pályabeolvasás (pl. test_map.txt) és kezdeti inicializálás [cite: 117]
 
         // 2. A grafikus motor és ablak indítása a Swing eseménykezelő szálán (EDT) [cite: 17]
@@ -75,11 +78,11 @@ public class Main {
 
 
 
-        if (args.length > 0) {
-            futtasFajlbol(args[0]);
-        } else {
-            interaktivMod();
-        }
+        // if (args.length > 0) {
+        //     futtasFajlbol(args[0]);
+        // } else {
+        //     interaktivMod();
+        // }
     }
 
     /**

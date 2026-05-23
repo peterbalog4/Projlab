@@ -3,12 +3,16 @@ package vezerles;
 import funkcionalisElemek.KorSzamlalo;
 import funkcionalisElemek.Telephely;
 import funkcionalisElemek.Ut;
+import grafika.panel.JatekterPanel;
 
+import java.io.Console;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import grafika.view.UtView;
+import segedOsztalyok.Irany;
 
 public class Map_generator {
     private Map<String, Ut> utak = new HashMap<>();
@@ -19,7 +23,7 @@ public class Map_generator {
         this.korszamlalo = korszamlalo;
     }
 
-    public void load(String filename) {
+    public void load(String filename, JatekterPanel jatekter) {
         try (Scanner scanner = new Scanner(new File(filename))) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine().trim();
@@ -47,12 +51,15 @@ public class Map_generator {
                         int hossz = Integer.parseInt(parts[2]);
                         int savokA = Integer.parseInt(parts[3]);
                         int savokB = Integer.parseInt(parts[4]);
+                        System.console().printf("Létrehozunk egy utat: %s hossz: %d savokA: %d savokB: %d%n", utId, hossz, savokA, savokB);
                         
                         Ut u = new Ut(utId, hossz, savokA, savokB);
                         utak.put(utId, u);
                         korszamlalo.addUt(u);
-                        break;
+                        UtView utView = new UtView(u, 10, 10, Irany.FEL); //TODO: koordináták és irány meghatározása
+                        jatekter.addUtView(utView);
 
+                        break;
                     case "connect":
                         // connect <út1_id> <út1_vége> <út2_id> <út2_vége>
                         Ut u1 = utak.get(parts[1]);

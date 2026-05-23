@@ -9,6 +9,7 @@ import funkcionalisElemek.*;
 import grafika.panel.FomenuPanel;
 import grafika.panel.JatekterPanel;
 import grafika.view.TelephelyView;
+import vezerles.Map_generator;
 
 
 /**
@@ -69,9 +70,16 @@ public class JatekAblak extends JFrame implements Observer {
         telephelyModell.addObserver(telephelyHud);
         this.getContentPane().add(telephelyHud, BorderLayout.EAST);
 
+        
+
+
         // 4. Játéktér panel középre (Ez lesz a központi vászon)
         JatekterPanel jatekter = new JatekterPanel();
         this.getContentPane().add(jatekter, BorderLayout.CENTER);
+        
+        //map betöltése
+        Map_generator map = new Map_generator(modell);
+        map.load("tests/test_map.txt", jatekter);
 
         // 5. Vezérlő panel alulra
         JPanel vezerloPanel = new JPanel();
