@@ -61,29 +61,17 @@ public class UtView implements Observer {
         for (Sav sav : savok) {
             switch (utIrany) {
                 case FEL:
-                    // Függőleges út, felfelé haladó. A sáv téglalapja: szélesség=SAV_SZELLESEG, magasság=hossz.
-                    // A sávok vízszintesen (X irányban) sorakoznak.
-                    savNezetek.add(new SavView(sav, currentX, currentY+sav.getHossz()));
-                    currentX += SAV_SZELLESEG;
-                    break;
- 
                 case LE:
                     // Függőleges út, lefelé haladó. Az út teteje startY, alja startY+hossz.
-                    savNezetek.add(new SavView(sav, currentX, currentY));
+                    savNezetek.add(new SavView(sav, currentX, currentY, utIrany));
                     currentX += SAV_SZELLESEG;
                     break;
  
                 case JOBBRA:
-                    // Vízszintes út, jobbra haladó. A sáv téglalapja: szélesség=hossz, magasság=SAV_SZELLESEG.
-                    // A sávok függőlegesen (Y irányban) sorakoznak.
-                    savNezetek.add(new SavView(sav, currentX, currentY));
-                    currentY += SAV_SZELLESEG;
-                    break;
- 
                 case BALRA:
                     // Vízszintes út, balra haladó. Az út jobb széle startX-nál van,
                     // de a SavView-nak a bal felső sarokot adjuk át (startX).
-                    savNezetek.add(new SavView(sav, currentX-SAV_SZELLESEG, currentY));
+                    savNezetek.add(new SavView(sav, currentX, currentY, utIrany));
                     currentY += SAV_SZELLESEG;
                     break;
             }
