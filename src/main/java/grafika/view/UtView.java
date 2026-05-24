@@ -30,6 +30,9 @@ public class UtView implements Observer {
     private Irany utIrany;
  
     public final int SAV_SZELLESEG = 60; // px – egy sáv szélessége
+
+    private int startX;
+    private int startY;
  
     /**
      * @param modell   A megfigyelt logikai Ut objektum.
@@ -41,6 +44,8 @@ public class UtView implements Observer {
         this.modell = modell;
         this.savNezetek = new ArrayList<>();
         this.utIrany = utIrany;
+        this.startX = startX;
+        this.startY = startY;
         modell.addObserver(this);
  
         buildSavNezetek(startX, startY);
@@ -106,5 +111,31 @@ public class UtView implements Observer {
      */
     public int getTeljesszelesseg() {
         return savNezetek.size() * SAV_SZELLESEG;
+    }
+
+    /**
+     * Visszaadja az UtView mögött álló logikai modellt.
+     * Ezt hívja meg a JatekterPanel az egérkattintáskor.
+     */
+    public Ut getModell() {
+        return this.modell;
+    }
+
+    public boolean contains(int mouseX, int mouseY) {
+        // A hossz a haladási iránnyal megegyező kiterjedés
+        int utHossz = modell.getHossz(); 
+        
+        // A szélesség a meglévő függvényed alapján (sávok száma * 60)
+        int utSzelesseg = getTeljesszelesseg(); 
+
+        if (utIrany == Irany.FEL || utIrany == Irany.LE) {
+            // Függőleges út esetén az X tengelyen a szélesség, az Y tengelyen a hossz terül el
+            return mouseX >= this.startX && mouseX <= (this.startX + utSzelesseg) &&
+                   mouseY >= this.startY && mouseY <= (this.startY + utHossz);
+        } else {
+            // Vízszintes út (JOBBRA, BALRA) esetén az X tengelyen a hossz, az Y tengelyen a szélesség terül el
+            return mouseX >= this.startX && mouseX <= (this.startX + utHossz) &&
+                   mouseY >= this.startY && mouseY <= (this.startY + utSzelesseg);
+        }
     }
 }

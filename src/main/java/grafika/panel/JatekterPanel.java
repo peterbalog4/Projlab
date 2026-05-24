@@ -3,11 +3,15 @@ package grafika.panel;
 import grafika.Observer;
 import grafika.view.JarmuView;
 import grafika.view.UtView;
+import jarmuvek.Hokotro;
 import jarmuvek.Jarmu;
 
 import javax.swing.*;
 
+import org.w3c.dom.events.MouseEvent;
+
 import funkcionalisElemek.KorSzamlalo;
+import funkcionalisElemek.Ut;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -27,14 +31,44 @@ public class JatekterPanel extends JPanel implements Observer {
     private KorSzamlalo modell;
     private Map<Jarmu, JarmuView> jarmuNezetekMap;
 
-    public JatekterPanel(KorSzamlalo modell) {
+public JatekterPanel(KorSzamlalo modell) {
         this.modell = modell;
         this.utakNezetei = new ArrayList<>();
         this.jarmuvekNezetei = new ArrayList<>();
         this.jarmuNezetekMap = new HashMap<>();
 
-        // Háttérszín beállítása (pl. téli, havas tájhoz egy halvány szürke/kék)
         setBackground(new Color(240, 248, 255));
+        
+        // EGÉR IRÁNYÍTÁS BEKÖTÉSE
+        // EGÉR IRÁNYÍTÁS BEKÖTÉSE
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                int mouseX = e.getX();
+                int mouseY = e.getY();
+                funkcionalisElemek.Ut celUt = null;
+
+                // 1. Megkeressük, melyik útra/sávra kattintott a játékos
+                for (grafika.view.UtView uv : utakNezetei) {
+                    if (uv.contains(mouseX, mouseY)) {
+                        celUt = uv.getModell();
+                        break;
+                    }
+                }
+
+                // 2. Ha érvényes útra kattintott, átadjuk a parancsot a Hókotrónak
+                if (celUt != null) {
+                    for (jarmuvek.Jarmu j : modell.getJarmuvek()) {
+                        if (j instanceof jarmuvek.Hokotro) {
+                            jarmuvek.Hokotro hokotro = (jarmuvek.Hokotro) j;
+                            hokotro.setKovetkezoUt(celUt);
+                            System.out.println("Játékos kattintott! Új célpont a hókotrónak sikeresen átadva.");
+                            break;
+                        }
+                    }
+                }
+            }
+        });
     }
 
     // Ezeket a metódusokat a pályabetöltő fogja használni,
@@ -48,33 +82,28 @@ public class JatekterPanel extends JPanel implements Observer {
      * illetve ha állapotváltozás történik.
      */
     @Override
-    public void update() {
+public void update() {
         // PULL fázis: Lekérjük az összes aktuális járművet a modelltől
         List<Jarmu> aktualisJarmuvek = modell.getJarmuvek();
 
-        // Végigmegyünk a logikai járműveken
         for (Jarmu j : aktualisJarmuvek) {
             // Ha felbukkan egy olyan jármű, aminek még nincs grafikus nézete
             if (!jarmuNezetekMap.containsKey(j)) {
                 System.out.println("JatekterPanel: Új jármű észlelve! Nézet generálása...");
                 JarmuView ujNezet = new JarmuView(j);
                 
-                // Ha a Jármű maga is Observable (specifikáció 11.2.2 alapján), 
-                // a nézet feliratkozhat közvetlenül rá is:
-                // j.addObserver(ujNezet); 
-
+                // KONKRÉT IMPLEMENTÁCIÓ: Hozzáadás a Map-hez ÉS a kirajzolandó listához is!
                 jarmuNezetekMap.put(j, ujNezet);
+                jarmuvekNezetei.add(ujNezet); 
             }
         }
-
-        // Törölhetnénk is innen a már nem létező járműveket, ha később megsemmisülnek
 
         // Frissítjük az összes létező járműnézetet (pozíciók újraszámolása)
         for (JarmuView jv : jarmuNezetekMap.values()) {
             jv.update();
         }
 
-        // A Swing motorjának jelezzük, hogy rajzoljon újra mindent az új adatokkal
+        // A Swing motorjának jelezzük, hogy rajzoljon újra mindent
         repaint();
     }
 

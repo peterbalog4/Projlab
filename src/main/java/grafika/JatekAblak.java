@@ -77,10 +77,39 @@ public class JatekAblak extends JFrame implements Observer {
         JatekterPanel jatekter = new JatekterPanel(modell); // Átadjuk a modellt
         modell.addObserver(jatekter); // FELIRATKOZÁS: A panel mostantól értesül az idő múlásáról és a spawnolásról!
         this.getContentPane().add(jatekter, BorderLayout.CENTER);
-        
-        //map betöltése
+
+        // 1. FONTOS: Előbb be kell tölteni a pályát, hogy legyenek utak a modellben!
+        // (Ha ez a két sor lejjebb volt, hozd át ide a jatekter hozzáadása utánra)
         Map_generator map = new Map_generator(modell);
         map.load("src/main/java/vezerles/test_map.txt", jatekter);
+
+        // 2. Itt lekérjük az utakat a modellből, ezzel megszűnik az "utak cannot be resolved" hiba
+        java.util.List<funkcionalisElemek.Ut> utak = modell.getUtak();
+
+        // 3. A feltételt is átírjuk az utakra, mert a globális savok lista üres
+        if (!utak.isEmpty() && !utak.get(0).getSavok().isEmpty()) {
+            // 1. Létrehozzuk a Hókotrót (tulajdonos ID: 0, és megkapja a telephelyet)
+            jarmuvek.Hokotro kezdoHokotro = new jarmuvek.Hokotro("hokotro_1", 0, telephelyModell);
+            
+            // 2. Létrehozzuk a Söprőfejet
+            kotrofejek.SoproFej kezdoFej = new kotrofejek.SoproFej();
+            
+            // Hogy az üzleti logika (Telephely.useFej) ne dobjon hibát, 
+            // előbb regisztráljuk a raktárba, majd felszereljük.
+            telephelyModell.tarol(kezdoFej);
+            kezdoHokotro.fejcsere(kezdoFej);
+            
+            // 3. Rárakjuk a pályára (az utak listából vett legelső sávra)
+            funkcionalisElemek.Sav induloSav = utak.get(0).getSavok().get(0);
+            if (induloSav.elfogad(kezdoHokotro)) {
+                modell.addJarmu(kezdoHokotro);
+                
+                // Értesítjük a JatekterPanel-t, hogy rajzolja ki!
+                modell.notifyObservers(); 
+            }
+        }
+        
+
 
         // 5. Vezérlő panel alulra
         JPanel vezerloPanel = new JPanel();

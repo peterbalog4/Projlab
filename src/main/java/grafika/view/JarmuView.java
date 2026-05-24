@@ -58,15 +58,22 @@ public class JarmuView implements Observer {
     /**
      * Az értesítés hatására aktiválódik, és lekérdezi a megjelenítéshez szükséges friss adatokat[cite: 560].
      */
-    @Override
+@Override
     public void update() {
-        // A belső modell csak a pálya logikai felépítését ismeri, képernyő-koordinátákat nem tartalmaz.
-        // Itt kell a lekérdezett Sav referenciát konkrét X és Y képernyő-koordinátákra leképezni.
+        // 1. Lekérjük a modellből a jármű aktuális sávját
+        funkcionalisElemek.Sav aktualisPozicio = modell.getAktualisSav();
         
-        // PULL fázis példa:
-        // Sav aktualisPozicio = modell.getPozicio();
-        // xKalkulalt = KoordinataKalkulator.szamolX(aktualisPozicio);
-        // yKalkulalt = KoordinataKalkulator.szamolY(aktualisPozicio);
+        if (aktualisPozicio != null) {
+            // Mivel az MVC elv szerint a logikai modell nem tartalmaz pixelkoordinátát, 
+            // a JarmuView-nak kell azt kiszámolnia vagy lekérnie.
+            // (Ha van KoordinataKalkulator osztályotok, azt használd, egyébként ideiglenesen 
+            // a teszteléshez egy statikus leképezést adunk, hogy látszódjon a képernyőn):
+            
+            // TODO: Itt kell lekérdezni a SavView-tól a pontos X és Y koordinátát. 
+            // Példa egy egyszerű fallback logikára a teszteléshez:
+            this.xKalkulalt = 150; // Helyettesítsd: aktualisPozicio.getX() szerű hívással, ha elkészül
+            this.yKalkulalt = 200; // Helyettesítsd: aktualisPozicio.getY() szerű hívással, ha elkészül
+        }
     }
 
     /**
