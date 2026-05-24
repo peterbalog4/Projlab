@@ -99,6 +99,29 @@ public class KorSzamlalo extends AbstractObservable {
     }
 
     /**
+     * Visszaadja a járművek listáját.
+     *
+     * @return A járművek listája.
+     */
+    public List<Jarmu> getJarmuvek() {
+        return jarmuvek;
+    }
+
+    /**
+     * Visszaadja a szimulációban lévő sávok listáját.
+     */
+    public List<Sav> getSavok() {
+        return savok;
+    }
+
+    /**
+     * Visszaadja a szimulációban lévő utak listáját.
+     */
+    public List<Ut> getUtak() {
+        return utak;
+    }
+
+    /**
      * Végrehajtja a kör léptetését.
      *
      * A következő sorrendben hajtja végre a műveleteket:

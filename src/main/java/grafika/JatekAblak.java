@@ -74,7 +74,8 @@ public class JatekAblak extends JFrame implements Observer {
 
 
         // 4. Játéktér panel középre (Ez lesz a központi vászon)
-        JatekterPanel jatekter = new JatekterPanel();
+        JatekterPanel jatekter = new JatekterPanel(modell); // Átadjuk a modellt
+        modell.addObserver(jatekter); // FELIRATKOZÁS: A panel mostantól értesül az idő múlásáról és a spawnolásról!
         this.getContentPane().add(jatekter, BorderLayout.CENTER);
         
         //map betöltése
@@ -83,6 +84,35 @@ public class JatekAblak extends JFrame implements Observer {
 
         // 5. Vezérlő panel alulra
         JPanel vezerloPanel = new JPanel();
+        JButton ujAutoGomb = new JButton("🚗 Új Autó Lerakása");
+        ujAutoGomb.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Lekérjük a modellből a rendelkezésre álló sávokat és utakat
+                java.util.List<Sav> savok = modell.getSavok();
+                java.util.List<Ut> utak = modell.getUtak();
+                
+                if (savok.size() > 0 && utak.size() > 0) {
+                    // Kiválasztjuk az legelső sávot induló helynek, és az utolsót célnak
+                    Sav induloSav = savok.get(0);
+                    Ut induloUt = induloSav.getUt();
+                    Ut celUt = utak.get(utak.size() - 1);
+                    
+                    // Létrehozzuk a logikai autót (egyedi azonosítóval, hogy ne ütközzenek a nevek)
+                    jarmuvek.Auto ujAuto = new jarmuvek.Auto("auto_" + System.currentTimeMillis(), induloUt, celUt);
+                    
+                    // Megpróbáljuk rátuszkolni a sávra
+                    if (induloSav.elfogad(ujAuto)) {
+                        modell.addJarmu(ujAuto); // Bejegyezzük a központi modellbe
+                        
+                        // PUSH: Szólunk a grafikus felületnek, hogy "Hé, változás történt!"
+                        modell.notifyObservers(); 
+                    } else {
+                        JOptionPane.showMessageDialog(JatekAblak.this, "A kezdő sáv tele van, nem sikerült lerakni az autót!");
+                    }
+                }
+            }
+        });
         JButton kovetkezoKorGomb = new JButton("Következő Kör");
         kovetkezoKorGomb.addActionListener(new ActionListener() {
             @Override
@@ -91,6 +121,7 @@ public class JatekAblak extends JFrame implements Observer {
                 modell.leptet();
             }
         });
+        vezerloPanel.add(ujAutoGomb);
         vezerloPanel.add(kovetkezoKorGomb);
         this.getContentPane().add(vezerloPanel, BorderLayout.SOUTH);
 

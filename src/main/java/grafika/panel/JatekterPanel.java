@@ -1,26 +1,37 @@
 package grafika.panel;
 
+import grafika.Observer;
 import grafika.view.JarmuView;
 import grafika.view.UtView;
+import jarmuvek.Jarmu;
 
 import javax.swing.*;
+
+import funkcionalisElemek.KorSzamlalo;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A fő játékablak központi része, a pálya vizualizációja.
  * Itt jelennek meg az Utak és a rajtuk mozgó járművek.
  */
-public class JatekterPanel extends JPanel {
+public class JatekterPanel extends JPanel implements Observer {
 
     // A kirajzolandó grafikus nézetek listái
     private List<UtView> utakNezetei;
     private List<JarmuView> jarmuvekNezetei;
+    private KorSzamlalo modell;
+    private Map<Jarmu, JarmuView> jarmuNezetekMap;
 
-    public JatekterPanel() {
+    public JatekterPanel(KorSzamlalo modell) {
+        this.modell = modell;
         this.utakNezetei = new ArrayList<>();
         this.jarmuvekNezetei = new ArrayList<>();
+        this.jarmuNezetekMap = new HashMap<>();
 
         // Háttérszín beállítása (pl. téli, havas tájhoz egy halvány szürke/kék)
         setBackground(new Color(240, 248, 255));
@@ -32,8 +43,39 @@ public class JatekterPanel extends JPanel {
         utakNezetei.add(uv);
     }
 
-    public void addJarmuView(JarmuView jv) {
-        jarmuvekNezetei.add(jv);
+    /**
+     * Ezt hívja meg a KorSzamlalo a notifyObservers() révén minden körben,
+     * illetve ha állapotváltozás történik.
+     */
+    @Override
+    public void update() {
+        // PULL fázis: Lekérjük az összes aktuális járművet a modelltől
+        List<Jarmu> aktualisJarmuvek = modell.getJarmuvek();
+
+        // Végigmegyünk a logikai járműveken
+        for (Jarmu j : aktualisJarmuvek) {
+            // Ha felbukkan egy olyan jármű, aminek még nincs grafikus nézete
+            if (!jarmuNezetekMap.containsKey(j)) {
+                System.out.println("JatekterPanel: Új jármű észlelve! Nézet generálása...");
+                JarmuView ujNezet = new JarmuView(j);
+                
+                // Ha a Jármű maga is Observable (specifikáció 11.2.2 alapján), 
+                // a nézet feliratkozhat közvetlenül rá is:
+                // j.addObserver(ujNezet); 
+
+                jarmuNezetekMap.put(j, ujNezet);
+            }
+        }
+
+        // Törölhetnénk is innen a már nem létező járműveket, ha később megsemmisülnek
+
+        // Frissítjük az összes létező járműnézetet (pozíciók újraszámolása)
+        for (JarmuView jv : jarmuNezetekMap.values()) {
+            jv.update();
+        }
+
+        // A Swing motorjának jelezzük, hogy rajzoljon újra mindent az új adatokkal
+        repaint();
     }
 
     /**
