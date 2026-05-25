@@ -105,7 +105,7 @@ public class JatekAblak extends JFrame implements Observer {
                 kezdoHokotro.fejcsere(kezdoFej);
                 if (hokotroSav.elfogad(kezdoHokotro)) modell.addJarmu(kezdoHokotro);
 
-                TelephelyView telephelyHud = new TelephelyView(telephelyModell);
+                TelephelyView telephelyHud = new TelephelyView(telephelyModell, kezdoHokotro);
                 telephelyModell.addObserver(telephelyHud);
                 jobbPanel.add(telephelyHud, "HOKOTRO");
 
@@ -131,7 +131,7 @@ public class JatekAblak extends JFrame implements Observer {
                 kezdoHokotro.fejcsere(kezdoFej);
                 if (induloSav.elfogad(kezdoHokotro)) modell.addJarmu(kezdoHokotro);
 
-                TelephelyView telephelyHud = new TelephelyView(telephelyModell);
+                TelephelyView telephelyHud = new TelephelyView(telephelyModell, kezdoHokotro);
                 telephelyModell.addObserver(telephelyHud);
                 jobbPanel.add(telephelyHud, "HUD"); // Itt nem kell CardLayout, elég csak hozzáadni
 

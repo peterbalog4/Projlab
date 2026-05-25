@@ -23,6 +23,7 @@ public class TelephelyView extends JPanel implements Observer {
 
     // Referencia a telephely logikai modelljére a pull alapú adatlekéréshez
     private Telephely modell;
+    private jarmuvek.Hokotro hokotro;
 
     // Swing UI elemek a statikus információk megjelenítéséhez
     private JLabel jmfLabel;
@@ -32,13 +33,17 @@ public class TelephelyView extends JPanel implements Observer {
     private JLabel kotrofejekLabel;
     private JButton boltGomb;
 
+    private JComboBox<String> fejekCombo;
+    private JButton equipGomb;
+
     /**
      * Konstruktor, amely inicializálja a panelt és a UI elemeket.
      * 
      * @param modell A megfigyelendő Telephely modell.
      */
-    public TelephelyView(Telephely modell) {
+    public TelephelyView(Telephely modell, jarmuvek.Hokotro hokotro) {
         this.modell = modell;
+        this.hokotro = hokotro;
 
         // A panel elrendezésének és stílusának beállítása
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -56,7 +61,7 @@ public class TelephelyView extends JPanel implements Observer {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     Window parentWindow = SwingUtilities.getWindowAncestor(TelephelyView.this);
-                    new TelephelyDialog(parentWindow, modell).setVisible(true);
+                    new TelephelyDialog(parentWindow, modell, hokotro).setVisible(true); // ITT!
                 }
             });
             add(ikonLabel);
@@ -72,6 +77,14 @@ public class TelephelyView extends JPanel implements Observer {
 
         boltGomb = new JButton("Bolt megnyitása");
 
+        fejekCombo = new JComboBox<>();
+        fejekCombo.setMaximumSize(new Dimension(200, 30)); // Ne nyúljon túl nagyra
+        fejekCombo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        equipGomb = new JButton("Felszerel");
+        equipGomb.setAlignmentX(Component.CENTER_ALIGNMENT);
+        equipGomb.addActionListener(e -> felszerel());
+
         // Elemek hozzáadása a panelhez
         add(new JLabel("ERŐFORRÁSOK ÉS KÉSZLETEK:"));
         add(Box.createRigidArea(new Dimension(0, 10))); // Térköz
@@ -81,6 +94,15 @@ public class TelephelyView extends JPanel implements Observer {
         add(zuzalekLabel);
         add(Box.createRigidArea(new Dimension(0, 20)));
         add(kotrofejekLabel);
+        add(Box.createRigidArea(new Dimension(0, 20)));
+        add(boltGomb);
+
+        add(kotrofejekLabel);
+        add(Box.createRigidArea(new Dimension(0, 5)));
+        add(fejekCombo);       // Lenyíló lista
+        add(Box.createRigidArea(new Dimension(0, 5)));
+        add(equipGomb);        // Felszerel gomb
+        
         add(Box.createRigidArea(new Dimension(0, 20)));
         add(boltGomb);
 
@@ -100,8 +122,36 @@ public class TelephelyView extends JPanel implements Observer {
     }
 
     /**
-     * Betölti és arányosan átméretezi a telephely ikonját ({@code Telephely.PNG}) egy
-     * {@link JLabel}-be, amit a HUD tetejére teszünk. Hiba esetén {@code null}-t ad vissza,
+     * Végrehajtja a Hókotrón a fejcserét a lenyíló listában kiválasztott elem alapján.
+     */
+    private void felszerel() {
+        String valasztott = (String) fejekCombo.getSelectedItem();
+        if (valasztott == null || hokotro == null) return;
+
+        // Kikeressük az objektumot a raktárból
+        KotroFej kivalasztottFej = null;
+        for (KotroFej f : modell.getKotrofejek()) {
+            if (f.getClass().getSimpleName().equals(valasztott)) {
+                kivalasztottFej = f;
+                break;
+            }
+        }
+
+        if (kivalasztottFej != null) {
+            hokotro.fejcsere(kivalasztottFej); // Fejcsere a Hókotrón
+            update(); // UI frissítése, hogy a kiválasztott fej eltűnjön a listából
+            
+            JOptionPane.showMessageDialog(this, 
+                "Sikeresen felszerelted a járműre: " + valasztott, 
+                "Sikeres fejcsere", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    /**
+     * Betölti és arányosan átméretezi a telephely ikonját ({@code Telephely.PNG})
+     * egy
+     * {@link JLabel}-be, amit a HUD tetejére teszünk. Hiba esetén {@code null}-t ad
+     * vissza,
      * ekkor a panel egyszerűen kép nélkül jelenik meg.
      */
     private JLabel keszitIkonLabel() {
@@ -133,8 +183,7 @@ public class TelephelyView extends JPanel implements Observer {
         int frissBiokerozin = modell.getBiokerozin();
         int frissSo = modell.getSo();
         int frissZuzalek = modell.getZuzalek();
-        // List<Kotrofej> frissFejek = modell.getKotrofejek();
-
+        
         // UI elemek szövegének frissítése
         jmfLabel.setText("JMF Egyenleg: " + frissJmf);
         biokerozinLabel.setText("Biokerozin: " + frissBiokerozin + " liter");
@@ -142,21 +191,44 @@ public class TelephelyView extends JPanel implements Observer {
         zuzalekLabel.setText("Zúzalék: " + frissZuzalek + " kg");
 
         List<KotroFej> frissFejek = modell.getKotrofejek();
+        
+        // 1. A SZÖVEGES LISTA (Label) frissítése
         StringBuilder fejekSzoveg = new StringBuilder("<html><b>Elérhető kotrófejek:</b><br>");
         if (frissFejek == null || frissFejek.isEmpty()) {
             fejekSzoveg.append("<i>- Nincs raktáron</i>");
         } else {
             for (KotroFej fej : frissFejek) {
-                // A getClass().getSimpleName() kiveszi az osztály nevét (pl. "SoproFej")
                 fejekSzoveg.append("- ").append(fej.getClass().getSimpleName()).append("<br>");
             }
         }
         fejekSzoveg.append("</html>");
         kotrofejekLabel.setText(fejekSzoveg.toString());
+
+        // 2. A LENYÍLÓ LISTA (JComboBox) és FELSZEREL GOMB frissítése
+        String jelenlegi = (String) fejekCombo.getSelectedItem(); // Megjegyezzük a mostani választást
+        fejekCombo.removeAllItems(); // Kiürítjük a régit
+        
+        if (frissFejek != null && !frissFejek.isEmpty()) {
+            // Feltöltjük az új adatokkal
+            for (KotroFej fej : frissFejek) {
+                fejekCombo.addItem(fej.getClass().getSimpleName());
+            }
+            fejekCombo.setEnabled(true);
+            equipGomb.setEnabled(true); // Van raktáron fej, bekapcsoljuk a gombot
+            
+            // Ha a korábban kiválasztott fej még mindig megvan, visszarakjuk rá a fókuszt
+            if (jelenlegi != null) {
+                fejekCombo.setSelectedItem(jelenlegi);
+            }
+        } else {
+            // Ha nincs fej a raktárban, letiltjuk a gombot és a listát
+            fejekCombo.setEnabled(false);
+            equipGomb.setEnabled(false);
+        }
+
         // Újrarajzolás kérése a Swing keretrendszertől
         repaint();
     }
-
     /**
      * Kirajzolja a telephelyhez tartozó UI elemeket.
      * Mivel a HUD Swing komponenseket (JLabel, JButton) használ,

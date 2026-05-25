@@ -2,6 +2,8 @@ package grafika.view;
 
 import funkcionalisElemek.Telephely;
 import grafika.Observer;
+import jarmuvek.Hokotro;
+import jarmuvek.Jarmu;
 import kotrofejek.KotroFej;
 
 import javax.swing.*;
@@ -19,15 +21,18 @@ import java.util.List;
 public class TelephelyDialog extends JDialog implements Observer {
 
     private final Telephely modell;
+    private final Hokotro hokotro;
     private final JLabel jmfLabel = new JLabel();
     private final JLabel biokerozinLabel = new JLabel();
     private final JLabel soLabel = new JLabel();
     private final JLabel zuzalekLabel = new JLabel();
     private final JLabel fejekLabel = new JLabel();
+    private final JComboBox<String> fejekCombo = new JComboBox<>();
 
-    public TelephelyDialog(Window parent, Telephely modell) {
+    public TelephelyDialog(Window parent, Telephely modell, Hokotro hokotro) {
         super(parent, "TELEPHELY", ModalityType.APPLICATION_MODAL);
         this.modell = modell;
+        this.hokotro = hokotro;
 
         initUI();
         modell.addObserver(this);
@@ -71,6 +76,42 @@ public class TelephelyDialog extends JDialog implements Observer {
         del.add(boltGomb);
         del.add(bezarGomb);
         add(del, BorderLayout.SOUTH);
+
+        // --- ÚJ RÉSZ: FELSZERELÉS PANEL ---
+        JPanel equipPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        equipPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        JButton equipGomb = new JButton("Felszerel");
+        
+        equipGomb.addActionListener(e -> felszerel());
+
+        equipPanel.add(new JLabel("Kiválasztott fej: "));
+        equipPanel.add(fejekCombo);
+        equipPanel.add(equipGomb);
+        
+        kozep.add(equipPanel);
+    }
+
+    private void felszerel() {
+        String valasztott = (String) fejekCombo.getSelectedItem();
+        if (valasztott == null) return;
+
+        // Megkeressük a tényleges objektumot a raktárban a neve alapján
+        KotroFej kivalasztottFej = null;
+        for (KotroFej f : modell.getKotrofejek()) {
+            if (f.getClass().getSimpleName().equals(valasztott)) {
+                kivalasztottFej = f;
+                break;
+            }
+        }
+
+        if (kivalasztottFej != null) {
+            // A fejcsere() leveszi a Hókotróról a régit (beteszi a telephelyre), az újat pedig rárakja
+            hokotro.fejcsere(kivalasztottFej); 
+            update(); // UI frissítése, hogy eltűnjön a lenyíló listából
+            JOptionPane.showMessageDialog(this, 
+                "Sikeresen felszerelted a járműre: " + valasztott, 
+                "Sikeres művelet", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     /** PULL: friss adatok lekérése a telephelytől. */
@@ -92,6 +133,18 @@ public class TelephelyDialog extends JDialog implements Observer {
         }
         sb.append("</html>");
         fejekLabel.setText(sb.toString());
+
+        String jelenlegi = (String) fejekCombo.getSelectedItem();
+        
+        fejekCombo.removeAllItems();
+        for (KotroFej f : modell.getKotrofejek()) {
+            fejekCombo.addItem(f.getClass().getSimpleName());
+        }
+        
+        if (jelenlegi != null) {
+            fejekCombo.setSelectedItem(jelenlegi);
+        }
+        
         repaint();
     }
 }
