@@ -55,6 +55,8 @@ public class JatekAblak extends JFrame implements Observer {
     public void jatekInditas(String jatekMod, Telephely telephelyModell) {
         System.out.println("--> JatekAblak: jatekInditas() elindult, régi panel eltávolítása...");
 
+        modell.reset();
+
         this.getContentPane().removeAll();
 
         // 2. Felső sáv a Körszámlálónak
