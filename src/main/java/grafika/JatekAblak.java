@@ -173,6 +173,15 @@ public class JatekAblak extends JFrame implements Observer {
 
         // Gombnyomás logikája
         leptoGomb.addActionListener(e -> {
+            
+            // --- ÚJ RÉSZ: JÁTÉK VÉGE ELLENŐRZÉS ---
+            // Ha már elértük az 50. kört (MAX_KOR), akkor vége a játéknak!
+            if (modell.getKor() >= KorSzamlalo.MAX_KOR) {
+                jatekVege();
+                return; // Kilépünk, nem engedjük tovább a szimulációt
+            }
+            // --------------------------------------
+
             if ("MULTIPLAYER".equals(jatekMod)) {
                 if ("HOKOTRO".equals(jatekter.getAktivJatekos())) {
                     jatekter.setAktivJatekos("BUSZ");
@@ -185,6 +194,7 @@ public class JatekAblak extends JFrame implements Observer {
                     leptoGomb.setText("Következő játékos (Busz)!");
                 }
             } else {
+                // Sima egyjátékos (Hókotró vagy Busz) mód
                 modell.leptet();
             }
         });
