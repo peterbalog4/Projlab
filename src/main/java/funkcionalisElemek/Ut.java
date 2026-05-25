@@ -26,6 +26,8 @@ public class Ut extends AbstractObservable {
     private Map<Ut, String> vegA_kapcsolatok = new HashMap<>();
     private Map<Ut, String> vegB_kapcsolatok = new HashMap<>();
     private final int hossz;
+    /** A szakasz fajtája (normál / híd / alagút). A hídon és alagútban nincs ütközés. */
+    private SzakaszTipus tipus = SzakaszTipus.NORMAL;
 
 
     /**
@@ -156,6 +158,28 @@ public class Ut extends AbstractObservable {
      */
     public int getHossz(){
         return hossz;
+    }
+
+    /**
+     * Beállítja a szakasz fajtáját, és ennek megfelelően az összes sávján be-/kikapcsolja
+     * az ütközésvizsgálatot. Híd és alagút esetén a járművek egymás felett/alatt haladnak el,
+     * ezért nem ütköznek.
+     *
+     * @param tipus Az új {@link SzakaszTipus} (NORMAL / HID / ALAGUT).
+     */
+    public void setTipus(SzakaszTipus tipus) {
+        this.tipus = tipus;
+        boolean utkozesmentes = (tipus == SzakaszTipus.HID || tipus == SzakaszTipus.ALAGUT);
+        for (Sav s : savok) {
+            s.setUtkozesmentes(utkozesmentes);
+        }
+    }
+
+    /**
+     * @return A szakasz fajtája (alapból {@link SzakaszTipus#NORMAL}).
+     */
+    public SzakaszTipus getTipus() {
+        return tipus;
     }
 
     /**

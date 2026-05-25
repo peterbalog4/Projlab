@@ -27,6 +27,13 @@ public class Sav extends AbstractObservable {
     private HaladasiIrany haladasiIrany;
     protected String id;
     private int hossz;
+    /**
+     * Ha igaz, a sávon nincs ütközés (híd/alagút szakasz): a járművek egymás
+     * felett/alatt haladnak el. Ilyenkor a {@link #jarmuMozgott(Jarmu)} kihagyja
+     * az ütközésvizsgálatot. Alapból {@code false}, így a normál sávok viselkedése
+     * változatlan marad.
+     */
+    private boolean utkozesmentes = false;
 
     /**
      * Konstruktor a sáv létrehozásához.
@@ -195,9 +202,11 @@ public class Sav extends AbstractObservable {
      * @param mozgottJarmu A jármű, amelyik éppen helyzetet változtatott a sávon belül.
      */
     public void jarmuMozgott(Jarmu mozgottJarmu) {
+        // Híd/alagút: a járművek egymás felett/alatt mennek el, így nem ütköznek.
+        if (utkozesmentes) return;
         for (Jarmu masik : jarmuvek) {
             if (masik != mozgottJarmu) {
-                mozgottJarmu.utkozesVizsgalat(masik); 
+                mozgottJarmu.utkozesVizsgalat(masik);
             }
         }
     }
@@ -396,5 +405,22 @@ public class Sav extends AbstractObservable {
     public boolean isJeg() {
         return jeg;
     }
-    
+
+    /**
+     * Beállítja, hogy a sáv ütközésmentes-e (híd/alagút). Az {@link Ut#setTipus} hívja
+     * az összes sávjára, amikor a szakaszt híddá/alagúttá jelöljük.
+     *
+     * @param utkozesmentes {@code true}, ha a sávon nem szabad ütközést vizsgálni.
+     */
+    public void setUtkozesmentes(boolean utkozesmentes) {
+        this.utkozesmentes = utkozesmentes;
+    }
+
+    /**
+     * @return {@code true}, ha a sáv híd/alagút része, ezért ütközésmentes.
+     */
+    public boolean isUtkozesmentes() {
+        return utkozesmentes;
+    }
+
 }

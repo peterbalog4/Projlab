@@ -2,6 +2,7 @@ package vezerles;
 
 import funkcionalisElemek.KorSzamlalo;
 import funkcionalisElemek.Sav;
+import funkcionalisElemek.SzakaszTipus;
 import funkcionalisElemek.Telephely;
 import funkcionalisElemek.Ut;
 import grafika.panel.JatekterPanel;
@@ -27,13 +28,17 @@ import java.util.Scanner;
  *      Csomópontot (kereszteződés / végpont) definiál pixelkoordinátákkal.
  *      Példa:  node n0 50 50
  *
- *  road <id> <savokA> <savokB> <nodeA_id> <nodeB_id>
+ *  road <id> <savokA> <savokB> <nodeA_id> <nodeB_id> [tipus]
  *      Utat hoz létre a két csomópont között.
  *      A hossz és az irány (FEL/LE/JOBBRA/BALRA) automatikusan számítódik:
  *        – Ha nodeA.x == nodeB.x → függőleges út (FEL vagy LE)
  *        – Ha nodeA.y == nodeB.y → vízszintes út (JOBBRA vagy BALRA)
  *        – Egyéb esetben hiba (átlós utak nem támogatottak).
+ *      Az opcionális <tipus> mező híddá vagy alagúttá teszi a szakaszt
+ *      (hid|alagut), amelyen nincs ütközés – a járművek egymás felett/alatt
+ *      haladnak el. Megadása nélkül a szakasz normál.
  *      Példa:  road r0 2 2 n0 n1
+ *      Példa:  road r1 1 1 n1 n2 hid
  *
  *  depot <id> <node_id> <jmf>
  *      Telephelyet hoz létre a megadott csomópontnál.
@@ -120,7 +125,7 @@ public class Map_generator {
 
     // ── Betöltés ───────────────────────────────────────────────────────────
 
-    public void load(String filename, JatekterPanel jatekter) {
+    public void load(String filename, JatekterPanel jatekter, Telephely aktivTelephely) {
         try (Scanner scanner = new Scanner(new File(filename))) {
             int lineNumber = 0;
 
@@ -182,6 +187,16 @@ public class Map_generator {
                                 korszamlalo.addSav(s);
                             }
 
+                            // Opcionális 7. mező: szakasz-típus (hid / alagut). Ha jelen van,
+                            // a szakasz ütközésmentes lesz (a járművek egymás felett/alatt mennek el).
+                            if (p.length >= 7) {
+                                SzakaszTipus tipus = parseSzakaszTipus(p[6], lineNumber);
+                                if (tipus != null && tipus != SzakaszTipus.NORMAL) {
+                                    u.setTipus(tipus);
+                                    System.out.printf("[Map]   ↳ %s = %s (ütközésmentes)%n", utId, tipus);
+                                }
+                            }
+
                             // Feljegyezzük, melyik csomópontból milyen irányba indul az út,
                             // hogy a betöltés végén legenerálhassuk a kanyar-csempéket.
                             int savokOsszesen = savokA + savokB;
@@ -212,9 +227,12 @@ public class Map_generator {
                             Node n = requireNode(nodeId, lineNumber);
                             if (n == null) break;
 
-                            // Telephely ID-ból számot próbálunk kinyerni, fallback 0
-                            int numId = extractNumber(telepId);
-                            Telephely t = new Telephely(numId);
+                            // A pálya telephelyét a játékos AKTÍV telephelyéhez kötjük, hogy a
+                            // depó induló JMF-je a játékoshoz kerüljön. Ha nincs átadva aktív
+                            // telephely (pl. teszt), külön példányt hozunk létre.
+                            Telephely t = (aktivTelephely != null)
+                                    ? aktivTelephely
+                                    : new Telephely(extractNumber(telepId));
                             t.JMFmodosit(jmf);
                             telephelyek.put(telepId, t);
                             System.out.printf("[Map] Telephely: %s  node=%s  JMF=%d%n",
@@ -371,6 +389,26 @@ private RoadGeometry computeGeometry(Node a, Node b, int lineNumber) {
             System.err.printf("[Map] %d. sor: ismeretlen csomópont: '%s'%n", line, id);
         }
         return n;
+    }
+
+    /**
+     * Egy szakasz-típus kulcsszót {@link SzakaszTipus}-ra fordít.
+     * Elfogad ékezetes és angol alakot is: {@code hid|híd|bridge} → HID,
+     * {@code alagut|alagút|tunnel} → ALAGUT. Ismeretlen érték esetén hibát ír és {@code null}-t ad.
+     */
+    private static SzakaszTipus parseSzakaszTipus(String s, int line) {
+        switch (s.toLowerCase()) {
+            case "hid": case "híd": case "bridge":
+                return SzakaszTipus.HID;
+            case "alagut": case "alagút": case "tunnel":
+                return SzakaszTipus.ALAGUT;
+            case "normal": case "normál":
+                return SzakaszTipus.NORMAL;
+            default:
+                System.err.printf("[Map] %d. sor: ismeretlen szakasz-típus '%s' "
+                        + "(várt: hid / alagut)%n", line, s);
+                return null;
+        }
     }
 
     /** Számot nyer ki egy string végéről (pl. "d0" → 0, "depot3" → 3). */

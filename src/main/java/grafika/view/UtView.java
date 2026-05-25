@@ -1,11 +1,16 @@
 package grafika.view;
  
 import funkcionalisElemek.Ut;
+import funkcionalisElemek.SzakaszTipus;
 import grafika.Observer;
 import segedOsztalyok.Irany;
 import funkcionalisElemek.Sav;
- 
+
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.util.ArrayList;
 import java.util.List;
  
@@ -94,11 +99,125 @@ public class UtView implements Observer {
  
     /**
      * Az út grafikus elemeinek kirajzolását hajtja végre.
+     * A sávok kirajzolása után, ha a szakasz híd vagy alagút, ráfesti a megkülönböztető
+     * jelölést (korlátok / alagútszáj) a teljes útszakaszra.
      */
     public void draw(Graphics g) {
         for (SavView sv : savNezetek) {
             sv.draw(g);
         }
+
+        SzakaszTipus tipus = modell.getTipus();
+        if (tipus == SzakaszTipus.HID) {
+            rajzolHid(g);
+        } else if (tipus == SzakaszTipus.ALAGUT) {
+            rajzolAlagut(g);
+        }
+    }
+
+    /** A teljes útszakasz képernyő-téglalapja {x, y, szélesség, magasság}. */
+    private int[] szakaszTeglalap() {
+        boolean fuggoleges = (utIrany == Irany.FEL || utIrany == Irany.LE);
+        int hossz = modell.getHossz();
+        int szel  = getTeljesszelesseg();
+        int rw = fuggoleges ? szel : hossz;
+        int rh = fuggoleges ? hossz : szel;
+        return new int[]{ startX, startY, rw, rh };
+    }
+
+    /**
+     * Híd: enyhén világosabb pályaszint, a két hosszanti külső élen vastag korlát
+     * (kívül vékony árnyékkal), és szabályos haránt dilatációs vonalak – együtt egy
+     * felülnézeti hídpályát adnak ki.
+     */
+    private void rajzolHid(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        int[] r = szakaszTeglalap();
+        int rx = r[0], ry = r[1], rw = r[2], rh = r[3];
+        boolean fuggoleges = (utIrany == Irany.FEL || utIrany == Irany.LE);
+
+        // Pályaszint enyhe kiemelése
+        g2.setColor(new Color(150, 152, 158, 55));
+        g2.fillRect(rx, ry, rw, rh);
+
+        final Color KORLAT       = new Color(228, 228, 224);
+        final Color KORLAT_ARNY  = new Color(35, 40, 45, 130);
+        final Color DILATACIO    = new Color(30, 34, 38, 110);
+
+        if (fuggoleges) {
+            int xL = rx + 3, xR = rx + rw - 3;
+            // dilatációs (haránt) vonalak
+            g2.setStroke(new BasicStroke(2f));
+            g2.setColor(DILATACIO);
+            for (int y = ry + 16; y < ry + rh - 8; y += 26) {
+                g2.drawLine(rx + 4, y, rx + rw - 4, y);
+            }
+            // korlát-árnyék kívül, majd a korlát
+            g2.setStroke(new BasicStroke(5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2.setColor(KORLAT_ARNY);
+            g2.drawLine(xL - 2, ry, xL - 2, ry + rh);
+            g2.drawLine(xR + 2, ry, xR + 2, ry + rh);
+            g2.setColor(KORLAT);
+            g2.drawLine(xL, ry, xL, ry + rh);
+            g2.drawLine(xR, ry, xR, ry + rh);
+        } else {
+            int yT = ry + 3, yB = ry + rh - 3;
+            g2.setStroke(new BasicStroke(2f));
+            g2.setColor(DILATACIO);
+            for (int x = rx + 16; x < rx + rw - 8; x += 26) {
+                g2.drawLine(x, ry + 4, x, ry + rh - 4);
+            }
+            g2.setStroke(new BasicStroke(5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2.setColor(KORLAT_ARNY);
+            g2.drawLine(rx, yT - 2, rx + rw, yT - 2);
+            g2.drawLine(rx, yB + 2, rx + rw, yB + 2);
+            g2.setColor(KORLAT);
+            g2.drawLine(rx, yT, rx + rw, yT);
+            g2.drawLine(rx, yB, rx + rw, yB);
+        }
+        g2.dispose();
+    }
+
+    /**
+     * Alagút: a szakaszt sötét, féláttetsző réteg fedi (a járművek "alá" mennek), a két
+     * végén pedig világos betonszáj (alagútportál) sötét belső peremmel jelzi a be-/kijáratot.
+     */
+    private void rajzolAlagut(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        int[] r = szakaszTeglalap();
+        int rx = r[0], ry = r[1], rw = r[2], rh = r[3];
+        boolean fuggoleges = (utIrany == Irany.FEL || utIrany == Irany.LE);
+
+        // Sötét fedés a teljes szakaszon
+        g2.setColor(new Color(12, 15, 20, 135));
+        g2.fillRect(rx, ry, rw, rh);
+
+        final Color PORTAL     = new Color(205, 200, 190); // beton
+        final Color PORTAL_BEL = new Color(0, 0, 0, 170);  // belső sötét perem
+        final int t = 9;   // portálfal vastagsága
+        final int b = 4;   // belső árnyékperem vastagsága
+
+        if (fuggoleges) {
+            // A rövid végek fent (ry) és lent (ry+rh); a száj a szélességet (rw) éri át.
+            g2.setColor(PORTAL);
+            g2.fillRect(rx, ry, rw, t);
+            g2.fillRect(rx, ry + rh - t, rw, t);
+            g2.setColor(PORTAL_BEL);
+            g2.fillRect(rx, ry + t, rw, b);
+            g2.fillRect(rx, ry + rh - t - b, rw, b);
+        } else {
+            g2.setColor(PORTAL);
+            g2.fillRect(rx, ry, t, rh);
+            g2.fillRect(rx + rw - t, ry, t, rh);
+            g2.setColor(PORTAL_BEL);
+            g2.fillRect(rx + t, ry, b, rh);
+            g2.fillRect(rx + rw - t - b, ry, b, rh);
+        }
+        g2.dispose();
     }
  
     // --- Getterek (pl. JatekterPanel számára) ---

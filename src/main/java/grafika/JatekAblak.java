@@ -81,7 +81,9 @@ public class JatekAblak extends JFrame implements Observer {
         // 1. FONTOS: Előbb be kell tölteni a pályát, hogy legyenek utak a modellben!
         // (Ha ez a két sor lejjebb volt, hozd át ide a jatekter hozzáadása utánra)
         Map_generator map = new Map_generator(modell);
-        map.load("src/main/java/vezerles/nagy_palya.txt", jatekter);
+        // A pálya depójának induló JMF-jét a játékos aktív telephelyéhez kötjük,
+        // és a depó kattintható ikonját is ekkor helyezzük a játéktérre.
+        map.load("src/main/java/vezerles/nagy_palya.txt", jatekter, telephelyModell);
 
         // 2. Itt lekérjük az utakat a modellből, ezzel megszűnik az "utak cannot be resolved" hiba
         java.util.List<funkcionalisElemek.Ut> utak = modell.getUtak();

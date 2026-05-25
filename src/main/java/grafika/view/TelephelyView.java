@@ -4,11 +4,16 @@ import funkcionalisElemek.Telephely;
 import grafika.Observer;
 import kotrofejek.KotroFej;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.List;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * A játékost segítő telephely adatainak (JMF egyenleg, készletek, kotrófejek)
@@ -39,6 +44,24 @@ public class TelephelyView extends JPanel implements Observer {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createTitledBorder("TELEPHELY"));
         setPreferredSize(new Dimension(250, 0)); // Fix szélesség az oldalsó sávnak
+
+        // Telephely fejléc-kép – a jobb oldali HUD-on jelenik meg (nem a térképen).
+        // Kattintásra megnyitja a telephely részletező ablakát.
+        JLabel ikonLabel = keszitIkonLabel();
+        if (ikonLabel != null) {
+            ikonLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            ikonLabel.setToolTipText("Kattints a telephely részleteihez");
+            ikonLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            ikonLabel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    Window parentWindow = SwingUtilities.getWindowAncestor(TelephelyView.this);
+                    new TelephelyDialog(parentWindow, modell).setVisible(true);
+                }
+            });
+            add(ikonLabel);
+            add(Box.createRigidArea(new Dimension(0, 12)));
+        }
 
         // UI elemek inicializálása
         jmfLabel = new JLabel("JMF Egyenleg: 0");
@@ -73,6 +96,29 @@ public class TelephelyView extends JPanel implements Observer {
                 boltAblak.setVisible(true);
             }
         });
+    }
+
+    /**
+     * Betölti és arányosan átméretezi a telephely ikonját ({@code Telephely.PNG}) egy
+     * {@link JLabel}-be, amit a HUD tetejére teszünk. Hiba esetén {@code null}-t ad vissza,
+     * ekkor a panel egyszerűen kép nélkül jelenik meg.
+     */
+    private JLabel keszitIkonLabel() {
+        try {
+            Image kep = ImageIO.read(new File("Telephely.PNG"));
+            if (kep == null) {
+                System.out.println("TelephelyView: nincs kepolvaso a Telephely.PNG-hez");
+                return null;
+            }
+            int magassag = 120;
+            float arany = kep.getWidth(null) / (float) kep.getHeight(null);
+            int szelesseg = Math.round(magassag * arany);
+            Image atmeretezett = kep.getScaledInstance(szelesseg, magassag, Image.SCALE_SMOOTH);
+            return new JLabel(new ImageIcon(atmeretezett));
+        } catch (IOException ex) {
+            System.out.println("TelephelyView: nem sikerult betolteni a Telephely.PNG-t: " + ex.getMessage());
+            return null;
+        }
     }
 
     /**
