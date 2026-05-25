@@ -26,6 +26,7 @@ public class SavView implements Observer {
     private static final Image UT_IMG  = betoltKep("ut.PNG");
     private static final Image HO_IMG  = betoltKep("ho.PNG");
     private static final Image JEG_IMG = betoltKep("jeg.png");
+    private static final Image VEGALLOMAS_IMG = betoltKep("vegallomas.png");
 
     /** Egy textúrát tölt be a projekt gyökeréből; hiba esetén null-t ad vissza. */
     private static Image betoltKep(String nev) {
@@ -104,19 +105,37 @@ public class SavView implements Observer {
     }
 
     private void rajzolUtAlap(Graphics2D g2d, int w, int h, boolean fuggoleges) {
-        if (UT_IMG == null) {
-            g2d.setColor(Color.DARK_GRAY);
+        boolean vegallomasE = (modell.getUt() != null && modell.getUt().isVegallomas());
+        Image alapKep = vegallomasE ? VEGALLOMAS_IMG : UT_IMG;
+
+        if (alapKep == null) {
+            g2d.setColor(vegallomasE ? Color.MAGENTA : Color.DARK_GRAY);
             g2d.fillRect(xKord, yKord, w, h);
             return;
         }
-        if (!fuggoleges) {
-            g2d.drawImage(UT_IMG, xKord, yKord, w, h, null);
+
+        if (vegallomasE) {
+            // Végállomás: Forgatás nélkül, négyzet alakban (MERET x MERET) ismételjük
+            if (fuggoleges) {
+                for (int y = yKord; y < yKord + h; y += MERET) {
+                    g2d.drawImage(alapKep, xKord, y, MERET, MERET, null);
+                }
+            } else {
+                for (int x = xKord; x < xKord + w; x += MERET) {
+                    g2d.drawImage(alapKep, x, yKord, MERET, MERET, null);
+                }
+            }
         } else {
-            Graphics2D r = (Graphics2D) g2d.create();
-            r.translate(xKord, yKord);
-            r.rotate(Math.toRadians(90));
-            r.drawImage(UT_IMG, 0, -w, h, w, null);
-            r.dispose();
+            // Sima út: Eredeti nyújtós és forgatós logika
+            if (!fuggoleges) {
+                g2d.drawImage(alapKep, xKord, yKord, w, h, null);
+            } else {
+                Graphics2D r = (Graphics2D) g2d.create();
+                r.translate(xKord, yKord);
+                r.rotate(Math.toRadians(90));
+                r.drawImage(alapKep, 0, -w, h, w, null);
+                r.dispose();
+            }
         }
     }
 

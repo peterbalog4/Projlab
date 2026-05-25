@@ -26,6 +26,7 @@ public class Ut extends AbstractObservable {
     private Map<Ut, String> vegA_kapcsolatok = new HashMap<>();
     private Map<Ut, String> vegB_kapcsolatok = new HashMap<>();
     private final int hossz;
+    private boolean vegallomas = false;
     /** A szakasz fajtája (normál / híd / alagút). A hídon és alagútban nincs ütközés. */
     private SzakaszTipus tipus = SzakaszTipus.NORMAL;
     /** Véletlenszám-generátor a sávonkénti (1/10 esélyű) hóeséshez. */
@@ -60,6 +61,14 @@ public class Ut extends AbstractObservable {
         }
     }
 
+
+    public boolean isVegallomas() {
+        return this.vegallomas;
+    }
+
+    public void setVegallomas(boolean vegallomas) {
+        this.vegallomas = vegallomas;
+    }
 
     /**
      * Létrehoz egy új sáv objektumot a megadott paraméterekkel.

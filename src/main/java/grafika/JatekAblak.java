@@ -52,74 +52,75 @@ public class JatekAblak extends JFrame implements Observer {
         this.add(fomenü, BorderLayout.CENTER);
     }
 
-    public void jatekInditas(String jatekMod, Telephely telephelyModell){
+    public void jatekInditas(String jatekMod, Telephely telephelyModell) {
         System.out.println("--> JatekAblak: jatekInditas() elindult, régi panel eltávolítása...");
 
-        // 1. Letakarítunk mindent a JFrame-ről! Ez a legbiztosabb módszer.
         this.getContentPane().removeAll();
-
-        // Új játék: a körszámlálót és a modell nyilvántartását nullázzuk, hogy a
-        // főmenüből indított új meccs 0. körről, tiszta pályával induljon.
-        modell.reset();
 
         // 2. Felső sáv a Körszámlálónak
         JPanel felsoSav = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        korLabel = new JLabel("KÖR: " + modell.getKor() + " / " + KorSzamlalo.MAX_KOR);
+        korLabel = new JLabel("KÖR: " + modell.getKor() + " / 50");
         korLabel.setFont(new Font("Arial", Font.BOLD, 16));
         felsoSav.add(korLabel);
         this.getContentPane().add(felsoSav, BorderLayout.NORTH);
 
-        // 3. Telephely HUD panel jobbra
-        TelephelyView telephelyHud = new TelephelyView(telephelyModell);
-        telephelyModell.addObserver(telephelyHud);
-        this.getContentPane().add(telephelyHud, BorderLayout.EAST);
+        // ÚJ: Létrehozunk egy üres konténert a jobb oldali HUD számára
+        JPanel jobbPanel = new JPanel(new BorderLayout());
+        this.getContentPane().add(jobbPanel, BorderLayout.EAST);
 
-        
-
-
-        // 4. Játéktér panel középre (Ez lesz a központi vászon)
-        JatekterPanel jatekter = new JatekterPanel(modell); // Átadjuk a modellt
-        modell.addObserver(jatekter); // FELIRATKOZÁS: A panel mostantól értesül az idő múlásáról és a spawnolásról!
+        // 4. Játéktér panel középre
+        JatekterPanel jatekter = new JatekterPanel(modell); 
+        modell.addObserver(jatekter);
         this.getContentPane().add(jatekter, BorderLayout.CENTER);
 
-        // 1. FONTOS: Előbb be kell tölteni a pályát, hogy legyenek utak a modellben!
-        // (Ha ez a két sor lejjebb volt, hozd át ide a jatekter hozzáadása utánra)
         Map_generator map = new Map_generator(modell);
-        // A pálya depójának induló JMF-jét a játékos aktív telephelyéhez kötjük,
-        // és a depó kattintható ikonját is ekkor helyezzük a játéktérre.
         map.load("src/main/java/vezerles/nagy_palya.txt", jatekter, telephelyModell);
 
-        // 2. Itt lekérjük az utakat a modellből, ezzel megszűnik az "utak cannot be resolved" hiba
         java.util.List<funkcionalisElemek.Ut> utak = modell.getUtak();
 
-        // 3. A feltételt is átírjuk az utakra, mert a globális savok lista üres
-if (!utak.isEmpty() && !utak.get(0).getSavok().isEmpty()) {
+        if (!utak.isEmpty() && !utak.get(0).getSavok().isEmpty()) {
             funkcionalisElemek.Sav induloSav = utak.get(0).getSavok().get(0);
 
             if ("HOKOTRO".equals(jatekMod)) {
                 jarmuvek.Hokotro kezdoHokotro = new jarmuvek.Hokotro("hokotro_1", 0, telephelyModell);
                 kotrofejek.SoproFej kezdoFej = new kotrofejek.SoproFej();
+                
                 telephelyModell.tarol(kezdoFej);
                 kezdoHokotro.fejcsere(kezdoFej);
                 
                 if (induloSav.elfogad(kezdoHokotro)) {
                     modell.addJarmu(kezdoHokotro);
                 }
+
+                // JAVÍTÁS: Csak hókotró esetén adjuk hozzá a TelephelyView-t
+                TelephelyView telephelyHud = new TelephelyView(telephelyModell);
+                telephelyModell.addObserver(telephelyHud);
+                jobbPanel.add(telephelyHud, BorderLayout.CENTER);
+
             } else if ("BUSZ".equals(jatekMod)) {
-                // Busz létrehozása és végállomások beállítása (pálya első és utolsó útja)
                 jarmuvek.Busz kezdoBusz = new jarmuvek.Busz("busz_1");
                 funkcionalisElemek.Ut vegallomas1 = utak.get(0);
                 funkcionalisElemek.Ut vegallomas2 = utak.get(utak.size() - 1);
+                
+                vegallomas1.setVegallomas(true);
+                vegallomas2.setVegallomas(true);
+                
                 kezdoBusz.setRoute(vegallomas1, vegallomas2);
                 
                 if (induloSav.elfogad(kezdoBusz)) {
                     modell.addJarmu(kezdoBusz);
                 }
+
+                // JAVÍTÁS: Busz esetén a BuszView-t adjuk hozzá, és feliratkoztatjuk a körszámlálóra
+                grafika.view.BuszView buszHud = new grafika.view.BuszView(kezdoBusz);
+                modell.addObserver(buszHud); 
+                jobbPanel.add(buszHud, BorderLayout.CENTER);
             }
             modell.notifyObservers(); 
         }
-        
 
+        // 5. Vezérlő panel alulra (innen minden marad a régiben)
+        // ...
 
         // 5. Vezérlő panel alulra
         JPanel vezerloPanel = new JPanel();
