@@ -28,6 +28,8 @@ public class Ut extends AbstractObservable {
     private final int hossz;
     /** A szakasz fajtája (normál / híd / alagút). A hídon és alagútban nincs ütközés. */
     private SzakaszTipus tipus = SzakaszTipus.NORMAL;
+    /** Véletlenszám-generátor a sávonkénti (1/10 esélyű) hóeséshez. */
+    private static final java.util.Random HO_RANDOM = new java.util.Random();
 
 
     /**
@@ -227,11 +229,16 @@ public class Ut extends AbstractObservable {
     }
 
     /**
-     * Végrehajtja a globális hóesést az úton.
-     * Minden sávján meghívja a hóréteg növelését végző függvényt. 
+     * Végrehajtja a hóesést az úton. A hó nem mindenhol és nem minden körben esik:
+     * minden sávra (csempére) külön-külön 1/10 az esélye, hogy ebben a körben hullik rá hó.
+     * Így a havazás véletlenszerűen, foltokban jelenik meg, nem egyszerre az egész pályán.
      */
     public void hoNovel(){
-        savok.forEach(sav -> sav.hoNovel(1));
+        for (Sav sav : savok) {
+            if (HO_RANDOM.nextInt(10) == 0) { // 1/10 esély csempénként
+                sav.hoNovel(1);
+            }
+        }
     }
 
     /**
