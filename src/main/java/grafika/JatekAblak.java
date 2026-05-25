@@ -123,7 +123,31 @@ public class JatekAblak extends JFrame implements Observer {
                 grafika.view.BuszView buszHud = new grafika.view.BuszView(kezdoBusz);
                 modell.addObserver(buszHud); 
                 jobbPanel.add(buszHud, "BUSZ");
-            } 
+            } else if ("HOKOTRO".equals(jatekMod)) {
+                // HÓKOTRÓ EGYJÁTÉKOS mód
+                jarmuvek.Hokotro kezdoHokotro = new jarmuvek.Hokotro("hokotro_1", 0, telephelyModell);
+                kotrofejek.SoproFej kezdoFej = new kotrofejek.SoproFej();
+                telephelyModell.tarol(kezdoFej);
+                kezdoHokotro.fejcsere(kezdoFej);
+                if (induloSav.elfogad(kezdoHokotro)) modell.addJarmu(kezdoHokotro);
+
+                TelephelyView telephelyHud = new TelephelyView(telephelyModell);
+                telephelyModell.addObserver(telephelyHud);
+                jobbPanel.add(telephelyHud, "HUD"); // Itt nem kell CardLayout, elég csak hozzáadni
+
+            } else if ("BUSZ".equals(jatekMod)) {
+                // BUSZ EGYJÁTÉKOS mód
+                jarmuvek.Busz kezdoBusz = new jarmuvek.Busz("busz_1");
+                funkcionalisElemek.Ut v1 = utak.get(0);
+                funkcionalisElemek.Ut v2 = utak.get(utak.size() - 1);
+                v1.setVegallomas(true); v2.setVegallomas(true);
+                kezdoBusz.setRoute(v1, v2);
+                if (induloSav.elfogad(kezdoBusz)) modell.addJarmu(kezdoBusz);
+
+                grafika.view.BuszView buszHud = new grafika.view.BuszView(kezdoBusz);
+                modell.addObserver(buszHud);
+                jobbPanel.add(buszHud, "HUD");
+            }
             
             modell.notifyObservers(); 
         }
