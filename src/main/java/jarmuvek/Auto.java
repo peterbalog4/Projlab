@@ -20,11 +20,11 @@ public class Auto extends Jarmu {
         this.utvonal = new LinkedList<>();
     }
 
+
     @Override
     public void elertSavVeget() {
         // 1. Ellenőrizzük, hogy elértük-e a célt (munkahely vagy épp az otthon)
         if (aktualisSav != null && aktualisSav.getUt().equals(munkahely)) {
-            // Megkeressük a jelenlegi út szembe sávját
             HaladasiIrany ellentetes = (aktualisSav.getIrany() == HaladasiIrany.A_BOL_B_BE) 
                     ? HaladasiIrany.B_BOL_A_BA 
                     : HaladasiIrany.A_BOL_B_BE;
@@ -32,26 +32,44 @@ public class Auto extends Jarmu {
             for (funkcionalisElemek.Sav s : aktualisSav.getUt().getSavok()) {
                 if (s.getIrany() == ellentetes) {
                     if (s.elfogad(this)) {
-                        // Siker esetén felcseréljük az úti célokat
                         Ut tmp = otthon;
                         otthon = munkahely;
                         munkahely = tmp;
-                        
-                        utvonal.clear(); // Töröljük a régi útvonalat
+                        utvonal.clear();
                         System.out.println("Auto " + id + " célhoz ért, megfordul és indul vissza!");
                         return; 
                     }
                 }
             }
-            // Ha a szembe sáv épp foglalt, várunk 1 kört
             megall(1);
             return;
         }
 
-        // 2. Normál haladás és útvonalkövetés
+        // 2. Dinamikus haladás és útvonalkövetés
         Ut kovetkezo = kovetkezoUt();
         if (kovetkezo != null) {
-            kanyarodik(kovetkezo);
+            // Előre ellenőrizzük, hogy a kinézett cél-sáv le lett-e zárva menet közben
+            String csatlakozas = aktualisSav.getUt().getKapcsolatok(aktualisSav.getIrany()).get(kovetkezo);
+            HaladasiIrany celIrany = csatlakozas.equals("vegA") ? HaladasiIrany.A_BOL_B_BE : HaladasiIrany.B_BOL_A_BA;
+            
+            boolean celLezarva = false;
+            for (funkcionalisElemek.Sav s : kovetkezo.getSavok()) {
+                if (s.getIrany() == celIrany && s.isLezarva()) {
+                    celLezarva = true; 
+                    break;
+                }
+            }
+
+            if (celLezarva) {
+                // Ha előttünk történt baleset, eldobjuk a régi tervet és egy kört várunk az újratervezéshez
+                System.out.println("Auto " + id + " balesetet észlelt maga előtt, újratervez!");
+                utvonal.clear();
+                megall(1);
+            } else {
+                // Ha tiszta az út, ténylegesen kivesszük az útvonalból (poll) és bekanyarodunk
+                utvonal.poll(); 
+                kanyarodik(kovetkezo);
+            }
         } else {
             megall(1);
         }
@@ -61,7 +79,7 @@ public class Auto extends Jarmu {
         if (utvonal.isEmpty()) {
             utvonal = dijkstra(aktualisSav.getUt(), munkahely);
         }
-        return utvonal.isEmpty() ? null : utvonal.poll();
+        return utvonal.isEmpty() ? null : utvonal.peek(); 
     }
 
     @Override
@@ -191,7 +209,16 @@ public class Auto extends Jarmu {
                     HaladasiIrany ujIrany = csatlakozasiPont.equals("vegA") 
                             ? HaladasiIrany.A_BOL_B_BE 
                             : HaladasiIrany.B_BOL_A_BA;
-                    
+
+                    boolean savLezarva = false;
+                    for (Sav s : szomszedUt.getSavok()) {
+                        if (s.getIrany() == ujIrany && s.isLezarva()) {
+                            savLezarva = true;
+                            break;
+                        }
+                    }
+                    if (savLezarva) continue;
+
                     AllapotG ujAllapot = new AllapotG(szomszedUt, ujIrany);
                     int ujTav = aktualisTav + 1;
 
