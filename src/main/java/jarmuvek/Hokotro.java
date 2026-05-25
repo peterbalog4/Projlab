@@ -106,6 +106,9 @@ public class Hokotro extends Jarmu {
 
         allapot = Allapot.KOZLEKEDIK;
         pozicio.halad(this, 300);
+        if (aktualisSav != null) {
+            aktualisSav.jarmuMozgott(this);
+        }
     }
 
     /**
@@ -134,7 +137,10 @@ public class Hokotro extends Jarmu {
      */
     @Override
     public void utkozik(Jarmu masikJarmu) {
-        // A hókotróra nem hat az ütközés, szándékosan üres.
+        // A hókotró maga nem áll meg és nem sérül, de a letarolt járművet összetöri!
+        if (masikJarmu != null && masikJarmu.getAllapot() != Allapot.OSSZECSUSZOTT) {
+            masikJarmu.utkozik(this);
+        }
     }
 
     /**
@@ -224,4 +230,6 @@ public class Hokotro extends Jarmu {
             kimenet.println("- Zuzalek: 0");
         }
     }
+
+    
 }

@@ -20,6 +20,10 @@ public class JarmuView implements Observer {
     private Jarmu modell; // Referencia a megfigyelt logikai modellre
     private Image sprite; // A járművet reprezentáló kép 
     
+    // ÚJ: Statikus változó az ütközés képének, hogy csak egyszer töltődjön be
+    private static Image utkozesSprite;
+    private static boolean utkozesBetoltve = false;
+    
     // Ideiglenes változók a kirajzolás helyének
     private int xKalkulalt = 100; 
     private int yKalkulalt = 100;
@@ -30,7 +34,7 @@ public class JarmuView implements Observer {
     }
 
     /**
-     * Betölti a megfelelő képet a modell típusa alapján.
+     * Betölti a megfelelő képet a modell típusa alapján, illetve az ütközés ikonját.
      */
     private void betoltSprite() {
         try {
@@ -44,7 +48,17 @@ public class JarmuView implements Observer {
                 sprite = ImageIO.read(new File("busz.png"));
             }
         } catch (IOException e) {
-            System.out.println("Hiba a kép betöltésekor: " + e.getMessage());
+            System.out.println("Hiba a jármű kép betöltésekor: " + e.getMessage());
+        }
+
+        // ÚJ: Ütközés képének betöltése (csak legelőször)
+        if (!utkozesBetoltve) {
+            try {
+                utkozesSprite = ImageIO.read(new File("utkozik.png"));
+            } catch (IOException e) {
+                System.out.println("Hiba az utkozik.png betöltésekor: " + e.getMessage());
+            }
+            utkozesBetoltve = true;
         }
     }
 
@@ -108,6 +122,11 @@ public class JarmuView implements Observer {
             // Hibakereséshez fallback vizualizáció, ha nem töltődött be a kép
             g.setColor(java.awt.Color.RED);
             g.fillRect(xKalkulalt, yKalkulalt, 50, 50);
+        }
+
+        // ÚJ: Ha a jármű állapota OSSZECSUSZOTT, rárajzoljuk az ütközés ikonját is
+        if (modell.getAllapot() == Jarmu.Allapot.OSSZECSUSZOTT && utkozesSprite != null) {
+            g.drawImage(utkozesSprite, xKalkulalt, yKalkulalt, null);
         }
     }
 }

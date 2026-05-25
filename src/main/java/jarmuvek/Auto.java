@@ -7,42 +7,12 @@ import segedOsztalyok.Irany;
 
 import java.util.*;
 
-/**
- * A személyautót reprezentáló osztály, amely a Jármű általános tulajdonságait
- * specifikus viselkedéssel egészíti ki.
- *
- * Az autó önállóan közlekedik az otthona és munkahelye között, a legrövidebb
- * utat Dijkstra-algoritmussal számítja ki. Képes jeges úton megcsúszni,
- * más járművel ütközni, valamint elakadás esetén szabad szomszédos sávba váltani.
- */
 public class Auto extends Jarmu {
 
-    /**
-     * Az autó kiindulópontjaként szolgáló út.
-     * Amikor eléri a munkahelyét, visszafordul ide.
-     */
     private Ut otthon;
-
-    /**
-     * Az autó célállomásaként szolgáló út.
-     * Amikor eléri, megfordul és otthon felé indul.
-     */
     private Ut munkahely;
-
-    /**
-     * Az aktuálisan követett útvonal útobjektumainak sorban rendezett listája.
-     * A Dijkstra-algoritmus eredménye; az autó minden kanyarodáskor
-     * a következő elemet veszi ki belőle.
-     */
     private LinkedList<Ut> utvonal;
 
-    /**
-     * Konstruktor az Auto osztályhoz.
-     *
-     * @param id        Az autó egyedi azonosítója, amelyet a naplózás során használunk.
-     * @param otthon    Az autó indulási útja.
-     * @param munkahely Az autó célútja.
-     */
     public Auto(String id, Ut otthon, Ut munkahely) {
         super(id);
         this.otthon = otthon;
@@ -50,22 +20,17 @@ public class Auto extends Jarmu {
         this.utvonal = new LinkedList<>();
     }
 
-    /**
-     * A sáv végének elérésekor a Pozicio hívja meg.
-     * Az autó kiszámolja a következő utat és kanyarodik.
-     */
-@Override
+    @Override
     public void elertSavVeget() {
         // 1. Ellenőrizzük, hogy elértük-e a célt (munkahely vagy épp az otthon)
         if (aktualisSav != null && aktualisSav.getUt().equals(munkahely)) {
             // Megkeressük a jelenlegi út szembe sávját
-            segedOsztalyok.HaladasiIrany ellentetes = (aktualisSav.getIrany() == segedOsztalyok.HaladasiIrany.A_BOL_B_BE) 
-                    ? segedOsztalyok.HaladasiIrany.B_BOL_A_BA 
-                    : segedOsztalyok.HaladasiIrany.A_BOL_B_BE;
+            HaladasiIrany ellentetes = (aktualisSav.getIrany() == HaladasiIrany.A_BOL_B_BE) 
+                    ? HaladasiIrany.B_BOL_A_BA 
+                    : HaladasiIrany.A_BOL_B_BE;
                     
             for (funkcionalisElemek.Sav s : aktualisSav.getUt().getSavok()) {
                 if (s.getIrany() == ellentetes) {
-                    // Megkísérelünk átsorolni a szembe sávba (U-turn)
                     if (s.elfogad(this)) {
                         // Siker esetén felcseréljük az úti célokat
                         Ut tmp = otthon;
@@ -73,12 +38,12 @@ public class Auto extends Jarmu {
                         munkahely = tmp;
                         
                         utvonal.clear(); // Töröljük a régi útvonalat
-                        System.out.println("Auto " + id + " célhoz ért, U-turn és indul vissza!");
-                        return; // Kilépünk, a mozgás a következő körben indul az új irányba
+                        System.out.println("Auto " + id + " célhoz ért, megfordul és indul vissza!");
+                        return; 
                     }
                 }
             }
-            // Ha a szembe sáv épp foglalt (áll benne valaki), várunk 1 kört
+            // Ha a szembe sáv épp foglalt, várunk 1 kört
             megall(1);
             return;
         }
@@ -88,20 +53,19 @@ public class Auto extends Jarmu {
         if (kovetkezo != null) {
             kanyarodik(kovetkezo);
         } else {
-            // Ha nincs érvényes út tovább, várakozik
             megall(1);
         }
     }
 
-     /*
-     * Ha a jármű vár (varakozasiIdo > 0), csökkenti a számlálót és nem mozdul.
-     * Ha elakadt (varakozasiIdo == -1), megpróbál szabad szomszédos sávba váltani.
-     * Egyébként előre mozdul a sávon; ha a sáv végére ér, kiszámolja a következő
-     * utat Dijkstrával és kanyarodik.
-     */
+    private Ut kovetkezoUt() {
+        if (utvonal.isEmpty()) {
+            utvonal = dijkstra(aktualisSav.getUt(), munkahely);
+        }
+        return utvonal.isEmpty() ? null : utvonal.poll();
+    }
+
     @Override
     public void kozlekedik() {
-
         if (varakozasiIdo > 0) {
             varakozasiIdo--;
             if (varakozasiIdo == 0) {
@@ -117,84 +81,46 @@ public class Auto extends Jarmu {
 
         if (aktualisSav == null || pozicio == null) return;
 
-
-       if (this.allapot != Allapot.CSUSZKAL) {
+        if (this.allapot != Allapot.CSUSZKAL) {
             this.allapot = Allapot.KOZLEKEDIK;
             pozicio.halad(this, 50);
-        }
-    }
-
-    /**
-     * Meghatározza a következő utat, amelyre az autónak kanyarodnia kell.
-     *
-     * Ha az útvonallista üres (vagy lejárt), újraszámítja Dijkstrával.
-     * Ha eléri a munkahelyét, felcseréli az otthont és a munkahelyet,
-     * majd újra tervez.
-     *
-     * @return A következő {@link Ut}, vagy {@code null}, ha nincs elérhető útvonal.
-     */
-    private Ut kovetkezoUt() {
-        if (utvonal.isEmpty()) {
-            Ut cel = munkahely;
-            if (aktualisSav.getUt().equals(cel)) {
-                Ut tmp = otthon;
-                otthon = munkahely;
-                munkahely = tmp;
-                cel = munkahely;
+            
+            // Ütközésvizsgálat a normál mozgás után
+            if (aktualisSav != null) {
+                aktualisSav.jarmuMozgott(this);
             }
-            utvonal = dijkstra(aktualisSav.getUt(), cel);
         }
-
-        return utvonal.isEmpty() ? null : utvonal.poll();
     }
 
-    /**
-     * Megkísérli a sávváltást, ha az autó elakadt.
-     * Először balra, majd jobbra próbál váltani. Ha sikerül, az állapot
-     * {@link Allapot#KOZLEKEDIK}-re vált.
-     */
     private void probaljSavotValtani() {
         Sav elotteSav = aktualisSav;
             
-            // 1. Ideiglenesen "kiszabadítjuk", hogy az új sáv hatásai érvényesüljenek
-            this.varakozasiIdo = 0;
-            this.allapot = Allapot.KOZLEKEDIK;
+        this.varakozasiIdo = 0;
+        this.allapot = Allapot.KOZLEKEDIK;
 
-            savvaltas(Irany.BALRA);
-            if (aktualisSav != elotteSav) return; // Sikerült, az új sáv beállította az állapotot!
+        savvaltas(Irany.BALRA);
+        if (aktualisSav != elotteSav) return;
 
-            savvaltas(Irany.JOBBRA);
-            if (aktualisSav != elotteSav) return; // Sikerült
+        savvaltas(Irany.JOBBRA);
+        if (aktualisSav != elotteSav) return;
 
-            // 2. Ha egyik irányba se sikerült váltani, újra elakad
-            this.varakozasiIdo = -1;
-            this.allapot = Allapot.ELAKADT;
+        this.varakozasiIdo = -1;
+        this.allapot = Allapot.ELAKADT;
     }
 
-    /**
-     * Megvalósítja az autó megcsúszását jeges útfelületen.
-     *
-     * A sáv által hívódik meg, ha a felszín jeges és nincs zúzalék.
-     * Az autó irányíthatatlanul 10 métert csúszik előre; ha ütközési
-     * partnert talál a sávon, ütközést kezdeményez.
-     */
-   @Override
+    @Override
     public void csuszik() {
         this.allapot = Allapot.CSUSZKAL;
         if (pozicio != null) {
-            pozicio.halad(this, 10); // ennyit????
+            pozicio.halad(this, 10);
+            
+            // Ütközésvizsgálat a csúszás után
+            if (aktualisSav != null) {
+                aktualisSav.jarmuMozgott(this);
+            }
         }
     }
 
-    /**
-     * Kezeli a más járművel való ütközés eseményét.
-     *
-     * Csak akkor vált ki hatást, ha az autó még nincs ütközési büntetés alatt
-     * (varakozasiIdo >= 0 és < 10). Ilyenkor mindkét jármű 10 körre megáll,
-     * és a sáv lezárásra kerül.
-     *
-     * @param masikJarmu Az a jármű, amellyel az autó összeütközött.
-     */
     @Override
     public void utkozik(Jarmu masikJarmu) {
         if (varakozasiIdo >= 0 && varakozasiIdo < 10) {
@@ -207,51 +133,83 @@ public class Auto extends Jarmu {
     }
 
     /**
-     * Dijkstra-algoritmussal kiszámítja a legrövidebb utat a forrás útról a cél útig.
-     *
-     * Az úthálózatot gráfként kezeli, ahol a csúcsok {@link Ut} objektumok,
-     * az élek súlya egységnyi (minden útváltás egy lépésnek számít).
-     * A szomszédokat az {@link Ut#getKapcsolatok(HaladasiIrany)} metóduson
-     * keresztül kérdezi le, figyelembe véve a haladási irányt.
-     *
-     * @param forras A kiindulási {@link Ut}.
-     * @param cel    A célként meghatározott {@link Ut}.
-     * @return Az útvonalat alkotó utak sorban rendezett listája (a forrás után kezdve),
-     *         vagy üres lista, ha nincs elérhető útvonal.
+     * Irányfüggő Dijkstra algoritmus a legrövidebb, fizikailag járható út megkeresésére.
      */
     private LinkedList<Ut> dijkstra(Ut forras, Ut cel) {
-        Map<Ut, Integer> tavolsag = new HashMap<>();
-        Map<Ut, Ut> elozo = new HashMap<>();
-        PriorityQueue<Ut> sor = new PriorityQueue<>(Comparator.comparingInt(tavolsag::get));
+        
+        // Belső osztály a gráf csomópontjainak (út + haladási irány) reprezentálására
+        class AllapotG {
+            Ut ut;
+            HaladasiIrany irany;
+            AllapotG(Ut ut, HaladasiIrany irany) {
+                this.ut = ut;
+                this.irany = irany;
+            }
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (!(o instanceof AllapotG)) return false;
+                AllapotG that = (AllapotG) o;
+                return ut.equals(that.ut) && irany == that.irany;
+            }
+            @Override
+            public int hashCode() {
+                return java.util.Objects.hash(ut, irany);
+            }
+        }
 
-        tavolsag.put(forras, 0);
-        sor.add(forras);
+        Map<AllapotG, Integer> tavolsag = new HashMap<>();
+        Map<AllapotG, AllapotG> elozo = new HashMap<>();
+        PriorityQueue<AllapotG> sor = new PriorityQueue<>(Comparator.comparingInt(tavolsag::get));
+
+        // A start állapot
+        AllapotG start = new AllapotG(forras, aktualisSav.getIrany());
+        tavolsag.put(start, 0);
+        sor.add(start);
+
+        AllapotG celAllapot = null;
 
         while (!sor.isEmpty()) {
-            Ut aktualis = sor.poll();
+            AllapotG aktualis = sor.poll();
 
-            if (aktualis.equals(cel)) break;
+            // Ha megtaláltuk a célutat, befejezzük a keresést
+            if (aktualis.ut.equals(cel)) {
+                celAllapot = aktualis;
+                break; 
+            }
 
             int aktualisTav = tavolsag.get(aktualis);
+            // Csak az adott irányból elérhető kapcsolatokat kérjük le!
+            Map<Ut, String> szomszedok = aktualis.ut.getKapcsolatok(aktualis.irany);
 
-            for (HaladasiIrany irany : HaladasiIrany.values()) {
-                Map<Ut, String> szomszedok = aktualis.getKapcsolatok(irany);
-                for (Ut szomszed : szomszedok.keySet()) {
+            if (szomszedok != null) {
+                for (Map.Entry<Ut, String> bejegyzes : szomszedok.entrySet()) {
+                    Ut szomszedUt = bejegyzes.getKey();
+                    String csatlakozasiPont = bejegyzes.getValue();
+                    
+                    // Meghatározzuk, hogy az új úton melyik sávon fogunk haladni
+                    HaladasiIrany ujIrany = csatlakozasiPont.equals("vegA") 
+                            ? HaladasiIrany.A_BOL_B_BE 
+                            : HaladasiIrany.B_BOL_A_BA;
+                    
+                    AllapotG ujAllapot = new AllapotG(szomszedUt, ujIrany);
                     int ujTav = aktualisTav + 1;
-                    if (ujTav < tavolsag.getOrDefault(szomszed, Integer.MAX_VALUE)) {
-                        tavolsag.put(szomszed, ujTav);
-                        elozo.put(szomszed, aktualis);
-                        sor.remove(szomszed);
-                        sor.add(szomszed);
+
+                    if (ujTav < tavolsag.getOrDefault(ujAllapot, Integer.MAX_VALUE)) {
+                        tavolsag.put(ujAllapot, ujTav);
+                        elozo.put(ujAllapot, aktualis);
+                        sor.remove(ujAllapot);
+                        sor.add(ujAllapot);
                     }
                 }
             }
         }
 
+        // Visszafejtjük a legrövidebb utat
         LinkedList<Ut> utvonal = new LinkedList<>();
-        Ut lepes = cel;
-        while (elozo.containsKey(lepes)) {
-            utvonal.addFirst(lepes);
+        AllapotG lepes = celAllapot;
+        while (lepes != null && elozo.containsKey(lepes)) {
+            utvonal.addFirst(lepes.ut);
             lepes = elozo.get(lepes);
         }
 

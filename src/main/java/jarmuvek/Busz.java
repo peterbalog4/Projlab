@@ -132,24 +132,33 @@ public class Busz extends Jarmu {
      * fordulót teljesít. Ha van megadott következő út, arra kanyarodik,
      * egyébként vár a játékos utasítására.
      */
-    @Override
+@Override
     public void kozlekedik() {
+        // 1. Várakozás kezelése (Ha büntetésben van, itt ragad)
         if (varakozasiIdo > 0) {
             varakozasiIdo--;
-            return;
-        }
-        if (varakozasiIdo == 0) {
-                allapot = Allapot.KOZLEKEDIK;
-                      pozicio.halad(this, 300);
-                      return;
+            if (varakozasiIdo == 0) {
+                allapot = Allapot.KOZLEKEDIK; // Ha most járt le, azonnal jelezzük az állapotot
+            }
+            return; // Várakozás alatt nincs fizikai mozgás
         }
 
+        // 2. Biztonsági ellenőrzések a mozgás előtt
         if (aktualisSav == null || pozicio == null) return;
 
-        if (allapot == Allapot.ELAKADT) { //TODO ezt átgondolni
+        // 3. Ha határozatlan ideig elakadt a hóban (varakozasiIdo == -1), nem mozog
+        if (allapot == Allapot.ELAKADT) {
             return; 
         }
-  
+
+        // 4. Normál haladás és ütközésvizsgálat
+        allapot = Allapot.KOZLEKEDIK;
+        pozicio.halad(this, 50); // Normál sebességű lépés
+        
+        // 5. Szólunk a sávnak, hogy mozogtunk, ellenőrizze nekimentünk-e valakinek
+        if (aktualisSav != null) {
+            aktualisSav.jarmuMozgott(this);
+        }
     }
 
     /**

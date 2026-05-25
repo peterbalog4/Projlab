@@ -116,6 +116,13 @@ public class UtView implements Observer {
             sv.draw(g);
         }
 
+        SzakaszTipus tipus = modell.getTipus();
+        if (tipus == SzakaszTipus.HID) {
+            rajzolHid(g);
+        } else if (tipus == SzakaszTipus.ALAGUT) {
+            rajzolAlagut(g);
+        }
+
         if (modell.isAktivCel()) {
             java.awt.Graphics2D g2 = (java.awt.Graphics2D) g;
             java.awt.Stroke regiStroke = g2.getStroke();

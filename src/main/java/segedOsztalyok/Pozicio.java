@@ -6,26 +6,27 @@ import jarmuvek.Jarmu;
 public class Pozicio {
     private Sav sav;
     private int megtettTavolsag;
+    private int elozoTavolsag; // ÚJ: Nyilvántartja honnan indultunk az adott körben
     private int savHossz; 
 
     public Pozicio(Sav sav, int savHossz) {
         this.sav = sav;
         this.savHossz = savHossz;
         this.megtettTavolsag = 0;
+        this.elozoTavolsag = 0;
     }
 
     public void halad(Jarmu jarmu, int sebesseg) {
-        // Ha már korábban elérte a végét, de még vár a parancsra (nem kanyarodott el):
         if (this.megtettTavolsag >= this.savHossz) {
             jarmu.elertSavVeget();
             return;
         }
         
+        this.elozoTavolsag = this.megtettTavolsag; // JAVÍTÁS: Eltároljuk a kiindulási pontot
         this.megtettTavolsag += sebesseg;
         
-        // Ha éppen most érte el a sáv végét:
         if (this.megtettTavolsag >= this.savHossz) {
-            this.megtettTavolsag = this.savHossz; // Rögzítjük a maximumot, nem engedjük túlfutni!
+            this.megtettTavolsag = this.savHossz;
             jarmu.elertSavVeget(); 
         }
     }
@@ -33,12 +34,20 @@ public class Pozicio {
     public void ujSavraLep(Sav ujSav, int ujSavHossz) {
         this.sav = ujSav;
         this.savHossz = ujSavHossz;
-        this.megtettTavolsag = 0; // Új sávon nulláról indulunk
+        this.megtettTavolsag = 0; 
+        this.elozoTavolsag = 0; 
     }
     
     public boolean utkozikE(Pozicio masikPozicio) {
-        // Egyszerű távolságalapú ütközésvizsgálat (pl. 5 méteren belül vannak)
-        return this.megtettTavolsag == masikPozicio.megtettTavolsag;
+        int masikTav = masikPozicio.getMegtettTavolsag();
+        
+        // 1. Átugrás vizsgálata: a másik jármű az előző és a mostani helyünk közé esik
+        boolean atugrottuk = (this.elozoTavolsag <= masikTav && this.megtettTavolsag >= masikTav);
+        
+        // 2. Közelség vizsgálata: megálltunk-e 40 méteren belül
+        boolean kozelVan = Math.abs(this.megtettTavolsag - masikTav) < 40;
+        
+        return atugrottuk || kozelVan;
     }
 
     public int getMegtettTavolsag() {
