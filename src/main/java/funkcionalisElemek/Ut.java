@@ -31,6 +31,15 @@ public class Ut extends AbstractObservable {
     private SzakaszTipus tipus = SzakaszTipus.NORMAL;
     /** Véletlenszám-generátor a sávonkénti (1/10 esélyű) hóeséshez. */
     private static final java.util.Random HO_RANDOM = new java.util.Random();
+    private boolean aktivCel = false;
+
+    public boolean isAktivCel() {
+        return this.aktivCel;
+    }
+
+    public void setAktivCel(boolean aktivCel) {
+        this.aktivCel = aktivCel;
+    }
 
 
     /**

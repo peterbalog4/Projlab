@@ -48,7 +48,7 @@ public class Busz extends Jarmu {
         super(id);
     }
 
-    /**
+/**
      * Beállítja a busz két végállomását és az első célt.
      * A {@code set_route} parancs hatására hívódik meg.
      *
@@ -58,7 +58,16 @@ public class Busz extends Jarmu {
     public void setRoute(Ut vegallomas1, Ut vegallomas2) {
         this.vegallomas1 = vegallomas1;
         this.vegallomas2 = vegallomas2;
-        this.aktualisCel = vegallomas2;
+        
+        // Vizuális reset a biztonság kedvéért (leveszi a sárga keretet, ha volt)
+        if (this.vegallomas1 != null) this.vegallomas1.setAktivCel(false);
+        if (this.vegallomas2 != null) this.vegallomas2.setAktivCel(false);
+        
+        // Induláskor a vegallomas2 a cél
+        this.aktualisCel = this.vegallomas2;
+        if (this.aktualisCel != null) {
+            this.aktualisCel.setAktivCel(true); // Bekapcsolja a sárga keretet a célon
+        }
     }
 
     /**
@@ -93,11 +102,17 @@ public class Busz extends Jarmu {
      * A sáv végének elérésekor a Pozicio hívja meg.
      * A busz ellenőrzi, hogy végállomáson van-e, majd kanyarodik vagy vár.
      */
+    /**
+     * A sáv végének elérésekor a Pozicio hívja meg.
+     * A busz ellenőrzi, hogy végállomáson van-e, majd kanyarodik vagy vár.
+     */
     @Override
     public void elertSavVeget() {
         if (aktualisSav != null) {
             Ut jelenlegi = aktualisSav.getUt();
-            if (jelenlegi.equals(aktualisCel) || (forduloSzam == 0 && (jelenlegi.equals(vegallomas1) || jelenlegi.equals(vegallomas2)))) {
+            
+            // CSAK akkor kap pontot (és vált célt), ha a konkrét AKTÍV célt érte el!
+            if (jelenlegi.equals(aktualisCel)) {
                 forduloNovel();
             }
         }
@@ -166,20 +181,33 @@ public class Busz extends Jarmu {
         }
     }
 
-    /**
+/**
      * Növeli a teljesített fordulók számát eggyel, és megfordítja az aktuális célt.
      *
      * Ha az aktuális cél {@code vegallomas1} volt, az új cél {@code vegallomas2} lesz,
-     * és fordítva. Ezt a metódust a {@link #kozlekedik} hívja meg, amikor a busz
-     * eléri az aktuális végállomást.
+     * és fordítva. Ezt a metódust az elertSavVeget() hívja meg.
      */
     public void forduloNovel() {
         forduloSzam++;
+        
+        // 1. Régi cél sárga keretének levétele
+        if (aktualisCel != null) {
+            aktualisCel.setAktivCel(false);
+        }
+        
+        // 2. Célpont átváltása a másik végállomásra
         if (aktualisCel == vegallomas1) {
             aktualisCel = vegallomas2;
         } else {
             aktualisCel = vegallomas1;
         }
+        
+        // 3. Új cél sárgára festése
+        if (aktualisCel != null) {
+            aktualisCel.setAktivCel(true);
+        }
+        
+        System.out.println("Busz elérte a célt! Új cél: " + aktualisCel.id + " | Fordulók: " + forduloSzam);
     }
 
     /**

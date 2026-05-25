@@ -116,6 +116,23 @@ public class UtView implements Observer {
             sv.draw(g);
         }
 
+        if (modell.isAktivCel()) {
+            java.awt.Graphics2D g2 = (java.awt.Graphics2D) g;
+            java.awt.Stroke regiStroke = g2.getStroke();
+            g2.setStroke(new java.awt.BasicStroke(8f)); // Jó vastag legyen
+            g2.setColor(new java.awt.Color(255, 200, 0, 220)); // Feltűnő sárga szín
+
+            int utHossz = modell.getHossz();
+            int utSzelesseg = getTeljesszelesseg();
+
+            if (utIrany == Irany.FEL || utIrany == Irany.LE) {
+                g2.drawRect(startX, startY, utSzelesseg, utHossz);
+            } else {
+                g2.drawRect(startX, startY, utHossz, utSzelesseg);
+            }
+            g2.setStroke(regiStroke); 
+        }
+
         // 2. Kijelölő keret kirajzolása (ha van)
         if (kijeloles != 0) {
             java.awt.Graphics2D g2 = (java.awt.Graphics2D) g;

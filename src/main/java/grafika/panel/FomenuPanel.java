@@ -27,27 +27,33 @@ public class FomenuPanel extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // 1. Cím felirat a specifikáció ASCII art-ja alapján
-        JLabel cimLabel = new JLabel("HÓKOTRÓS JÁTÉK", SwingConstants.CENTER); //
+        JLabel cimLabel = new JLabel("HÓKOTRÓS JÁTÉK", SwingConstants.CENTER);
         cimLabel.setFont(new Font("Arial", Font.BOLD, 28));
         gbc.gridy = 0;
         add(cimLabel, gbc);
 
         // 2. "Új Játék Hókotróval" gomb
-        JButton ujJatekHokotrovalBtn = new JButton("Új Játék Hókotróval"); //
+        JButton ujJatekHokotrovalBtn = new JButton("Új Játék Hókotróval");
         ujJatekHokotrovalBtn.setFont(new Font("Arial", Font.PLAIN, 16));
         gbc.gridy = 1;
         add(ujJatekHokotrovalBtn, gbc);
 
         // 3. "Új Játék Busszal" gomb
-        JButton ujJatekBusszalBtn = new JButton("Új Játék Busszal"); //
+        JButton ujJatekBusszalBtn = new JButton("Új Játék Busszal");
         ujJatekBusszalBtn.setFont(new Font("Arial", Font.PLAIN, 16));
         gbc.gridy = 2;
         add(ujJatekBusszalBtn, gbc);
 
-        // 4. "Kilépés" gomb
-        JButton kilepesBtn = new JButton("Kilépés"); //
-        kilepesBtn.setFont(new Font("Arial", Font.PLAIN, 16));
+        // ÚJ: 4. "Többjátékos (Hókotró vs Busz)" gomb
+        JButton tobbjatekosBtn = new JButton("Többjátékos (Hókotró vs Busz)");
+        tobbjatekosBtn.setFont(new Font("Arial", Font.BOLD, 16));
         gbc.gridy = 3;
+        add(tobbjatekosBtn, gbc);
+
+        // 5. "Kilépés" gomb (lejjebb csúszott a gridy = 4-re)
+        JButton kilepesBtn = new JButton("Kilépés");
+        kilepesBtn.setFont(new Font("Arial", Font.PLAIN, 16));
+        gbc.gridy = 4;
         add(kilepesBtn, gbc);
 
         // --- ESEMÉNYKEZELŐK (A vezérlés váza) ---
@@ -55,8 +61,6 @@ public class FomenuPanel extends JPanel {
         ujJatekHokotrovalBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO: Pályaválasztás feldolgozása (pl. JFileChooser segítségével a test_map.txt-hez)
-                // utána a játék indítása hókotró módban
                 inditUjJatek("HOKOTRO");
             }
         });
@@ -64,9 +68,15 @@ public class FomenuPanel extends JPanel {
         ujJatekBusszalBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO: Pályaválasztás feldolgozása
-                // utána a játék indítása busz módban
                 inditUjJatek("BUSZ");
+            }
+        });
+
+        // ÚJ: Többjátékos gomb eseménykezelője
+        tobbjatekosBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                inditUjJatek("MULTIPLAYER");
             }
         });
 
@@ -92,7 +102,10 @@ public class FomenuPanel extends JPanel {
             if (szuloAblak instanceof JatekAblak) {
                 System.out.println("--> Szülő ablak megtalálva (JatekAblak). Panelváltás indítása...");
                 JatekAblak foablak = (JatekAblak) szuloAblak;
+                
+                // JAVÍTÁS: Átadjuk a jatekMod paramétert is a főablaknak!
                 foablak.jatekInditas(jatekMod, ujTelephelyModell);
+                
             } else {
                 System.out.println("HIBA: A szuloAblak nem JatekAblak típusú, hanem: " + szuloAblak.getClass().getName());
             }

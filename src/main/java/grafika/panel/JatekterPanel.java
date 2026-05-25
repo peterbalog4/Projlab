@@ -34,8 +34,23 @@ public class JatekterPanel extends JPanel implements Observer {
     private List<JarmuView> jarmuvekNezetei;
     private KorSzamlalo modell;
     private Map<Jarmu, JarmuView> jarmuNezetekMap;
+    private String aktivJatekos = "HOKOTRO";
 
-public JatekterPanel(KorSzamlalo modell) {
+
+    public void setAktivJatekos(String aktivJatekos) {
+        this.aktivJatekos = aktivJatekos;
+        // Töröljük a kijelöléseket a kör átadásakor
+        for (grafika.view.UtView uv : utakNezetei) {
+            uv.setKijeloles(0);
+        }
+        repaint();
+    }
+
+    public String getAktivJatekos() {
+        return aktivJatekos;
+    }
+
+    public JatekterPanel(KorSzamlalo modell) {
         this.modell = modell;
         this.utakNezetei = new ArrayList<>();
         this.kanyarNezetei = new ArrayList<>();
@@ -54,10 +69,13 @@ public JatekterPanel(KorSzamlalo modell) {
                 int mouseX = e.getX();
                 int mouseY = e.getY();
                 
-                // 1. Megkeressük a játékos járművét (Hókotró vagy Busz)
+                // 1. Megkeressük az aktuális játékos járművét
                 jarmuvek.Jarmu jatekosJarmu = null;
                 for (jarmuvek.Jarmu j : modell.getJarmuvek()) {
-                    if (j instanceof jarmuvek.Hokotro || j instanceof jarmuvek.Busz) {
+                    if ("HOKOTRO".equals(aktivJatekos) && j instanceof jarmuvek.Hokotro) {
+                        jatekosJarmu = j;
+                        break;
+                    } else if ("BUSZ".equals(aktivJatekos) && j instanceof jarmuvek.Busz) {
                         jatekosJarmu = j;
                         break;
                     }
