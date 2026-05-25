@@ -35,8 +35,25 @@ public class JatekterPanel extends JPanel implements Observer {
     private KorSzamlalo modell;
     private Map<Jarmu, JarmuView> jarmuNezetekMap;
     private String aktivJatekos = "HOKOTRO";
+    private jarmuvek.Hokotro aktivHokotro = null;
 
-
+    public void kovetkezoHokotro() {
+        java.util.List<jarmuvek.Hokotro> list = new java.util.ArrayList<>();
+        for (jarmuvek.Jarmu j : modell.getJarmuvek()) {
+            if (j instanceof jarmuvek.Hokotro) {
+                list.add((jarmuvek.Hokotro) j);
+            }
+        }
+        if (list.isEmpty()) return;
+        
+        if (aktivHokotro == null || !list.contains(aktivHokotro)) {
+            aktivHokotro = list.get(0);
+        } else {
+            int idx = list.indexOf(aktivHokotro);
+            aktivHokotro = list.get((idx + 1) % list.size());
+        }
+    }
+    
     public void setAktivJatekos(String aktivJatekos) {
         this.aktivJatekos = aktivJatekos;
         // Töröljük a kijelöléseket a kör átadásakor
@@ -69,15 +86,21 @@ public class JatekterPanel extends JPanel implements Observer {
                 int mouseX = e.getX();
                 int mouseY = e.getY();
                 
-                // 1. Megkeressük az aktuális játékos járművét
+            // 1. Megkeressük az aktuális játékos járművét
                 jarmuvek.Jarmu jatekosJarmu = null;
-                for (jarmuvek.Jarmu j : modell.getJarmuvek()) {
-                    if ("HOKOTRO".equals(aktivJatekos) && j instanceof jarmuvek.Hokotro) {
-                        jatekosJarmu = j;
-                        break;
-                    } else if ("BUSZ".equals(aktivJatekos) && j instanceof jarmuvek.Busz) {
-                        jatekosJarmu = j;
-                        break;
+                
+                if ("HOKOTRO".equals(aktivJatekos)) {
+                    // JAVÍTVA: Ha még nincs kiválasztva gép, vagy a meglévő már nincs a pályán
+                    if (aktivHokotro == null || !modell.getJarmuvek().contains(aktivHokotro)) {
+                        kovetkezoHokotro(); 
+                    }
+                    jatekosJarmu = aktivHokotro; // Itt a kiválasztott gépet adjuk át!
+                } else if ("BUSZ".equals(aktivJatekos)) {
+                    for (jarmuvek.Jarmu j : modell.getJarmuvek()) {
+                        if (j instanceof jarmuvek.Busz) {
+                            jatekosJarmu = j;
+                            break;
+                        }
                     }
                 }
 
@@ -107,20 +130,20 @@ public class JatekterPanel extends JPanel implements Observer {
                     }
                 }
 
-                // 4. Érvényesség ellenőrzése és parancs kiadása
                 if (celUtView != null && jatekosJarmu != null) {
                     funkcionalisElemek.Sav aktSav = jatekosJarmu.getAktualisSav();
                     boolean ervenyesKanyar = false;
 
-                    // Lekérdezzük, hogy az aktuális irányból van-e fizikai kapcsolat a célút felé
                     if (aktSav != null) {
                         funkcionalisElemek.Ut aktUt = aktSav.getUt();
                         segedOsztalyok.HaladasiIrany irany = aktSav.getIrany();
-                        ervenyesKanyar = aktUt.getKapcsolatok(irany).containsKey(celUtView.getModell());
+                        // JAVÍTVA: Csak akkor ellenőrizzük, ha nem null
+                        if (aktUt.getKapcsolatok(irany) != null) {
+                            ervenyesKanyar = aktUt.getKapcsolatok(irany).containsKey(celUtView.getModell());
+                        }
                     }
 
                     if (ervenyesKanyar) {
-                        // Ha lehet kanyarodni -> ZÖLD keret + parancs kiadása
                         celUtView.setKijeloles(1); 
                         if (jatekosJarmu instanceof jarmuvek.Hokotro) {
                             ((jarmuvek.Hokotro) jatekosJarmu).setKovetkezoUt(celUtView.getModell());
@@ -129,7 +152,6 @@ public class JatekterPanel extends JPanel implements Observer {
                         }
                         System.out.println("Érvényes kijelölés! Új célpont átadva: " + celUtView.getModell().id);
                     } else {
-                        // Ha fizikailag lehetetlen (pl. rossz irány, nincs összekötve) -> SZÜRKE keret
                         celUtView.setKijeloles(2); 
                         System.out.println("Érvénytelen kanyarodási cél: Nincs összeköttetés!");
                     }
@@ -140,6 +162,8 @@ public class JatekterPanel extends JPanel implements Observer {
             }
         });
     }
+
+    
 
     // Ezeket a metódusokat a pályabetöltő fogja használni,
     // hogy felpakolja a nézeteket a vászonra

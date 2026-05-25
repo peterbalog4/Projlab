@@ -159,7 +159,7 @@ public class Hokotro extends Jarmu {
 
             // Csak akkor fizetünk, ha a takarítás "sikeres" volt, ÉS volt is mit letakarítani
             if (tisztabb && (hoElotte > 0 || jegElotte)) {
-                telephely.JMFmodosit(100000);
+                telephely.JMFmodosit(1000000);
             }
         }
     }

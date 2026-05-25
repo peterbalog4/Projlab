@@ -78,6 +78,19 @@ public class Telephely extends AbstractObservable {
      */
     private List<KotroFej> kotroFejek = new ArrayList<>();
 
+    private int raktaronLevoHokotrok = 0;
+
+    public int getRaktaronLevoHokotrok() {
+        return raktaronLevoHokotrok;
+    }
+
+    public void kiveszHokotrot() {
+        if (raktaronLevoHokotrok > 0) {
+            raktaronLevoHokotrok--;
+            notifyObservers();
+        }
+    }
+
     public int getJMF(){
         return JMF;
     }

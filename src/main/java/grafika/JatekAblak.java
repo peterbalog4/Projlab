@@ -56,23 +56,21 @@ public class JatekAblak extends JFrame implements Observer {
         System.out.println("--> JatekAblak: jatekInditas() elindult, régi panel eltávolítása...");
 
         modell.reset();
-
         this.getContentPane().removeAll();
 
-        // 2. Felső sáv a Körszámlálónak
+        // 1. Felső sáv (Körszámláló)
         JPanel felsoSav = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        korLabel = new JLabel("KÖR: " + modell.getKor() + " / 50");
+        korLabel = new JLabel("KÖR: " + modell.getKor() + " / " + KorSzamlalo.MAX_KOR);
         korLabel.setFont(new Font("Arial", Font.BOLD, 16));
         felsoSav.add(korLabel);
         this.getContentPane().add(felsoSav, BorderLayout.NORTH);
 
-
-       // ÚJ: CardLayout a jobb oldali panelnek, hogy cserélgetni tudjuk a HUD-ot
+        // 2. Jobb oldali HUD (CardLayout a játékosváltáshoz)
         java.awt.CardLayout cardLayout = new java.awt.CardLayout();
         JPanel jobbPanel = new JPanel(cardLayout);
         this.getContentPane().add(jobbPanel, BorderLayout.EAST);
 
-        // 4. Játéktér panel középre
+        // 3. Központi játéktér
         JatekterPanel jatekter = new JatekterPanel(modell); 
         modell.addObserver(jatekter);
         this.getContentPane().add(jatekter, BorderLayout.CENTER);
@@ -82,7 +80,7 @@ public class JatekAblak extends JFrame implements Observer {
 
         java.util.List<funkcionalisElemek.Ut> utak = modell.getUtak();
 
-        // ── Autók spawnolása (a korábban megírt kódod itt marad) ──
+        // Autók spawnolása
         if (utak.size() >= 9) { 
             for (int i = 0; i < 4; i++) {
                 funkcionalisElemek.Ut otthonUt = utak.get(i * 2 + 1);      
@@ -99,34 +97,7 @@ public class JatekAblak extends JFrame implements Observer {
             funkcionalisElemek.Sav induloSav = utak.get(0).getSavok().get(0);
 
             if ("MULTIPLAYER".equals(jatekMod)) {
-                // HÓKOTRÓ LÉTREHOZÁSA (indul az első útról)
-                funkcionalisElemek.Sav hokotroSav = utak.get(0).getSavok().get(0);
-                jarmuvek.Hokotro kezdoHokotro = new jarmuvek.Hokotro("hokotro_1", 0, telephelyModell);
-                kotrofejek.SoproFej kezdoFej = new kotrofejek.SoproFej();
-                telephelyModell.tarol(kezdoFej);
-                kezdoHokotro.fejcsere(kezdoFej);
-                if (hokotroSav.elfogad(kezdoHokotro)) modell.addJarmu(kezdoHokotro);
-
-                TelephelyView telephelyHud = new TelephelyView(telephelyModell, kezdoHokotro);
-                telephelyModell.addObserver(telephelyHud);
-                jobbPanel.add(telephelyHud, "HOKOTRO");
-
-                // BUSZ LÉTREHOZÁSA (indul az utolsó útról)
-                funkcionalisElemek.Ut vegallomas1 = utak.get(0);
-                funkcionalisElemek.Ut vegallomas2 = utak.get(utak.size() - 1);
-                vegallomas1.setVegallomas(true);
-                vegallomas2.setVegallomas(true);
-                
-                funkcionalisElemek.Sav buszSav = vegallomas2.getSavok().get(0);
-                jarmuvek.Busz kezdoBusz = new jarmuvek.Busz("busz_1");
-                kezdoBusz.setRoute(vegallomas2, vegallomas1);
-                if (buszSav.elfogad(kezdoBusz)) modell.addJarmu(kezdoBusz);
-
-                grafika.view.BuszView buszHud = new grafika.view.BuszView(kezdoBusz);
-                modell.addObserver(buszHud); 
-                jobbPanel.add(buszHud, "BUSZ");
-            } else if ("HOKOTRO".equals(jatekMod)) {
-                // HÓKOTRÓ EGYJÁTÉKOS mód
+                // Hókotró
                 jarmuvek.Hokotro kezdoHokotro = new jarmuvek.Hokotro("hokotro_1", 0, telephelyModell);
                 kotrofejek.SoproFej kezdoFej = new kotrofejek.SoproFej();
                 telephelyModell.tarol(kezdoFej);
@@ -135,10 +106,30 @@ public class JatekAblak extends JFrame implements Observer {
 
                 TelephelyView telephelyHud = new TelephelyView(telephelyModell, kezdoHokotro);
                 telephelyModell.addObserver(telephelyHud);
-                jobbPanel.add(telephelyHud, "HUD"); // Itt nem kell CardLayout, elég csak hozzáadni
+                jobbPanel.add(telephelyHud, "HOKOTRO");
 
+                // Busz
+                funkcionalisElemek.Ut v1 = utak.get(0);
+                funkcionalisElemek.Ut v2 = utak.get(utak.size() - 1);
+                v1.setVegallomas(true); v2.setVegallomas(true);
+                jarmuvek.Busz kezdoBusz = new jarmuvek.Busz("busz_1");
+                kezdoBusz.setRoute(v2, v1);
+                if (v2.getSavok().get(0).elfogad(kezdoBusz)) modell.addJarmu(kezdoBusz);
+
+                grafika.view.BuszView buszHud = new grafika.view.BuszView(kezdoBusz);
+                modell.addObserver(buszHud); 
+                jobbPanel.add(buszHud, "BUSZ");
+            } else if ("HOKOTRO".equals(jatekMod)) {
+                jarmuvek.Hokotro kezdoHokotro = new jarmuvek.Hokotro("hokotro_1", 0, telephelyModell);
+                kotrofejek.SoproFej kezdoFej = new kotrofejek.SoproFej();
+                telephelyModell.tarol(kezdoFej);
+                kezdoHokotro.fejcsere(kezdoFej);
+                if (induloSav.elfogad(kezdoHokotro)) modell.addJarmu(kezdoHokotro);
+
+                TelephelyView telephelyHud = new TelephelyView(telephelyModell, kezdoHokotro);
+                telephelyModell.addObserver(telephelyHud);
+                jobbPanel.add(telephelyHud, "HUD");
             } else if ("BUSZ".equals(jatekMod)) {
-                // BUSZ EGYJÁTÉKOS mód
                 jarmuvek.Busz kezdoBusz = new jarmuvek.Busz("busz_1");
                 funkcionalisElemek.Ut v1 = utak.get(0);
                 funkcionalisElemek.Ut v2 = utak.get(utak.size() - 1);
@@ -150,21 +141,16 @@ public class JatekAblak extends JFrame implements Observer {
                 modell.addObserver(buszHud);
                 jobbPanel.add(buszHud, "HUD");
             }
-            
             modell.notifyObservers(); 
         }
 
-        // Hóesés globális bekapcsolása multiplayer és sima módoknál is
         modell.setHoesik(true);
 
-        // 5. Vezérlő panel alulra az új logikával
+        // 4. Alsó vezérlő panel
         JPanel alsoPanel = new JPanel();
         JButton leptoGomb = new JButton();
         leptoGomb.setFont(new Font("Arial", Font.BOLD, 14));
-        alsoPanel.add(leptoGomb);
-        this.getContentPane().add(alsoPanel, BorderLayout.SOUTH);
-
-        // Kezdőállapot beállítása
+        
         if ("MULTIPLAYER".equals(jatekMod)) {
             jatekter.setAktivJatekos("HOKOTRO");
             cardLayout.show(jobbPanel, "HOKOTRO");
@@ -173,17 +159,11 @@ public class JatekAblak extends JFrame implements Observer {
             leptoGomb.setText("Következő kör!");
         }
 
-        // Gombnyomás logikája
         leptoGomb.addActionListener(e -> {
-            
-            // --- ÚJ RÉSZ: JÁTÉK VÉGE ELLENŐRZÉS ---
-            // Ha már elértük az 50. kört (MAX_KOR), akkor vége a játéknak!
             if (modell.getKor() >= KorSzamlalo.MAX_KOR) {
                 jatekVege();
-                return; // Kilépünk, nem engedjük tovább a szimulációt
+                return;
             }
-            // --------------------------------------
-
             if ("MULTIPLAYER".equals(jatekMod)) {
                 if ("HOKOTRO".equals(jatekter.getAktivJatekos())) {
                     jatekter.setAktivJatekos("BUSZ");
@@ -196,11 +176,37 @@ public class JatekAblak extends JFrame implements Observer {
                     leptoGomb.setText("Következő játékos (Busz)!");
                 }
             } else {
-                // Sima egyjátékos (Hókotró vagy Busz) mód
                 modell.leptet();
             }
         });
-        
+
+        // Új gombok (raktárkezelés)
+        JButton ujHokotroGomb = new JButton("🚜 Lerakás Raktárból");
+        ujHokotroGomb.addActionListener(e -> {
+            if (telephelyModell.getRaktaronLevoHokotrok() > 0) {
+                java.util.List<funkcionalisElemek.Sav> savok = modell.getSavok();
+                if (!savok.isEmpty()) {
+                    jarmuvek.Hokotro ujHk = new jarmuvek.Hokotro("hokotro_" + System.currentTimeMillis(), 0, telephelyModell);
+                    kotrofejek.SoproFej kezdoFej = new kotrofejek.SoproFej();
+                    telephelyModell.tarol(kezdoFej);
+                    ujHk.fejcsere(kezdoFej);
+                    if (savok.get(0).elfogad(ujHk)) {
+                        modell.addJarmu(ujHk);
+                        telephelyModell.kiveszHokotrot();
+                        modell.notifyObservers();
+                    }
+                }
+            }
+        });
+
+        JButton valtasGomb = new JButton("🔄 Irányítás Váltása");
+        valtasGomb.addActionListener(e -> jatekter.kovetkezoHokotro());
+
+        alsoPanel.add(ujHokotroGomb);
+        alsoPanel.add(valtasGomb);
+        alsoPanel.add(leptoGomb);
+        this.getContentPane().add(alsoPanel, BorderLayout.SOUTH);
+
         this.getContentPane().revalidate();
         this.getContentPane().repaint();
     }
@@ -252,4 +258,6 @@ public class JatekAblak extends JFrame implements Observer {
         // hogy a komponenseket újra kell rajzolni a Graphics kontextus segítségével.
         repaint();
     }
+
+    
 }
