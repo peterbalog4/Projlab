@@ -154,6 +154,7 @@ public class Sav extends AbstractObservable {
             this.ut.havatAtad(this, tavolsag, eltakaritottMennyiseg, zuzalek);
             zuzalekEltakarit();
         }
+        notifyObservers();
         return eltakaritottMennyiseg;
     }
 
@@ -165,6 +166,7 @@ public class Sav extends AbstractObservable {
         if (jeg) {
             this.jeg = false;
             this.ho++;
+            notifyObservers();
         }
     }
 
@@ -301,6 +303,7 @@ public class Sav extends AbstractObservable {
      */
     public void soSzor(){
         sozottIdotartam = 5; //5 ugye?
+        notifyObservers();
     }
 
 
@@ -309,6 +312,7 @@ public class Sav extends AbstractObservable {
      */
     public void zuzalekSzor(){
         zuzalek = true;
+        notifyObservers();
     }
 
 
@@ -317,6 +321,7 @@ public class Sav extends AbstractObservable {
      */
     public void zuzalekEltakarit(){
         zuzalek = false;
+        notifyObservers();
     }
 
 
