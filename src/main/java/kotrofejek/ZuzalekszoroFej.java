@@ -23,6 +23,10 @@ public class ZuzalekszoroFej extends KotroFej {
      */
     private boolean fejBekapcsolva = false;
 
+    public int getZuzalek() {
+        return zuzalek;
+    }
+
     /**
      *
      * @param sav A takarítandó sáv.

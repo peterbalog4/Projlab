@@ -32,6 +32,7 @@ public class TelephelyView extends JPanel implements Observer {
     private JLabel zuzalekLabel;
     private JLabel kotrofejekLabel;
     private JLabel jelenlegiFejLabel;
+    private JButton refillGomb;
     private JButton boltGomb;
 
     private JComboBox<String> fejekCombo;
@@ -77,12 +78,16 @@ public class TelephelyView extends JPanel implements Observer {
         kotrofejekLabel = new JLabel("Elérhető kotrófejek: Nincs");
         jelenlegiFejLabel = new JLabel("Aktuális fej: Nincs");
 
+        refillGomb = new JButton("Újratöltés a telephelyről");
+        refillGomb.setAlignmentX(Component.LEFT_ALIGNMENT);
+        refillGomb.addActionListener(e -> ujratoltFej());
+
         boltGomb = new JButton("Bolt megnyitása");
 
         fejekCombo = new JComboBox<>();
         fejekCombo.setMaximumSize(new Dimension(200, 30)); // Ne nyúljon túl nagyra
         fejekCombo.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
+
         equipGomb = new JButton("Felszerel");
         equipGomb.setAlignmentX(Component.CENTER_ALIGNMENT);
         equipGomb.addActionListener(e -> felszerel());
@@ -96,18 +101,19 @@ public class TelephelyView extends JPanel implements Observer {
         add(zuzalekLabel);
         add(Box.createRigidArea(new Dimension(0, 20)));
         add(jelenlegiFejLabel);
+        add(Box.createRigidArea(new Dimension(0, 5)));
+        add(refillGomb);
         add(Box.createRigidArea(new Dimension(0, 10)));
-        add(Box.createRigidArea(new Dimension(0, 20)));
         add(kotrofejekLabel);
         add(Box.createRigidArea(new Dimension(0, 20)));
         add(boltGomb);
 
         add(kotrofejekLabel);
         add(Box.createRigidArea(new Dimension(0, 5)));
-        add(fejekCombo);       // Lenyíló lista
+        add(fejekCombo); // Lenyíló lista
         add(Box.createRigidArea(new Dimension(0, 5)));
-        add(equipGomb);        // Felszerel gomb
-        
+        add(equipGomb); // Felszerel gomb
+
         add(Box.createRigidArea(new Dimension(0, 20)));
         add(boltGomb);
 
@@ -127,11 +133,13 @@ public class TelephelyView extends JPanel implements Observer {
     }
 
     /**
-     * Végrehajtja a Hókotrón a fejcserét a lenyíló listában kiválasztott elem alapján.
+     * Végrehajtja a Hókotrón a fejcserét a lenyíló listában kiválasztott elem
+     * alapján.
      */
     private void felszerel() {
         String valasztott = (String) fejekCombo.getSelectedItem();
-        if (valasztott == null || hokotro == null) return;
+        if (valasztott == null || hokotro == null)
+            return;
 
         // Kikeressük az objektumot a raktárból
         KotroFej kivalasztottFej = null;
@@ -144,11 +152,18 @@ public class TelephelyView extends JPanel implements Observer {
 
         if (kivalasztottFej != null) {
             hokotro.fejcsere(kivalasztottFej); // Fejcsere a Hókotrón
+            if (kivalasztottFej instanceof kotrofejek.SoszoroFej) {
+                ((kotrofejek.SoszoroFej) kivalasztottFej).bekapcsol();
+            } else if (kivalasztottFej instanceof kotrofejek.ZuzalekszoroFej) {
+                ((kotrofejek.ZuzalekszoroFej) kivalasztottFej).bekapcsol();
+            } else if (kivalasztottFej instanceof kotrofejek.SarkanyFej) {
+                ((kotrofejek.SarkanyFej) kivalasztottFej).bekapcsol();
+            }
             update(); // UI frissítése, hogy a kiválasztott fej eltűnjön a listából
-            
-            JOptionPane.showMessageDialog(this, 
-                "Sikeresen felszerelted a járműre: " + valasztott, 
-                "Sikeres fejcsere", JOptionPane.INFORMATION_MESSAGE);
+
+            JOptionPane.showMessageDialog(this,
+                    "Sikeresen felszerelted a járműre: " + valasztott,
+                    "Sikeres fejcsere", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -177,6 +192,48 @@ public class TelephelyView extends JPanel implements Observer {
         }
     }
 
+    private void ujratoltFej() {
+        if (hokotro == null || hokotro.getAktivFej() == null)
+            return;
+
+        KotroFej aktivFej = hokotro.getAktivFej();
+        boolean sikeres = false;
+
+        // --- SÓSZÓRÓ FEJ TÖLTÉSE ---
+        if (aktivFej instanceof kotrofejek.SoszoroFej) {
+            kotrofejek.SoszoroFej fej = (kotrofejek.SoszoroFej) aktivFej;
+            sikeres = fej.ujratoltEllenorzott(modell);
+
+            // --- ZÚZALÉKSZÓRÓ FEJ TÖLTÉSE ---
+        } else if (aktivFej instanceof kotrofejek.ZuzalekszoroFej) {
+            kotrofejek.ZuzalekszoroFej fej = (kotrofejek.ZuzalekszoroFej) aktivFej;
+            sikeres = fej.ujratoltEllenorzott(modell);
+
+            // --- SÁRKÁNYFEJ (BIOKEROZIN) TÖLTÉSE ---
+        } else if (aktivFej instanceof kotrofejek.SarkanyFej) {
+            kotrofejek.SarkanyFej fej = (kotrofejek.SarkanyFej) aktivFej;
+            // Ha a SarkanyFej-ben nincs ujratoltEllenorzott, akkor sima ujratolt:
+            // (Ha ott is megírtátok az ujratoltEllenorzott-t, akkor cseréld arra a lenti
+            // sort!)
+            int elotte = modell.getBiokerozin();
+            fej.ujratolt(modell);
+            if (elotte > modell.getBiokerozin())
+                sikeres = true;
+        }
+
+        // --- VISSZAJELZÉS A JÁTÉKOSNAK ---
+        if (sikeres) {
+            update(); // Frissíti a bal oldali számokat a felületen
+            JOptionPane.showMessageDialog(this,
+                    "Sikeresen újratöltötted a fejet a telephely készletéből!",
+                    "Sikeres töltés", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Nem sikerült az újratöltés! Nincs elég anyag a telephelyen.",
+                    "Sikertelen töltés", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
     /**
      * Az Observer interfész implementációja.
      * Értesül a telephely belső állapotának (pl. egyenleg) változásáról.
@@ -188,20 +245,53 @@ public class TelephelyView extends JPanel implements Observer {
         int frissBiokerozin = modell.getBiokerozin();
         int frissSo = modell.getSo();
         int frissZuzalek = modell.getZuzalek();
-        
+
         // UI elemek szövegének frissítése
         jmfLabel.setText("JMF Egyenleg: " + frissJmf);
         biokerozinLabel.setText("Biokerozin: " + frissBiokerozin + " liter");
         soLabel.setText("Só: " + frissSo + " kg");
         zuzalekLabel.setText("Zúzalék: " + frissZuzalek + " kg");
         if (hokotro != null && hokotro.getAktivFej() != null) {
-            String activeFejNev = hokotro.getAktivFej().getClass().getSimpleName();
-            jelenlegiFejLabel.setText("<html><b>Felszerelt fej:</b> <font color='blue'>" + activeFejNev + "</font></html>");
+            KotroFej aktivFej = hokotro.getAktivFej();
+            String activeFejNev = aktivFej.getClass().getSimpleName();
+            
+            String anyagInfo = "";
+            boolean szuksegesUjratolteni = false; // Ezzel akadályozzuk meg a pazarlást
+            
+            // Anyagmennyiség kiszámítása és a gomb engedélyezése, HA NINCS TELE
+            if (aktivFej instanceof kotrofejek.SoszoroFej) {
+                int amount = ((kotrofejek.SoszoroFej) aktivFej).getSo();
+                String szin = (amount == 0) ? "red" : "blue"; // Ha nulla, piros lesz
+                anyagInfo = " (<font color='" + szin + "'>" + amount + "</font>/10 só)";
+                if (amount < 10) szuksegesUjratolteni = true;
+                
+            } else if (aktivFej instanceof kotrofejek.ZuzalekszoroFej) {
+                int amount = ((kotrofejek.ZuzalekszoroFej) aktivFej).getZuzalek();
+                String szin = (amount == 0) ? "red" : "blue";
+                anyagInfo = " (<font color='" + szin + "'>" + amount + "</font>/10 zúzalék)";
+                if (amount < 10) szuksegesUjratolteni = true;
+                
+            } else if (aktivFej instanceof kotrofejek.SarkanyFej) {
+                int amount = ((kotrofejek.SarkanyFej) aktivFej).getBiokerozin();
+                String szin = (amount == 0) ? "red" : "blue";
+                anyagInfo = " (<font color='" + szin + "'>" + amount + "</font>/10 kerozin)";
+                if (amount < 10) szuksegesUjratolteni = true;
+            }
+            
+            // Megjelenítjük a fej nevét és a hozzá tartozó készletinfót
+            jelenlegiFejLabel.setText("<html><b>Felszerelt fej:</b> <font color='blue'>" + activeFejNev + "</font>" + anyagInfo + "</html>");
+            
+            // A gomb csak akkor kattintható, ha OLYAN fej van rajta, amit LEHET tölteni, ÉS NINCS TELE
+            refillGomb.setEnabled(szuksegesUjratolteni);
+            
         } else {
             jelenlegiFejLabel.setText("<html><b>Felszerelt fej:</b> <font color='red'>Nincs</font></html>");
+            if (refillGomb != null) {
+                refillGomb.setEnabled(false);
+            }
         }
         List<KotroFej> frissFejek = modell.getKotrofejek();
-        
+
         // 1. A SZÖVEGES LISTA (Label) frissítése
         StringBuilder fejekSzoveg = new StringBuilder("<html><b>Elérhető kotrófejek:</b><br>");
         if (frissFejek == null || frissFejek.isEmpty()) {
@@ -217,7 +307,7 @@ public class TelephelyView extends JPanel implements Observer {
         // 2. A LENYÍLÓ LISTA (JComboBox) és FELSZEREL GOMB frissítése
         String jelenlegi = (String) fejekCombo.getSelectedItem(); // Megjegyezzük a mostani választást
         fejekCombo.removeAllItems(); // Kiürítjük a régit
-        
+
         if (frissFejek != null && !frissFejek.isEmpty()) {
             // Feltöltjük az új adatokkal
             for (KotroFej fej : frissFejek) {
@@ -225,7 +315,7 @@ public class TelephelyView extends JPanel implements Observer {
             }
             fejekCombo.setEnabled(true);
             equipGomb.setEnabled(true); // Van raktáron fej, bekapcsoljuk a gombot
-            
+
             // Ha a korábban kiválasztott fej még mindig megvan, visszarakjuk rá a fókuszt
             if (jelenlegi != null) {
                 fejekCombo.setSelectedItem(jelenlegi);
@@ -239,6 +329,7 @@ public class TelephelyView extends JPanel implements Observer {
         // Újrarajzolás kérése a Swing keretrendszertől
         repaint();
     }
+
     /**
      * Kirajzolja a telephelyhez tartozó UI elemeket.
      * Mivel a HUD Swing komponenseket (JLabel, JButton) használ,

@@ -21,6 +21,10 @@ public class SoszoroFej extends KotroFej {
      */
     private boolean fejBekapcsolva = false;
 
+    public int getSo() {
+        return so;
+    }
+
     /**
      * Felsózza a Sávot. Aminek a hatására a sávon 5 körig nem tud új hó esni és elolvad 1 kör alatt az eddig rajta lévő
      * hó.

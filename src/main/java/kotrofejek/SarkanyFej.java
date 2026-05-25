@@ -23,6 +23,10 @@ public class SarkanyFej extends KotroFej {
      */
     private boolean fejBekapcsolva = false;
 
+    public int getBiokerozin() {
+        return biokerozin;
+    }
+
     /**
      * Eltakarítja közvetlen a Hókotró előtt a jeget és a havat a Sávról.
      *
