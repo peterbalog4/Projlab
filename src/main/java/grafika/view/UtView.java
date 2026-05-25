@@ -38,6 +38,11 @@ public class UtView implements Observer {
 
     private int startX;
     private int startY;
+    private int kijeloles = 0;
+
+    public void setKijeloles(int kijelolesSzint) {
+        this.kijeloles = kijelolesSzint;
+    }
  
     /**
      * @param modell   A megfigyelt logikai Ut objektum.
@@ -102,16 +107,41 @@ public class UtView implements Observer {
      * A sávok kirajzolása után, ha a szakasz híd vagy alagút, ráfesti a megkülönböztető
      * jelölést (korlátok / alagútszáj) a teljes útszakaszra.
      */
+/**
+     * Az út grafikus elemeinek kirajzolását hajtja végre.
+     */
     public void draw(Graphics g) {
+        // 1. Sávok kirajzolása
         for (SavView sv : savNezetek) {
             sv.draw(g);
         }
 
-        SzakaszTipus tipus = modell.getTipus();
-        if (tipus == SzakaszTipus.HID) {
-            rajzolHid(g);
-        } else if (tipus == SzakaszTipus.ALAGUT) {
-            rajzolAlagut(g);
+        // 2. Kijelölő keret kirajzolása (ha van)
+        if (kijeloles != 0) {
+            java.awt.Graphics2D g2 = (java.awt.Graphics2D) g;
+            java.awt.Stroke regiStroke = g2.getStroke();
+            g2.setStroke(new java.awt.BasicStroke(6f)); // 6 pixel vastag keret
+
+            if (kijeloles == 1) {
+                // Zöld, félig átlátszó keret
+                g2.setColor(new java.awt.Color(0, 255, 0, 180)); 
+            } else {
+                // Szürke, félig átlátszó keret
+                g2.setColor(new java.awt.Color(128, 128, 128, 180)); 
+            }
+
+            int utHossz = modell.getHossz();
+            int utSzelesseg = getTeljesszelesseg();
+
+            // A keret orientációja az út iránya alapján
+            if (utIrany == Irany.FEL || utIrany == Irany.LE) {
+                g2.drawRect(startX, startY, utSzelesseg, utHossz);
+            } else {
+                g2.drawRect(startX, startY, utHossz, utSzelesseg);
+            }
+
+            // Visszaállítjuk az ecsetet az eredetire
+            g2.setStroke(regiStroke); 
         }
     }
 

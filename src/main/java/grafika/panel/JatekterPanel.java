@@ -53,9 +53,8 @@ public JatekterPanel(KorSzamlalo modell) {
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 int mouseX = e.getX();
                 int mouseY = e.getY();
-                funkcionalisElemek.Ut celUt = null;
-
-                // Megkeressük a játékos járművét (Hókotró vagy Busz)
+                
+                // 1. Megkeressük a játékos járművét (Hókotró vagy Busz)
                 jarmuvek.Jarmu jatekosJarmu = null;
                 for (jarmuvek.Jarmu j : modell.getJarmuvek()) {
                     if (j instanceof jarmuvek.Hokotro || j instanceof jarmuvek.Busz) {
@@ -64,12 +63,20 @@ public JatekterPanel(KorSzamlalo modell) {
                     }
                 }
 
+                // 2. Minden út kijelölésének törlése
+                for (grafika.view.UtView uv : utakNezetei) {
+                    uv.setKijeloles(0);
+                }
+
+                // 3. Megkeressük, melyik UtView-ra kattintottunk
                 double minTavolsag = Double.MAX_VALUE;
+                grafika.view.UtView celUtView = null;
 
                 for (grafika.view.UtView uv : utakNezetei) {
                     if (uv.contains(mouseX, mouseY)) {
                         funkcionalisElemek.Ut vizsgaltUt = uv.getModell();
                         
+                        // Az aktuális utat ignoráljuk
                         if (jatekosJarmu != null && jatekosJarmu.getAktualisSav() != null && jatekosJarmu.getAktualisSav().getUt() == vizsgaltUt) {
                             continue;
                         }
@@ -77,20 +84,41 @@ public JatekterPanel(KorSzamlalo modell) {
                         double tav = uv.kozepTavolsag(mouseX, mouseY);
                         if (tav < minTavolsag) {
                             minTavolsag = tav;
-                            celUt = vizsgaltUt;
+                            celUtView = uv;
                         }
                     }
                 }
 
-                if (celUt != null && jatekosJarmu != null) {
-                    // Átadjuk a célt annak megfelelően, hogy melyikkel játszunk
-                    if (jatekosJarmu instanceof jarmuvek.Hokotro) {
-                        ((jarmuvek.Hokotro) jatekosJarmu).setKovetkezoUt(celUt);
-                    } else if (jatekosJarmu instanceof jarmuvek.Busz) {
-                        ((jarmuvek.Busz) jatekosJarmu).setKovetkezoUt(celUt);
+                // 4. Érvényesség ellenőrzése és parancs kiadása
+                if (celUtView != null && jatekosJarmu != null) {
+                    funkcionalisElemek.Sav aktSav = jatekosJarmu.getAktualisSav();
+                    boolean ervenyesKanyar = false;
+
+                    // Lekérdezzük, hogy az aktuális irányból van-e fizikai kapcsolat a célút felé
+                    if (aktSav != null) {
+                        funkcionalisElemek.Ut aktUt = aktSav.getUt();
+                        segedOsztalyok.HaladasiIrany irany = aktSav.getIrany();
+                        ervenyesKanyar = aktUt.getKapcsolatok(irany).containsKey(celUtView.getModell());
                     }
-                    System.out.println("Játékos kattintott! Új célpont átadva: " + celUt.id);
+
+                    if (ervenyesKanyar) {
+                        // Ha lehet kanyarodni -> ZÖLD keret + parancs kiadása
+                        celUtView.setKijeloles(1); 
+                        if (jatekosJarmu instanceof jarmuvek.Hokotro) {
+                            ((jarmuvek.Hokotro) jatekosJarmu).setKovetkezoUt(celUtView.getModell());
+                        } else if (jatekosJarmu instanceof jarmuvek.Busz) {
+                            ((jarmuvek.Busz) jatekosJarmu).setKovetkezoUt(celUtView.getModell());
+                        }
+                        System.out.println("Érvényes kijelölés! Új célpont átadva: " + celUtView.getModell().id);
+                    } else {
+                        // Ha fizikailag lehetetlen (pl. rossz irány, nincs összekötve) -> SZÜRKE keret
+                        celUtView.setKijeloles(2); 
+                        System.out.println("Érvénytelen kanyarodási cél: Nincs összeköttetés!");
+                    }
                 }
+                
+                // Panel azonnali frissítése, hogy a keretek megjelenjenek
+                repaint();
             }
         });
     }
