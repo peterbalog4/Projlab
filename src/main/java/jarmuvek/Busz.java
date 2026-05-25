@@ -107,7 +107,7 @@ public class Busz extends Jarmu {
             kovetkezoUt = null;
             kanyarodik(cel);
         } else {
-            this.varakozasiIdo = 0;
+            this.varakozasiIdo = 0; //TODO ezt megoldani, szar itt a kód, else ágban is megy tovább
             this.allapot = Allapot.KOZLEKEDIK;
         }
     }
@@ -134,7 +134,7 @@ public class Busz extends Jarmu {
         }
 
         allapot = Allapot.KOZLEKEDIK;
-        pozicio.halad(this, 1);
+        pozicio.halad(this, 50);
     }
 
     /**

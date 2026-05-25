@@ -93,6 +93,10 @@ public abstract class Jarmu {
         return aktualisSav;
     }
 
+    public segedOsztalyok.Pozicio getPozicio() {
+        return this.pozicio;
+    }
+
     /**
      * Visszaadja a jármű hátralévő várakozási idejét körökben.
      *

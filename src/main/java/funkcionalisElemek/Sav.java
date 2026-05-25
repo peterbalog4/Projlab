@@ -16,8 +16,7 @@ import java.util.List;
 public class Sav extends AbstractObservable {
 
 
-    private int athaladtJarmuvekSzama = 0; // MINDEN áthaladt jármű (a stat ezt mutatja)
-    private int athaladtAutokSzama = 0;    // csak az "autók" (Auto, Busz) – a jegesedéshez (hókotró NEM számít)
+    private int athaladtJarmuvekSzama = 0; 
     private boolean jeg = false;
     private int ho = 0;
     private boolean zuzalek = false;
@@ -65,12 +64,6 @@ public class Sav extends AbstractObservable {
         if (!jarmuvek.contains(j)) {
             this.jarmuvek.add(j);
             this.athaladtJarmuvekSzama++;
-            // A jegesedéshez csak az "autók" (Auto, Busz) áthaladása számít,
-            // a hókotró NEM (spec). Az 5. ilyen áthaladásnál fagy be a havas sáv
-            // (lásd allapotFrissit()).
-            if (!(j instanceof Hokotro)) {
-                this.athaladtAutokSzama++;
-            }
         }
     }
 
@@ -284,14 +277,11 @@ public class Sav extends AbstractObservable {
             jeg = false;
             ho = 0;
             athaladtJarmuvekSzama = 0;
-            athaladtAutokSzama = 0;
             sozottIdotartam--;
-        } else if(athaladtAutokSzama >= 5 && ho > 0){
-            // 5 "autó" (Auto/Busz) áthaladása után a letaposott hó jéggé válik.
+        } else if(athaladtJarmuvekSzama >= 5 && ho > 0){
             jeg = true;
             ho = 0;
             athaladtJarmuvekSzama = 0;
-            athaladtAutokSzama = 0;
         }
         // Ha valami megváltozott (pl. elolvadt a hó, lefagyott az út), értesítjük a View-t:
         notifyObservers();

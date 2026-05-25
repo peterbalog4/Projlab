@@ -4,7 +4,7 @@ import grafika.Observer;
 import jarmuvek.Jarmu;
 import jarmuvek.Auto;
 import jarmuvek.Busz;
-import jarmuvek.Hokotro; // Hókotró importálása a típusvizsgálathoz
+import jarmuvek.Hokotro;
 
 import javax.imageio.ImageIO;
 import java.awt.Graphics;
@@ -35,44 +35,65 @@ public class JarmuView implements Observer {
     private void betoltSprite() {
         try {
             if (modell instanceof Hokotro) {
-                // A csatolt kép betöltése a fájlrendszerből
                 sprite = ImageIO.read(new File("hokotro.png"));
-                
-                // Opcionális: Kép átméretezése, ha túl nagy lenne a játéktérhez
-                // sprite = sprite.getScaledInstance(64, 64, Image.SCALE_SMOOTH);
             }
             else if (modell instanceof Auto) {
-                // Az Auto típusú jármű képének betöltése
                 sprite = ImageIO.read(new File("auto.png"));
             }
             else if (modell instanceof Busz) {
-                // A Busz típusú jármű képének betöltése 
                 sprite = ImageIO.read(new File("busz.png"));
             }
-            // Később ide jöhet a Busz típusú jármű képe is
         } catch (IOException e) {
             System.out.println("Hiba a kép betöltésekor: " + e.getMessage());
         }
     }
 
     /**
-     * Az értesítés hatására aktiválódik, és lekérdezi a megjelenítéshez szükséges friss adatokat[cite: 560].
+     * Az értesítés hatására aktiválódik, és kiszámolja a pontos képernyő-koordinátákat.
      */
-@Override
+    @Override
     public void update() {
-        // 1. Lekérjük a modellből a jármű aktuális sávját
         funkcionalisElemek.Sav aktualisPozicio = modell.getAktualisSav();
         
         if (aktualisPozicio != null) {
-            // Mivel az MVC elv szerint a logikai modell nem tartalmaz pixelkoordinátát, 
-            // a JarmuView-nak kell azt kiszámolnia vagy lekérnie.
-            // (Ha van KoordinataKalkulator osztályotok, azt használd, egyébként ideiglenesen 
-            // a teszteléshez egy statikus leképezést adunk, hogy látszódjon a képernyőn):
+            // Kikeresjük, hogy az aktuális sávhoz melyik grafikus nézet tartozik
+            grafika.view.SavView sv = grafika.view.SavView.nezetRegiszter.get(aktualisPozicio);
             
-            // TODO: Itt kell lekérdezni a SavView-tól a pontos X és Y koordinátát. 
-            // Példa egy egyszerű fallback logikára a teszteléshez:
-            this.xKalkulalt = 150; // Helyettesítsd: aktualisPozicio.getX() szerű hívással, ha elkészül
-            this.yKalkulalt = 200; // Helyettesítsd: aktualisPozicio.getY() szerű hívással, ha elkészül
+            if (sv != null) {
+                int baseX = sv.getXKord();
+                int baseY = sv.getYKord();
+                int tav = modell.getPozicio().getMegtettTavolsag();
+                int hossz = aktualisPozicio.getHossz();
+                
+                segedOsztalyok.Irany utIrany = sv.getIrany(); 
+                // Ha B-ből A-ba megyünk, a rajzolást a vonal másik végéről kell indítani!
+                boolean abolBbe = (aktualisPozicio.getIrany() == segedOsztalyok.HaladasiIrany.A_BOL_B_BE);
+                int vizualisTav = abolBbe ? tav : (hossz - tav);
+
+                // Koordináták kiszámítása az út vizuális haladási iránya alapján
+                if (utIrany == segedOsztalyok.Irany.JOBBRA) {
+                    this.xKalkulalt = baseX + vizualisTav;
+                    this.yKalkulalt = baseY;
+                } else if (utIrany == segedOsztalyok.Irany.BALRA) {
+                    this.xKalkulalt = baseX + hossz - vizualisTav;
+                    this.yKalkulalt = baseY;
+                } else if (utIrany == segedOsztalyok.Irany.LE) {
+                    this.xKalkulalt = baseX;
+                    this.yKalkulalt = baseY + vizualisTav;
+                } else if (utIrany == segedOsztalyok.Irany.FEL) {
+                    this.xKalkulalt = baseX;
+                    this.yKalkulalt = baseY + hossz - vizualisTav;
+                }
+                
+                // Középre igazítás (hogy a jármű ne a sáv szélén csússzon, hanem a közepén)
+                if (utIrany == segedOsztalyok.Irany.JOBBRA || utIrany == segedOsztalyok.Irany.BALRA) {
+                    this.yKalkulalt += 10; 
+                    this.xKalkulalt -= 20; 
+                } else {
+                    this.xKalkulalt += 10;
+                    this.yKalkulalt -= 20;
+                }
+            }
         }
     }
 

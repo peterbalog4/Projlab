@@ -113,15 +113,19 @@ public class Ut extends AbstractObservable {
      */
     public void kanyarodik(Jarmu j, Ut celUt, Sav honnanSav, HaladasiIrany honnanIrany) {
         Map<Ut, String> kapcsolatok = (honnanIrany == HaladasiIrany.A_BOL_B_BE) ? vegB_kapcsolatok : vegA_kapcsolatok;
+        String honnanVeg = (honnanIrany == HaladasiIrany.A_BOL_B_BE) ? "vegB" : "vegA";
         
         String erkezesiVeg = kapcsolatok.get(celUt);
         
         if (erkezesiVeg != null) {
-
+            System.out.println("    >>> KANYARODÁS SIKERES! Jármű átlépett a(z) " + celUt.id + " útra.");
             List<Sav> forrasLista = (honnanIrany == HaladasiIrany.A_BOL_B_BE) ? A_bol_B_savok : B_bol_A_savok;
             int savIndex = forrasLista.indexOf(honnanSav);
             
             celUt.befogad(j, erkezesiVeg, savIndex);
+        } else {
+            // Ez a sor leleplezi, ha a térkép alapján illegális a kanyarodás:
+            System.out.println("    [HIBA] Nem lehet kanyarodni! A(z) " + this.id + " út " + honnanVeg + " vége fizikailag nincs összekötve a(z) " + celUt.id + " úttal!");
         }
     }
 

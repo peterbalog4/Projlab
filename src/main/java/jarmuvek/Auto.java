@@ -88,7 +88,7 @@ public class Auto extends Jarmu {
 
        if (this.allapot != Allapot.CSUSZKAL) {
             this.allapot = Allapot.KOZLEKEDIK;
-            pozicio.halad(this, 1);
+            pozicio.halad(this, 50);
         }
     }
 

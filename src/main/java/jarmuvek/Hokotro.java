@@ -58,11 +58,13 @@ public class Hokotro extends Jarmu {
      */
     @Override
     public void elertSavVeget() {
-        if (kovetkezoUt != null) {
+ if (kovetkezoUt != null) {
+            System.out.println(">>> A hókotró parancsot kapott, kanyarodik ide: " + kovetkezoUt.id);
             Ut cel = kovetkezoUt;
             kovetkezoUt = null;
             kanyarodik(cel);
         } else {
+            System.out.println(">>> A hókotró a sáv végére ért, és várja a játékos utasítását!");
             megall(0);
         }
     }
@@ -96,7 +98,7 @@ public class Hokotro extends Jarmu {
         dolgozik();
 
         allapot = Allapot.KOZLEKEDIK;
-        pozicio.halad(this, 1);
+        pozicio.halad(this, 50);
     }
 
     /**

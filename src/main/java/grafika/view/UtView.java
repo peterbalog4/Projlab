@@ -122,20 +122,31 @@ public class UtView implements Observer {
     }
 
     public boolean contains(int mouseX, int mouseY) {
-        // A hossz a haladási iránnyal megegyező kiterjedés
         int utHossz = modell.getHossz(); 
-        
-        // A szélesség a meglévő függvényed alapján (sávok száma * 60)
         int utSzelesseg = getTeljesszelesseg(); 
+        
+        // KIBŐVÍTÉS: A kereszteződések vizuális négyzetei logikailag nincsenek benne az út hosszában.
+        // Ezzel a "padding"-gel megnyújtjuk a kattintási zónát (egy sávnyival) a kereszteződésekre is!
+        int padding = 60; 
 
         if (utIrany == Irany.FEL || utIrany == Irany.LE) {
-            // Függőleges út esetén az X tengelyen a szélesség, az Y tengelyen a hossz terül el
-            return mouseX >= this.startX && mouseX <= (this.startX + utSzelesseg) &&
-                   mouseY >= this.startY && mouseY <= (this.startY + utHossz);
+            return mouseX >= (this.startX - padding) && mouseX <= (this.startX + utSzelesseg + padding) &&
+                   mouseY >= (this.startY - padding) && mouseY <= (this.startY + utHossz + padding);
         } else {
-            // Vízszintes út (JOBBRA, BALRA) esetén az X tengelyen a hossz, az Y tengelyen a szélesség terül el
-            return mouseX >= this.startX && mouseX <= (this.startX + utHossz) &&
-                   mouseY >= this.startY && mouseY <= (this.startY + utSzelesseg);
+            return mouseX >= (this.startX - padding) && mouseX <= (this.startX + utHossz + padding) &&
+                   mouseY >= (this.startY - padding) && mouseY <= (this.startY + utSzelesseg + padding);
         }
+    }
+
+    public double kozepTavolsag(int mouseX, int mouseY) {
+        int centerX, centerY;
+        if (utIrany == Irany.FEL || utIrany == Irany.LE) {
+            centerX = this.startX + (getTeljesszelesseg() / 2);
+            centerY = this.startY + (modell.getHossz() / 2);
+        } else {
+            centerX = this.startX + (modell.getHossz() / 2);
+            centerY = this.startY + (getTeljesszelesseg() / 2);
+        }
+        return Math.sqrt(Math.pow(mouseX - centerX, 2) + Math.pow(mouseY - centerY, 2));
     }
 }

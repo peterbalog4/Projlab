@@ -47,8 +47,7 @@ public JatekterPanel(KorSzamlalo modell) {
         // és a kanyarok fűhátere zökkenőmentesen olvadjon bele.
         setBackground(KanyarView.GRASS);
         
-        // EGÉR IRÁNYÍTÁS BEKÖTÉSE
-        // EGÉR IRÁNYÍTÁS BEKÖTÉSE
+        // EGÉR IRÁNYÍTÁS BEKÖTÉSE (Távolság alapú döntéssel)
         addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -56,24 +55,39 @@ public JatekterPanel(KorSzamlalo modell) {
                 int mouseY = e.getY();
                 funkcionalisElemek.Ut celUt = null;
 
-                // 1. Megkeressük, melyik útra/sávra kattintott a játékos
-                for (grafika.view.UtView uv : utakNezetei) {
-                    if (uv.contains(mouseX, mouseY)) {
-                        celUt = uv.getModell();
+                jarmuvek.Hokotro aktHokotro = null;
+                for (jarmuvek.Jarmu j : modell.getJarmuvek()) {
+                    if (j instanceof jarmuvek.Hokotro) {
+                        aktHokotro = (jarmuvek.Hokotro) j;
                         break;
                     }
                 }
 
-                // 2. Ha érvényes útra kattintott, átadjuk a parancsot a Hókotrónak
-                if (celUt != null) {
-                    for (jarmuvek.Jarmu j : modell.getJarmuvek()) {
-                        if (j instanceof jarmuvek.Hokotro) {
-                            jarmuvek.Hokotro hokotro = (jarmuvek.Hokotro) j;
-                            hokotro.setKovetkezoUt(celUt);
-                            System.out.println("Játékos kattintott! Új célpont a hókotrónak sikeresen átadva.");
-                            break;
+                double minTavolsag = Double.MAX_VALUE;
+
+                // Végignézzük az utakat, és ha több is fedi a kattintást, a legközelebbit választjuk
+                for (grafika.view.UtView uv : utakNezetei) {
+                    if (uv.contains(mouseX, mouseY)) {
+                        funkcionalisElemek.Ut vizsgaltUt = uv.getModell();
+                        
+                        // Az aktuális utat ignoráljuk
+                        if (aktHokotro != null && aktHokotro.getAktualisSav() != null && aktHokotro.getAktualisSav().getUt() == vizsgaltUt) {
+                            continue;
+                        }
+                        
+                        double tav = uv.kozepTavolsag(mouseX, mouseY);
+                        if (tav < minTavolsag) {
+                            minTavolsag = tav;
+                            celUt = vizsgaltUt;
                         }
                     }
+                }
+
+                if (celUt != null && aktHokotro != null) {
+                    aktHokotro.setKovetkezoUt(celUt);
+                    System.out.println("Játékos kattintott! Új célpont átadva: " + celUt.id);
+                } else {
+                    System.out.println("Kattintás a semmibe. X=" + mouseX + ", Y=" + mouseY);
                 }
             }
         });

@@ -42,5 +42,47 @@ road rv3 1 1 n11 n12
 road rv4 1 1 n20 n21
 road rv5 1 1 n21 n22
 
+# ─── ÖSSZEKÖTTETÉSEK (CSOMÓPONTOK) ───
+
+# n00 (Bal felső sarok)
+connect rh0 vegA rv0 vegA
+
+# n10 (Felső T-kereszteződés)
+connect rh0 vegB rh1 vegA
+connect rh0 vegB rv2 vegA
+connect rh1 vegA rv2 vegA
+
+# n20 (Jobb felső sarok)
+connect rh1 vegB rv4 vegA
+
+# n01 (Bal oldali T-kereszteződés)
+connect rv0 vegB rv1 vegA
+connect rv0 vegB rh2 vegA
+connect rv1 vegA rh2 vegA
+
+# n11 (Középső 4-ágú kereszteződés)
+connect rh2 vegB rh3 vegA
+connect rh2 vegB rv2 vegB
+connect rh2 vegB rv3 vegA
+connect rh3 vegA rv2 vegB
+connect rh3 vegA rv3 vegA
+connect rv2 vegB rv3 vegA
+
+# n21 (Jobb oldali T-kereszteződés)
+connect rh3 vegB rv4 vegB
+connect rh3 vegB rv5 vegA
+connect rv4 vegB rv5 vegA
+
+# n02 (Bal alsó sarok)
+connect rv1 vegB rh4 vegA
+
+# n12 (Alsó T-kereszteződés)
+connect rh4 vegB rh5 vegA
+connect rh4 vegB rv3 vegB
+connect rh5 vegA rv3 vegB
+
+# n22 (Jobb alsó sarok)
+connect rh5 vegB rv5 vegB
+
 # Telephely a bal-felső csomópontnál
 depot d0 n00 5000

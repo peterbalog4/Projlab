@@ -232,7 +232,8 @@ public class Map_generator {
                             if (u1 == null) { System.err.printf("[Map] %d. sor: ismeretlen út '%s'%n", lineNumber, p[1]); break; }
                             if (u2 == null) { System.err.printf("[Map] %d. sor: ismeretlen út '%s'%n", lineNumber, p[3]); break; }
 
-                            u1.addKapcsolat(p[2], u2, p[4]);
+                            // JAVÍTÁS: addKapcsolat() helyett connect() kell a kétirányú fizikai összekötéshez!
+                            u1.connect(p[2], u2, p[4]); 
                             System.out.printf("[Map] Kapcsolat: %s.%s ↔ %s.%s%n", p[1], p[2], p[3], p[4]);
                             break;
                         }
@@ -327,7 +328,7 @@ public class Map_generator {
      * A startX/startY mindig a kisebb koordinátájú végpont
      * (azaz a bal-fent sarok), mert az UtView is így várja.
      */
-    private RoadGeometry computeGeometry(Node a, Node b, int lineNumber) {
+private RoadGeometry computeGeometry(Node a, Node b, int lineNumber) {
         boolean vizszintes = (a.y == b.y);
         boolean fuggoleges = (a.x == b.x);
 
@@ -340,14 +341,17 @@ public class Map_generator {
 
         if (vizszintes) {
             int startX = Math.min(a.x, b.x);
-            int startY = a.y;                   // y azonos mindkét csomópontnál
+            int startY = a.y;                   
             int hossz  = Math.abs(b.x - a.x);
-            return new RoadGeometry(startX, startY, hossz, Irany.JOBBRA);
+            // JAVÍTÁS: Dinamikus irány megállapítása vízszintes útnál
+            Irany irany = (b.x > a.x) ? Irany.JOBBRA : Irany.BALRA;
+            return new RoadGeometry(startX, startY, hossz, irany);
         } else {
-            int startX = a.x;                   // x azonos mindkét csomópontnál
+            int startX = a.x;                   
             int startY = Math.min(a.y, b.y);
             int hossz  = Math.abs(b.y - a.y);
-            return new RoadGeometry(startX, startY, hossz, Irany.FEL);
+            Irany irany = (b.y > a.y) ? Irany.LE : Irany.FEL;
+            return new RoadGeometry(startX, startY, hossz, irany);
         }
     }
 
