@@ -315,7 +315,8 @@ public class Telephely extends AbstractObservable {
     }
 
     public List<KotroFej> getKotrofejek() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getKotrofejek'");
+       
+        return kotroFejek;
+    
     }
 }
