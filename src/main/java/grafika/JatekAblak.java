@@ -202,8 +202,8 @@ public class JatekAblak extends JFrame implements Observer {
         JButton valtasGomb = new JButton("🔄 Irányítás Váltása");
         valtasGomb.addActionListener(e -> jatekter.kovetkezoHokotro());
 
-        alsoPanel.add(ujHokotroGomb);
-        alsoPanel.add(valtasGomb);
+        jobbPanel.add(ujHokotroGomb, "HOKOTRO");
+        jobbPanel.add(valtasGomb, "HOKOTRO");
         alsoPanel.add(leptoGomb);
         this.getContentPane().add(alsoPanel, BorderLayout.SOUTH);
 
