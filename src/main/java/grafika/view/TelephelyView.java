@@ -31,6 +31,7 @@ public class TelephelyView extends JPanel implements Observer {
     private JLabel soLabel;
     private JLabel zuzalekLabel;
     private JLabel kotrofejekLabel;
+    private JLabel jelenlegiFejLabel;
     private JButton boltGomb;
 
     private JComboBox<String> fejekCombo;
@@ -74,6 +75,7 @@ public class TelephelyView extends JPanel implements Observer {
         soLabel = new JLabel("Só: 0 kg");
         zuzalekLabel = new JLabel("Zúzalék: 0 kg");
         kotrofejekLabel = new JLabel("Elérhető kotrófejek: Nincs");
+        jelenlegiFejLabel = new JLabel("Aktuális fej: Nincs");
 
         boltGomb = new JButton("Bolt megnyitása");
 
@@ -92,6 +94,9 @@ public class TelephelyView extends JPanel implements Observer {
         add(biokerozinLabel);
         add(soLabel);
         add(zuzalekLabel);
+        add(Box.createRigidArea(new Dimension(0, 20)));
+        add(jelenlegiFejLabel);
+        add(Box.createRigidArea(new Dimension(0, 10)));
         add(Box.createRigidArea(new Dimension(0, 20)));
         add(kotrofejekLabel);
         add(Box.createRigidArea(new Dimension(0, 20)));
@@ -189,7 +194,12 @@ public class TelephelyView extends JPanel implements Observer {
         biokerozinLabel.setText("Biokerozin: " + frissBiokerozin + " liter");
         soLabel.setText("Só: " + frissSo + " kg");
         zuzalekLabel.setText("Zúzalék: " + frissZuzalek + " kg");
-
+        if (hokotro != null && hokotro.getAktivFej() != null) {
+            String activeFejNev = hokotro.getAktivFej().getClass().getSimpleName();
+            jelenlegiFejLabel.setText("<html><b>Felszerelt fej:</b> <font color='blue'>" + activeFejNev + "</font></html>");
+        } else {
+            jelenlegiFejLabel.setText("<html><b>Felszerelt fej:</b> <font color='red'>Nincs</font></html>");
+        }
         List<KotroFej> frissFejek = modell.getKotrofejek();
         
         // 1. A SZÖVEGES LISTA (Label) frissítése
