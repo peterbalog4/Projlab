@@ -35,7 +35,7 @@ public class Telephely extends AbstractObservable {
     /**
      * Egy Zúzalékszóró fej árát tárolja.
      */
-    static private final int zuzalekszorofejAr = 400000;
+    static private final int zuzalekszorofejAr = 350000;
     /**
      * Egy teljes töltés biokerozin árát tárolja.
      */
@@ -126,74 +126,87 @@ public class Telephely extends AbstractObservable {
      * volt).
      */
     public boolean vasarol(String item) {
+        boolean sikeres = false; // Eltároljuk, hogy sikeres volt-e a tranzakció
+
         switch (item) {
             case "soprofej":
                 if (JMF >= soprofejAr) {
                     JMF -= soprofejAr;
                     kotroFejek.add(new SoproFej());
-                    return true;
+                    sikeres = true;
                 }
                 break;
             case "jegtorofej":
                 if (JMF >= jegtorofejAr) {
                     JMF -= jegtorofejAr;
                     kotroFejek.add(new JegtoroFej());
-                    return true;
+                    sikeres = true;
                 }
                 break;
             case "hanyofej":
                 if (JMF >= hanyofejAr) {
                     JMF -= hanyofejAr;
                     kotroFejek.add(new HanyoFej());
-                    return true;
+                    sikeres = true;
                 }
                 break;
             case "sarkanyfej":
                 if (JMF >= sarkanyfejAr) {
                     JMF -= sarkanyfejAr;
                     kotroFejek.add(new SarkanyFej());
-                    return true;
+                    sikeres = true;
                 }
                 break;
             case "soszorofej":
                 if (JMF >= soszorofejAr) {
                     JMF -= soszorofejAr;
                     kotroFejek.add(new SoszoroFej());
-                    return true;
+                    sikeres = true;
                 }
                 break;
             case "zuzalekszorofej":
                 if (JMF >= zuzalekszorofejAr) {
                     JMF -= zuzalekszorofejAr;
                     kotroFejek.add(new ZuzalekszoroFej());
-                    return true;
+                    sikeres = true;
                 }
                 break;
             case "biokerozin":
                 if (JMF >= biokerozinAr) {
                     JMF -= biokerozinAr;
                     biokerozin++;
+                    sikeres = true; // Ez a régi kódból hiányzott!
                 }
                 break;
             case "so":
                 if (JMF >= soAr) {
                     JMF -= soAr;
                     so++;
+                    sikeres = true; // Ez a régi kódból hiányzott!
                 }
                 break;
             case "zuzalek":
                 if (JMF >= zuzalekAr) {
                     JMF -= zuzalekAr;
                     zuzalek++;
+                    sikeres = true; // Ez a régi kódból hiányzott!
                 }
                 break;
             case "hokotro":
                 if (JMF >= hokotroAr) {
                     JMF -= hokotroAr;
+                    sikeres = true; // Ez a régi kódból hiányzott!
                 }
                 break;
         }
-        return false;
+
+        // PUSH FÁZIS: Ha vettünk valamit és megváltozott a pénz/készlet,
+        // értesítjük a grafikus felületet (HUD-ot és a Boltot), hogy rajzolják újra magukat!
+        if (sikeres) {
+            notifyObservers();
+        }
+
+        return sikeres;
     }
 
     /**

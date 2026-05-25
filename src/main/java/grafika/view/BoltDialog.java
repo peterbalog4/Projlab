@@ -85,7 +85,7 @@ public class BoltDialog extends JDialog implements Observer {
         // 2. Anyagok hozzáadása [cite: 71-82]
         hozzaadBoltElem(anyagokPanel, "[7] Biokerozin (töltet)", 5000, "BIOKEROZIN");
         hozzaadBoltElem(anyagokPanel, "[8] Só (töltet)", 8000, "SO");
-        hozzaadBoltElem(anyagokPanel, "[9] Zúzalék (töltet)", 6000, "ZUZALEK");
+        hozzaadBoltElem(anyagokPanel, "[9] Zúzalék (töltet)", 5000, "ZUZALEK");
 
         // 3. Járművek hozzáadása [cite: 89, 90]
         hozzaadBoltElem(jarmuvekPanel, "[H] Új Hókotró", 2000000, "HOKOTRO");
@@ -132,30 +132,39 @@ public class BoltDialog extends JDialog implements Observer {
      * Tranzakciókezelés. Ellenőrzi a fedezetet és meghívja a modell módosító metódusait.
      */
     private void vasarlasKezeles(String nev, int ar, String tipusId) {
-        int aktualisJmf = modell.getJMF(); // PULL az ellenőrzéshez 
+        
+        // 1. Átfordítjuk a Bolt belső azonosítóit a Telephely által várt szavakra
+        String telephelyItem = "";
+        switch(tipusId) {
+            case "SOPRO": telephelyItem = "soprofej"; break;
+            case "HANYO": telephelyItem = "hanyofej"; break;
+            case "JEGTORO": telephelyItem = "jegtorofej"; break;
+            case "SARKANY": telephelyItem = "sarkanyfej"; break;
+            case "SOSZORO": telephelyItem = "soszorofej"; break;
+            case "ZUZALEKSZORO": telephelyItem = "zuzalekszorofej"; break;
+            case "BIOKEROZIN": telephelyItem = "biokerozin"; break;
+            case "SO": telephelyItem = "so"; break;
+            case "ZUZALEK": telephelyItem = "zuzalek"; break;
+            case "HOKOTRO": telephelyItem = "hokotro"; break;
+        }
 
-        if (aktualisJmf < ar) {
+        // 2. TÉNYLEGES VÁSÁRLÁS MEGHÍVÁSA A MODELLEN
+        boolean sikeres = modell.vasarol(telephelyItem);
+
+        // 3. Vizuális visszajelzés a felhasználónak
+        if (sikeres) {
+            System.out.println("BOLT: Sikeres vásárlás! (" + telephelyItem + ")");
+            JOptionPane.showMessageDialog(this, 
+                "Sikeresen megvásároltad: " + nev, 
+                "Sikeres vásárlás", 
+                JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            System.out.println("BOLT: Sikertelen vásárlás (nincs elég JMF)!");
             JOptionPane.showMessageDialog(this, 
                 "Nincs elég JMF egyenleged a vásárláshoz!", 
                 "Sikertelen vásárlás", 
                 JOptionPane.ERROR_MESSAGE);
-            return;
         }
-
-        // --- MODELL MÓDOSÍTÁSA (Üzleti logika meghívása) ---
-        // TODO: Kösd össze a saját Telephely osztályod tranzakciós metódusaival!
-        // Példa:
-        // modell.levonJMF(ar);
-        // if(tipusId.equals("SO")) modell.addSo(50);
-        // ... stb.
-        
-        // Mivel a modell módosul, az meghívja a notifyObservers()-t, 
-        // ami automatikusan triggereli az itteni update() függvényt is! [cite: 109, 110]
-
-        JOptionPane.showMessageDialog(this, 
-            "Sikeresen megvásároltad: " + nev, 
-            "Sikeres vásárlás", 
-            JOptionPane.INFORMATION_MESSAGE);
     }
 
     /**

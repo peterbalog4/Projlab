@@ -96,6 +96,7 @@ public class TelephelyView extends JPanel implements Observer {
                 boltAblak.setVisible(true);
             }
         });
+        update();
     }
 
     /**
