@@ -143,17 +143,22 @@ public class Hokotro extends Jarmu {
         }
     }
 
-    /**
+/**
      * Kezdeményezi az úttakarítási folyamatot az aktuális sávon.
      *
      * Ha van felszerelt kotrófej, meghívja annak {@link KotroFej#takarit} metódusát.
-     * Ha a kotrófej jelzi, hogy eredményes volt a takarítás, a tulajdonos
-     * telephelyének JMF egyenlege 10 000-rel nő.
+     * Csak akkor ad 10 000 JMF jutalmat, ha a sávon ténylegesen volt hó vagy jég.
      */
     public void dolgozik() {
         if (aktivFej != null && aktualisSav != null) {
+            // Eltároljuk a sáv állapotát a takarítás előtt
+            int hoElotte = aktualisSav.getHo();
+            boolean jegElotte = aktualisSav.isJeg();
+
             boolean tisztabb = aktivFej.takarit(aktualisSav, aktualisSav.getUt());
-            if (tisztabb) {
+
+            // Csak akkor fizetünk, ha a takarítás "sikeres" volt, ÉS volt is mit letakarítani
+            if (tisztabb && (hoElotte > 0 || jegElotte)) {
                 telephely.JMFmodosit(100000);
             }
         }
