@@ -54,13 +54,45 @@ public class Auto extends Jarmu {
      * A sáv végének elérésekor a Pozicio hívja meg.
      * Az autó kiszámolja a következő utat és kanyarodik.
      */
-    @Override
+@Override
     public void elertSavVeget() {
+        // 1. Ellenőrizzük, hogy elértük-e a célt (munkahely vagy épp az otthon)
+        if (aktualisSav != null && aktualisSav.getUt().equals(munkahely)) {
+            // Megkeressük a jelenlegi út szembe sávját
+            segedOsztalyok.HaladasiIrany ellentetes = (aktualisSav.getIrany() == segedOsztalyok.HaladasiIrany.A_BOL_B_BE) 
+                    ? segedOsztalyok.HaladasiIrany.B_BOL_A_BA 
+                    : segedOsztalyok.HaladasiIrany.A_BOL_B_BE;
+                    
+            for (funkcionalisElemek.Sav s : aktualisSav.getUt().getSavok()) {
+                if (s.getIrany() == ellentetes) {
+                    // Megkísérelünk átsorolni a szembe sávba (U-turn)
+                    if (s.elfogad(this)) {
+                        // Siker esetén felcseréljük az úti célokat
+                        Ut tmp = otthon;
+                        otthon = munkahely;
+                        munkahely = tmp;
+                        
+                        utvonal.clear(); // Töröljük a régi útvonalat
+                        System.out.println("Auto " + id + " célhoz ért, U-turn és indul vissza!");
+                        return; // Kilépünk, a mozgás a következő körben indul az új irányba
+                    }
+                }
+            }
+            // Ha a szembe sáv épp foglalt (áll benne valaki), várunk 1 kört
+            megall(1);
+            return;
+        }
+
+        // 2. Normál haladás és útvonalkövetés
         Ut kovetkezo = kovetkezoUt();
         if (kovetkezo != null) {
             kanyarodik(kovetkezo);
+        } else {
+            // Ha nincs érvényes út tovább, várakozik
+            megall(1);
         }
     }
+
      /*
      * Ha a jármű vár (varakozasiIdo > 0), csökkenti a számlálót és nem mozdul.
      * Ha elakadt (varakozasiIdo == -1), megpróbál szabad szomszédos sávba váltani.

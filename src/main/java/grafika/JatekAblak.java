@@ -64,7 +64,7 @@ public class JatekAblak extends JFrame implements Observer {
         felsoSav.add(korLabel);
         this.getContentPane().add(felsoSav, BorderLayout.NORTH);
 
-        // ÚJ: Létrehozunk egy üres konténert a jobb oldali HUD számára
+        // Létrehozunk egy üres konténert a jobb oldali HUD számára
         JPanel jobbPanel = new JPanel(new BorderLayout());
         this.getContentPane().add(jobbPanel, BorderLayout.EAST);
 
@@ -77,6 +77,23 @@ public class JatekAblak extends JFrame implements Observer {
         map.load("src/main/java/vezerles/nagy_palya.txt", jatekter, telephelyModell);
 
         java.util.List<funkcionalisElemek.Ut> utak = modell.getUtak();
+
+        if (utak.size() >= 9) { 
+            for (int i = 0; i < 4; i++) {
+                funkcionalisElemek.Ut otthonUt = utak.get(i * 2 + 1);      
+                funkcionalisElemek.Ut munkahelyUt = utak.get(i * 2 + 2);   
+                
+                if (!otthonUt.getSavok().isEmpty()) {
+                    funkcionalisElemek.Sav induloSav = otthonUt.getSavok().get(0);
+                    jarmuvek.Auto induloAuto = new jarmuvek.Auto("auto_start_" + (i + 1), otthonUt, munkahelyUt);
+                    
+                    // Elhelyezzük az autót a saját otthonának legelső sávján
+                    if (induloSav.elfogad(induloAuto)) {
+                        modell.addJarmu(induloAuto); 
+                    }
+                }
+            }
+        }
 
         if (!utak.isEmpty() && !utak.get(0).getSavok().isEmpty()) {
             funkcionalisElemek.Sav induloSav = utak.get(0).getSavok().get(0);
