@@ -58,9 +58,13 @@ public class JatekAblak extends JFrame implements Observer {
         // 1. Letakarítunk mindent a JFrame-ről! Ez a legbiztosabb módszer.
         this.getContentPane().removeAll();
 
+        // Új játék: a körszámlálót és a modell nyilvántartását nullázzuk, hogy a
+        // főmenüből indított új meccs 0. körről, tiszta pályával induljon.
+        modell.reset();
+
         // 2. Felső sáv a Körszámlálónak
         JPanel felsoSav = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        korLabel = new JLabel("KÖR: " + modell.getKor() + " / 50");
+        korLabel = new JLabel("KÖR: " + modell.getKor() + " / " + KorSzamlalo.MAX_KOR);
         korLabel.setFont(new Font("Arial", Font.BOLD, 16));
         felsoSav.add(korLabel);
         this.getContentPane().add(felsoSav, BorderLayout.NORTH);
@@ -152,6 +156,12 @@ if (!utak.isEmpty() && !utak.get(0).getSavok().isEmpty()) {
         kovetkezoKorGomb.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Körlimit: MAX_KOR kör játszható le. Ha már letelt mind, a következő
+                // kör (a MAX_KOR+1.) helyett a játéknak vége.
+                if (modell.getKor() >= KorSzamlalo.MAX_KOR) {
+                    jatekVege();
+                    return;
+                }
                 System.out.println("Gombnyomás: Következő kör!");
                 modell.leptet();
             }
@@ -189,9 +199,36 @@ if (!utak.isEmpty() && !utak.get(0).getSavok().isEmpty()) {
     public void update() {
         // PULL fázis: Amikor a modell szólt, hogy telt az idő, frissítjük a szöveget!
         if (korLabel != null) {
-            korLabel.setText("KÖR: " + modell.getKor() + " / 50");
+            korLabel.setText("KÖR: " + modell.getKor() + " / " + KorSzamlalo.MAX_KOR);
         }
         repaint();
+    }
+
+    /**
+     * A játék vége: egyszerű győzelmi képernyőt jelenít meg, majd visszadob a főmenübe.
+     * Akkor hívódik, amikor a játékos a {@link KorSzamlalo#MAX_KOR}. kör után próbálna léptetni.
+     */
+    private void jatekVege() {
+        JOptionPane.showMessageDialog(
+                this,
+                "<html><div style='text-align:center;'>"
+                        + "<h1>🏆 GYŐZELEM! 🏆</h1>"
+                        + "<p>Letelt mind a(z) " + KorSzamlalo.MAX_KOR + " kör.</p>"
+                        + "<p>A játéknak vége – szép munka volt!</p></div></html>",
+                "Játék vége",
+                JOptionPane.INFORMATION_MESSAGE);
+        foMenubeVissza();
+    }
+
+    /**
+     * Letakarítja a játéktér paneljeit, és visszaállítja a főmenüt.
+     */
+    private void foMenubeVissza() {
+        this.getContentPane().removeAll();
+        korLabel = null; // a régi (eltávolított) felirat referenciáját elengedjük
+        initLayoutVaz();
+        this.getContentPane().revalidate();
+        this.getContentPane().repaint();
     }
 
     /**

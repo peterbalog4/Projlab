@@ -18,6 +18,13 @@ import java.util.List;
 public class KorSzamlalo extends AbstractObservable {
 
     /**
+     * A játék körlimitje. Ennyi kör (1..MAX_KOR) játszható le; a MAX_KOR. kör után
+     * a játéknak vége. A GUI ezt használja a „KÖR: x / MAX_KOR" feliratban és a
+     * játék végének eldöntéséhez.
+     */
+    public static final int MAX_KOR = 50;
+
+    /**
      * A játék kezdete óta eltelt körök száma.
      */
     private int kor = 0;
@@ -87,6 +94,20 @@ public class KorSzamlalo extends AbstractObservable {
      */
     public void setHoesik(boolean hoesik) {
         this.hoesik = hoesik;
+    }
+
+    /**
+     * Visszaállítja a körszámlálót egy új játékhoz: nullázza a körszámot, és kiüríti
+     * a nyilvántartott járműveket, utakat és sávokat, hogy a főmenüből indított új
+     * játék tiszta lappal kezdjen (ne maradjon benne az előző játék pályája/állapota).
+     * A megfigyelőket (View-k) nem érinti.
+     */
+    public void reset() {
+        kor = 0;
+        jarmuvek.clear();
+        utak.clear();
+        savok.clear();
+        hoesik = false;
     }
 
     /**
