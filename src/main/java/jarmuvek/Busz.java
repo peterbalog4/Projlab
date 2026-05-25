@@ -121,10 +121,12 @@ public class Busz extends Jarmu {
     public void kozlekedik() {
         if (varakozasiIdo > 0) {
             varakozasiIdo--;
-            if (varakozasiIdo == 0) {
-                allapot = Allapot.KOZLEKEDIK;
-            }
             return;
+        }
+        if (varakozasiIdo == 0) {
+                allapot = Allapot.KOZLEKEDIK;
+                      pozicio.halad(this, 300);
+                      return;
         }
 
         if (aktualisSav == null || pozicio == null) return;
@@ -132,9 +134,7 @@ public class Busz extends Jarmu {
         if (allapot == Allapot.ELAKADT) { //TODO ezt átgondolni
             return; 
         }
-
-        allapot = Allapot.KOZLEKEDIK;
-        pozicio.halad(this, 300);
+  
     }
 
     /**

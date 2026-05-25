@@ -40,7 +40,7 @@ public abstract class Jarmu {
      *   <li>{@code -1} – határozatlan ideig áll (pl. mély hóban elakadt)</li>
      * </ul>
      */
-    protected int varakozasiIdo;
+    protected int varakozasiIdo = 0;
 
     /**
      * A jármű aktuális állapota.
