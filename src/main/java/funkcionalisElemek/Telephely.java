@@ -314,8 +314,15 @@ public class Telephely extends AbstractObservable {
         kimenet.println(sb);
     }
 
+    /**
+     * Visszaadja a telephely raktárában lévő, éppen nem használt kotrófejeket.
+     * A grafikus felület ({@link grafika.view.TelephelyView}) ezen keresztül listázza
+     * a felszerelhető fejeket. Védő másolatot ad vissza, hogy a hívó ne módosíthassa
+     * közvetlenül a belső raktárlistát.
+     *
+     * @return A tárolt {@link KotroFej}-ek másolt listája (sosem {@code null}).
+     */
     public List<KotroFej> getKotrofejek() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getKotrofejek'");
+        return new ArrayList<>(kotroFejek);
     }
 }

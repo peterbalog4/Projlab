@@ -1,9 +1,12 @@
 package vezerles;
 
 import funkcionalisElemek.KorSzamlalo;
+import funkcionalisElemek.Sav;
 import funkcionalisElemek.Telephely;
 import funkcionalisElemek.Ut;
 import grafika.panel.JatekterPanel;
+import grafika.view.KanyarView;
+import grafika.view.KeresztezodesView;
 import grafika.view.UtView;
 import segedOsztalyok.Irany;
 
@@ -75,11 +78,38 @@ public class Map_generator {
         }
     }
 
+    // ── Belső segédosztály: csomópontból kiinduló utak iránya ────────────────
+
+    /**
+     * Egy csomóponthoz nyilvántartja, hogy mely égtájak felé indul út belőle,
+     * és a csatlakozó utak közül a legnagyobb sávszámot (a kanyar-cella méretéhez).
+     * É = north, D = south, K = east (jobbra), Ny = west (balra).
+     */
+    private static class NodeAcc {
+        boolean N, S, E, W;
+        int iranyokSzama = 0;
+        int savSzam = 0;
+
+        void hozzaad(char dir, int savok) {
+            switch (dir) {
+                case 'N': if (!N) { N = true; iranyokSzama++; } break;
+                case 'S': if (!S) { S = true; iranyokSzama++; } break;
+                case 'E': if (!E) { E = true; iranyokSzama++; } break;
+                case 'W': if (!W) { W = true; iranyokSzama++; } break;
+            }
+            savSzam = Math.max(savSzam, savok);
+        }
+    }
+
     // ── Állapot ────────────────────────────────────────────────────────────
+
+    /** Egy sáv (és így egy kanyar-cella) szélessége pixelben. Egyezik az UtView/SavView 60-ával. */
+    private static final int SAV_SZELESSEG = 60;
 
     private final Map<String, Node>      nodeok     = new HashMap<>();
     private final Map<String, Ut>        utak       = new HashMap<>();
     private final Map<String, Telephely> telephelyek = new HashMap<>();
+    private final Map<String, NodeAcc>   csomopontIranyok = new HashMap<>();
     private final KorSzamlalo           korszamlalo;
 
     // ── Konstruktor ────────────────────────────────────────────────────────
@@ -145,6 +175,27 @@ public class Map_generator {
                             utak.put(utId, u);
                             korszamlalo.addUt(u);
 
+                            // A sávokat is regisztráljuk a körszámlálóba, különben a
+                            // leptet()-ben az allapotFrissit() üres listán futna, és
+                            // sosem indulna be a jegesedés, sem a sáv-View frissítése.
+                            for (Sav s : u.getSavok()) {
+                                korszamlalo.addSav(s);
+                            }
+
+                            // Feljegyezzük, melyik csomópontból milyen irányba indul az út,
+                            // hogy a betöltés végén legenerálhassuk a kanyar-csempéket.
+                            int savokOsszesen = savokA + savokB;
+                            char dirA, dirB;
+                            if (a.y == b.y) {                 // vízszintes út
+                                dirA = (b.x > a.x) ? 'E' : 'W';
+                                dirB = (b.x > a.x) ? 'W' : 'E';
+                            } else {                          // függőleges út
+                                dirA = (b.y > a.y) ? 'S' : 'N';
+                                dirB = (b.y > a.y) ? 'N' : 'S';
+                            }
+                            csomopontIranyok.computeIfAbsent(idA, k -> new NodeAcc()).hozzaad(dirA, savokOsszesen);
+                            csomopontIranyok.computeIfAbsent(idB, k -> new NodeAcc()).hozzaad(dirB, savokOsszesen);
+
                             UtView utView = new UtView(u, geo.startX, geo.startY, geo.irany);
                             jatekter.addUtView(utView);
                             break;
@@ -202,8 +253,52 @@ public class Map_generator {
             System.err.println("[Map] Hiba: fájl nem található: " + filename);
         }
 
+        generaljCsomopontGrafikat(jatekter);
+
         System.out.printf("[Map] Betöltés kész – %d út, %d telephely, %d csomópont%n",
                 utak.size(), telephelyek.size(), nodeok.size());
+    }
+
+    // ── Kanyar-generálás ────────────────────────────────────────────────────
+
+    /**
+     * Legenerálja a csomópontok grafikáját a hozzájuk csatlakozó utak alapján:
+     *   - pontosan 2, egymásra merőleges út → kanyar ({@link KanyarView}),
+     *   - 3 vagy 4 út → kereszteződés ({@link KeresztezodesView}),
+     *   - 2 collineáris (egyenes átmenő) vagy 1 (zsákutca) → nincs külön grafika.
+     *
+     * A cella minden esetben a csomóponthoz illesztett, az út szélességével megegyező
+     * oldalú négyzet (az utak +x/+y irányba terülnek el), így pontosan a csatlakozó
+     * utak éleire illeszkedik. A kanyar alap-állása a Nyugat+Dél éleket köti össze;
+     * a forgatás:  {Ny,D}→0  {É,Ny}→1  {É,K}→2  {K,D}→3  (90°-os lépések).
+     */
+    private void generaljCsomopontGrafikat(JatekterPanel jatekter) {
+        for (Map.Entry<String, NodeAcc> e : csomopontIranyok.entrySet()) {
+            Node n = nodeok.get(e.getKey());
+            if (n == null) continue;
+
+            NodeAcc acc = e.getValue();
+            int meret = acc.savSzam * SAV_SZELESSEG;
+            boolean vizszintesVan = acc.E || acc.W;
+            boolean fuggolegesVan = acc.N || acc.S;
+
+            if (acc.iranyokSzama == 2 && vizszintesVan && fuggolegesVan) {
+                int forgatas;
+                if      (acc.W && acc.S) forgatas = 0;
+                else if (acc.N && acc.W) forgatas = 1;
+                else if (acc.N && acc.E) forgatas = 2;
+                else                     forgatas = 3; // K && D
+                jatekter.addKanyarView(new KanyarView(n.x, n.y, meret, forgatas));
+                System.out.printf("[Map] Kanyar: %s  px=(%d,%d)  meret=%d  forgatas=%d%n",
+                        e.getKey(), n.x, n.y, meret, forgatas);
+
+            } else if (acc.iranyokSzama >= 3) {
+                jatekter.addKeresztezodesView(
+                        new KeresztezodesView(n.x, n.y, meret, acc.N, acc.S, acc.E, acc.W));
+                System.out.printf("[Map] Kereszteződés: %s  px=(%d,%d)  meret=%d  agak=%d%n",
+                        e.getKey(), n.x, n.y, meret, acc.iranyokSzama);
+            }
+        }
     }
 
     // ── Geometria-számítás ─────────────────────────────────────────────────

@@ -81,7 +81,7 @@ public class JatekAblak extends JFrame implements Observer {
         // 1. FONTOS: Előbb be kell tölteni a pályát, hogy legyenek utak a modellben!
         // (Ha ez a két sor lejjebb volt, hozd át ide a jatekter hozzáadása utánra)
         Map_generator map = new Map_generator(modell);
-        map.load("src/main/java/vezerles/test_map.txt", jatekter);
+        map.load("src/main/java/vezerles/nagy_palya.txt", jatekter);
 
         // 2. Itt lekérjük az utakat a modellből, ezzel megszűnik az "utak cannot be resolved" hiba
         java.util.List<funkcionalisElemek.Ut> utak = modell.getUtak();
@@ -150,8 +150,23 @@ public class JatekAblak extends JFrame implements Observer {
                 modell.leptet();
             }
         });
+        // Havazás bekapcsolása indításkor + kapcsoló a vezérlőpulton.
+        // Bekapcsolt állapotban a leptet() minden körben havat szór minden sávra,
+        // így megfigyelhető a hófelhalmozódás és (5 áthaladás után) a jegesedés.
+        modell.setHoesik(true);
+        JToggleButton havazasGomb = new JToggleButton("❄ Havazás: BE", true);
+        havazasGomb.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean be = havazasGomb.isSelected();
+                modell.setHoesik(be);
+                havazasGomb.setText(be ? "❄ Havazás: BE" : "❄ Havazás: KI");
+            }
+        });
+
         vezerloPanel.add(ujAutoGomb);
         vezerloPanel.add(kovetkezoKorGomb);
+        vezerloPanel.add(havazasGomb);
         this.getContentPane().add(vezerloPanel, BorderLayout.SOUTH);
 
         // 6. Swing képernyőfrissítés (kötelező a removeAll után)

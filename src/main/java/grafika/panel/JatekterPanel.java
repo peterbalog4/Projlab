@@ -2,6 +2,8 @@ package grafika.panel;
 
 import grafika.Observer;
 import grafika.view.JarmuView;
+import grafika.view.KanyarView;
+import grafika.view.KeresztezodesView;
 import grafika.view.UtView;
 import jarmuvek.Hokotro;
 import jarmuvek.Jarmu;
@@ -27,6 +29,8 @@ public class JatekterPanel extends JPanel implements Observer {
 
     // A kirajzolandó grafikus nézetek listái
     private List<UtView> utakNezetei;
+    private List<KanyarView> kanyarNezetei;
+    private List<KeresztezodesView> keresztezodesNezetei;
     private List<JarmuView> jarmuvekNezetei;
     private KorSzamlalo modell;
     private Map<Jarmu, JarmuView> jarmuNezetekMap;
@@ -34,10 +38,14 @@ public class JatekterPanel extends JPanel implements Observer {
 public JatekterPanel(KorSzamlalo modell) {
         this.modell = modell;
         this.utakNezetei = new ArrayList<>();
+        this.kanyarNezetei = new ArrayList<>();
+        this.keresztezodesNezetei = new ArrayList<>();
         this.jarmuvekNezetei = new ArrayList<>();
         this.jarmuNezetekMap = new HashMap<>();
 
-        setBackground(new Color(240, 248, 255));
+        // Fűzöld háttér, hogy az utak közti (nem-úttest) terület ne fehéren villogjon,
+        // és a kanyarok fűhátere zökkenőmentesen olvadjon bele.
+        setBackground(KanyarView.GRASS);
         
         // EGÉR IRÁNYÍTÁS BEKÖTÉSE
         // EGÉR IRÁNYÍTÁS BEKÖTÉSE
@@ -75,6 +83,16 @@ public JatekterPanel(KorSzamlalo modell) {
     // hogy felpakolja a nézeteket a vászonra
     public void addUtView(UtView uv) {
         utakNezetei.add(uv);
+    }
+
+    /** A pályabetöltő hívja: felveszi egy sarok kanyar-nézetét. */
+    public void addKanyarView(KanyarView kv) {
+        kanyarNezetei.add(kv);
+    }
+
+    /** A pályabetöltő hívja: felveszi egy 3-/4-ágú kereszteződés nézetét. */
+    public void addKeresztezodesView(KeresztezodesView kv) {
+        keresztezodesNezetei.add(kv);
     }
 
     /**
@@ -119,7 +137,19 @@ public void update() {
             uv.draw(g);
         }
 
-        // 2. Erre rajzoljuk rá a járműveket, hogy takarják az aszfaltot/havat
+        // 2. A kanyarok a sarkokra, az egyenes sávok fölé, hogy elfedjék az ott
+        //    átfedő téglalapokat egy rendezett ívvel.
+        for (KanyarView kv : kanyarNezetei) {
+            kv.draw(g);
+        }
+
+        // 3. A 3-/4-ágú kereszteződések egységes aszfaltfoltja, szintén az utak fölé,
+        //    hogy a keresztben futó sávjelzések ne zsúfolják össze a csomópontot.
+        for (KeresztezodesView kv : keresztezodesNezetei) {
+            kv.draw(g);
+        }
+
+        // 4. Legfelülre a járművek, hogy takarják az aszfaltot/havat
         for (JarmuView jv : jarmuvekNezetei) {
             jv.draw(g);
         }

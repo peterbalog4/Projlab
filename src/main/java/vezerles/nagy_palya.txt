@@ -1,0 +1,46 @@
+# ═══════════════════════════════════════════════════════════════
+#  "Bízz bennem, mérnök leszek" – nagyobb városi térkép
+# ═══════════════════════════════════════════════════════════════
+#
+#  3x3 csomópont-rács, 1+1 sávos utakkal (keskenyebb, úttest-szerű).
+#  Tartalmaz: 4 sarkot (kanyar), 4 T-kereszteződést és 1 db 4-ágú keresztet.
+#
+#    n00 ── n10 ── n20
+#     │      │      │
+#    n01 ── n11 ── n21
+#     │      │      │
+#    n02 ── n12 ── n22
+#
+#  Koordináták: origó 40, rácstávolság 240, út-szélesség 120 (=2 sáv).
+#  Max kiterjedés: 640x640 px, így a HUD melletti játéktérben elfér.
+# ════════════════════════════════════════════════════════════════
+
+# Csomópontok (x, y)
+node n00   40    40
+node n10  280    40
+node n20  520    40
+node n01   40   280
+node n11  280   280
+node n21  520   280
+node n02   40   520
+node n12  280   520
+node n22  520   520
+
+# Vízszintes utak: road <id> <savokA> <savokB> <nodeA> <nodeB>
+road rh0 1 1 n00 n10
+road rh1 1 1 n10 n20
+road rh2 1 1 n01 n11
+road rh3 1 1 n11 n21
+road rh4 1 1 n02 n12
+road rh5 1 1 n12 n22
+
+# Függőleges utak
+road rv0 1 1 n00 n01
+road rv1 1 1 n01 n02
+road rv2 1 1 n10 n11
+road rv3 1 1 n11 n12
+road rv4 1 1 n20 n21
+road rv5 1 1 n21 n22
+
+# Telephely a bal-felső csomópontnál
+depot d0 n00 5000
