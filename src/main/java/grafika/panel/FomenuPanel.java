@@ -92,7 +92,7 @@ public class FomenuPanel extends JPanel {
             if (szuloAblak instanceof JatekAblak) {
                 System.out.println("--> Szülő ablak megtalálva (JatekAblak). Panelváltás indítása...");
                 JatekAblak foablak = (JatekAblak) szuloAblak;
-                foablak.jatekInditas(ujTelephelyModell);
+                foablak.jatekInditas(jatekMod, ujTelephelyModell);
             } else {
                 System.out.println("HIBA: A szuloAblak nem JatekAblak típusú, hanem: " + szuloAblak.getClass().getName());
             }
