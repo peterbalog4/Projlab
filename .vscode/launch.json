@@ -1,0 +1,18 @@
+{
+    // VS Code Java indítási konfiguráció.
+    // Fontos: "console": "internalConsole" — a terminálos indítás okozta
+    //   "Failed to launch debuggee in terminal / TransportTimeoutException" elkerülésére.
+    // "cwd": "${workspaceFolder}" — a projekt gyökeréből fut, hogy a relatív
+    //   kép- (ut.PNG, ho.PNG, ...) és pályaútvonalak (src/main/java/vezerles/nagy_palya.txt) feloldódjanak.
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Bízz bennem – Main (GUI)",
+            "request": "launch",
+            "mainClass": "vezerles.Main",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole"
+        }
+    ]
+}

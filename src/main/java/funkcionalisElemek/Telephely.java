@@ -323,6 +323,8 @@ public class Telephely extends AbstractObservable {
      * @return A tárolt {@link KotroFej}-ek másolt listája (sosem {@code null}).
      */
     public List<KotroFej> getKotrofejek() {
-        return new ArrayList<>(kotroFejek);
+       
+        return kotroFejek;
+    
     }
 }

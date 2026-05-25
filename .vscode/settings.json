@@ -1,0 +1,5 @@
+{
+    // A CodeLens "Run | Debug" gombok (launch.json nélküli indítás) is belső
+    // konzolt használjanak, ne terminált — ez kerüli el a TransportTimeoutException-t.
+    "java.debug.settings.console": "internalConsole"
+}
