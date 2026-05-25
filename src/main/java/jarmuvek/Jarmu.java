@@ -168,7 +168,9 @@ public abstract class Jarmu {
     public void kanyarodik(Ut celUt) {
         if (aktualisSav != null) {
             aktualisSav.jarmuKanyarodik(this, celUt);
-            this.allapot = Allapot.KOZLEKEDIK;
+            if (this.allapot != Allapot.OSSZECSUSZOTT) {
+                this.allapot = Allapot.KOZLEKEDIK;
+            }
         }
     }
 

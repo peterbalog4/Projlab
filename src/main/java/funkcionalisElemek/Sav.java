@@ -149,7 +149,11 @@ public class Sav extends AbstractObservable {
     public int hoTakarit(int tavolsag) {
         int eltakaritottMennyiseg = this.ho;
         this.ho = 0;
-        this.jarmuvek.forEach(jarmu -> jarmu.megall(0));
+        this.jarmuvek.forEach(jarmu -> {
+            if (jarmu.getAllapot() == Jarmu.Allapot.ELAKADT) {
+                jarmu.megall(0);
+            }
+        });
         if (tavolsag > 0 && (eltakaritottMennyiseg > 0 || zuzalek)) {
             this.ut.havatAtad(this, tavolsag, eltakaritottMennyiseg, zuzalek);
             zuzalekEltakarit();
@@ -178,6 +182,14 @@ public class Sav extends AbstractObservable {
         lezarvaKorig = kor;
     }
 
+    /**
+     * Visszaadja, hogy a sáv jelenleg le van-e zárva baleset miatt.
+     * @return true, ha le van zárva, false egyébként.
+     */
+    public boolean isLezarva() {
+        return lezarvaKorig > 0;
+    }
+    
     /**
      * Fogadja a belépő járművet a sávba.
      *
@@ -230,9 +242,13 @@ public class Sav extends AbstractObservable {
      */
     public void hatasAlkalmaz(Jarmu j){
         if(!(j instanceof Hokotro)){
+            if (j.getAllapot() == Jarmu.Allapot.OSSZECSUSZOTT) {
+                return;
+            }
+
             if(ho < 3 && jeg  && !zuzalek){
                 j.csuszik();
-        }
+            }
             else if(ho >= 3){
                 j.megall(-1);
             }

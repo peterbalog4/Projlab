@@ -154,7 +154,7 @@ public class Hokotro extends Jarmu {
         if (aktivFej != null && aktualisSav != null) {
             boolean tisztabb = aktivFej.takarit(aktualisSav, aktualisSav.getUt());
             if (tisztabb) {
-                telephely.JMFmodosit(10000);
+                telephely.JMFmodosit(100000);
             }
         }
     }

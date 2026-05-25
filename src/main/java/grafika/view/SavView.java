@@ -27,6 +27,8 @@ public class SavView implements Observer {
     private static final Image HO_IMG  = betoltKep("ho.PNG");
     private static final Image JEG_IMG = betoltKep("jeg.png");
     private static final Image VEGALLOMAS_IMG = betoltKep("vegallomas.png");
+    // ÚJ: Lezárás ikonjának betöltése
+    private static final Image LEZARVA_IMG = betoltKep("lezarva.png");
 
     /** Egy textúrát tölt be a projekt gyökeréből; hiba esetén null-t ad vissza. */
     private static Image betoltKep(String nev) {
@@ -48,6 +50,7 @@ public class SavView implements Observer {
     private int homennyiseg;
     private boolean jeges;
     private boolean zuzalekos;
+    private boolean lezarva;      // ÚJ: Állapot a lezárás nyilvántartására
     private final int MERET = 60; // A sáv vastagsága (a haladási irányra merőleges)
     private final Irany irany;
 
@@ -69,6 +72,8 @@ public class SavView implements Observer {
         homennyiseg = modell.getHo();
         jeges = modell.isJeg();
         zuzalekos = modell.isZuzalek();
+        // ÚJ: Lekérdezzük a sáv lezárási állapotát a modelltől
+        lezarva = modell.isLezarva(); 
     }
 
     public Sav getModell() { return modell; }
@@ -76,7 +81,6 @@ public class SavView implements Observer {
     public int getXKord() { return xKord; }
     public int getYKord() { return yKord; }
     
-    // Ezt hiányolta a fordító:
     public Irany getIrany() { return irany; }
 
     public void draw(Graphics g) {
@@ -99,6 +103,21 @@ public class SavView implements Observer {
         } else if (zuzalekos) {
             g2d.setColor(new Color(110, 110, 110, 120));
             g2d.fillRect(xKord, yKord, w, h);
+        }
+
+        // ÚJ: Ha le van zárva, a sáv két végére rárajzoljuk az ikont (MERET x MERET formában)
+        if (lezarva && LEZARVA_IMG != null) {
+            if (fuggoleges) {
+                // Felső vég
+                g2d.drawImage(LEZARVA_IMG, xKord, yKord, MERET, MERET, null);
+                // Alsó vég
+                g2d.drawImage(LEZARVA_IMG, xKord, yKord + h - MERET, MERET, MERET, null);
+            } else {
+                // Bal vég
+                g2d.drawImage(LEZARVA_IMG, xKord, yKord, MERET, MERET, null);
+                // Jobb vég
+                g2d.drawImage(LEZARVA_IMG, xKord + w - MERET, yKord, MERET, MERET, null);
+            }
         }
 
         g2d.dispose();
