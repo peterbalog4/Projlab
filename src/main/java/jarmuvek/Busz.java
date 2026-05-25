@@ -134,7 +134,7 @@ public class Busz extends Jarmu {
         }
 
         allapot = Allapot.KOZLEKEDIK;
-        pozicio.halad(this, 50);
+        pozicio.halad(this, 100);
     }
 
     /**

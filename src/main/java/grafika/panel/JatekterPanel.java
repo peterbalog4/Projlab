@@ -47,7 +47,7 @@ public JatekterPanel(KorSzamlalo modell) {
         // és a kanyarok fűhátere zökkenőmentesen olvadjon bele.
         setBackground(KanyarView.GRASS);
         
-        // EGÉR IRÁNYÍTÁS BEKÖTÉSE (Távolság alapú döntéssel)
+        // EGÉR IRÁNYÍTÁS BEKÖTÉSE
         addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -55,23 +55,22 @@ public JatekterPanel(KorSzamlalo modell) {
                 int mouseY = e.getY();
                 funkcionalisElemek.Ut celUt = null;
 
-                jarmuvek.Hokotro aktHokotro = null;
+                // Megkeressük a játékos járművét (Hókotró vagy Busz)
+                jarmuvek.Jarmu jatekosJarmu = null;
                 for (jarmuvek.Jarmu j : modell.getJarmuvek()) {
-                    if (j instanceof jarmuvek.Hokotro) {
-                        aktHokotro = (jarmuvek.Hokotro) j;
+                    if (j instanceof jarmuvek.Hokotro || j instanceof jarmuvek.Busz) {
+                        jatekosJarmu = j;
                         break;
                     }
                 }
 
                 double minTavolsag = Double.MAX_VALUE;
 
-                // Végignézzük az utakat, és ha több is fedi a kattintást, a legközelebbit választjuk
                 for (grafika.view.UtView uv : utakNezetei) {
                     if (uv.contains(mouseX, mouseY)) {
                         funkcionalisElemek.Ut vizsgaltUt = uv.getModell();
                         
-                        // Az aktuális utat ignoráljuk
-                        if (aktHokotro != null && aktHokotro.getAktualisSav() != null && aktHokotro.getAktualisSav().getUt() == vizsgaltUt) {
+                        if (jatekosJarmu != null && jatekosJarmu.getAktualisSav() != null && jatekosJarmu.getAktualisSav().getUt() == vizsgaltUt) {
                             continue;
                         }
                         
@@ -83,11 +82,14 @@ public JatekterPanel(KorSzamlalo modell) {
                     }
                 }
 
-                if (celUt != null && aktHokotro != null) {
-                    aktHokotro.setKovetkezoUt(celUt);
+                if (celUt != null && jatekosJarmu != null) {
+                    // Átadjuk a célt annak megfelelően, hogy melyikkel játszunk
+                    if (jatekosJarmu instanceof jarmuvek.Hokotro) {
+                        ((jarmuvek.Hokotro) jatekosJarmu).setKovetkezoUt(celUt);
+                    } else if (jatekosJarmu instanceof jarmuvek.Busz) {
+                        ((jarmuvek.Busz) jatekosJarmu).setKovetkezoUt(celUt);
+                    }
                     System.out.println("Játékos kattintott! Új célpont átadva: " + celUt.id);
-                } else {
-                    System.out.println("Kattintás a semmibe. X=" + mouseX + ", Y=" + mouseY);
                 }
             }
         });

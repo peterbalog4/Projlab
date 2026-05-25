@@ -52,7 +52,7 @@ public class JatekAblak extends JFrame implements Observer {
         this.add(fomenü, BorderLayout.CENTER);
     }
 
-    public void jatekInditas(Telephely telephelyModell) {
+    public void jatekInditas(String jatekMod, Telephely telephelyModell){
         System.out.println("--> JatekAblak: jatekInditas() elindult, régi panel eltávolítása...");
 
         // 1. Letakarítunk mindent a JFrame-ről! Ez a legbiztosabb módszer.
@@ -89,26 +89,30 @@ public class JatekAblak extends JFrame implements Observer {
         java.util.List<funkcionalisElemek.Ut> utak = modell.getUtak();
 
         // 3. A feltételt is átírjuk az utakra, mert a globális savok lista üres
-        if (!utak.isEmpty() && !utak.get(0).getSavok().isEmpty()) {
-            // 1. Létrehozzuk a Hókotrót (tulajdonos ID: 0, és megkapja a telephelyet)
-            jarmuvek.Hokotro kezdoHokotro = new jarmuvek.Hokotro("hokotro_1", 0, telephelyModell);
-            
-            // 2. Létrehozzuk a Söprőfejet
-            kotrofejek.SoproFej kezdoFej = new kotrofejek.SoproFej();
-            
-            // Hogy az üzleti logika (Telephely.useFej) ne dobjon hibát, 
-            // előbb regisztráljuk a raktárba, majd felszereljük.
-            telephelyModell.tarol(kezdoFej);
-            kezdoHokotro.fejcsere(kezdoFej);
-            
-            // 3. Rárakjuk a pályára (az utak listából vett legelső sávra)
+if (!utak.isEmpty() && !utak.get(0).getSavok().isEmpty()) {
             funkcionalisElemek.Sav induloSav = utak.get(0).getSavok().get(0);
-            if (induloSav.elfogad(kezdoHokotro)) {
-                modell.addJarmu(kezdoHokotro);
+
+            if ("HOKOTRO".equals(jatekMod)) {
+                jarmuvek.Hokotro kezdoHokotro = new jarmuvek.Hokotro("hokotro_1", 0, telephelyModell);
+                kotrofejek.SoproFej kezdoFej = new kotrofejek.SoproFej();
+                telephelyModell.tarol(kezdoFej);
+                kezdoHokotro.fejcsere(kezdoFej);
                 
-                // Értesítjük a JatekterPanel-t, hogy rajzolja ki!
-                modell.notifyObservers(); 
+                if (induloSav.elfogad(kezdoHokotro)) {
+                    modell.addJarmu(kezdoHokotro);
+                }
+            } else if ("BUSZ".equals(jatekMod)) {
+                // Busz létrehozása és végállomások beállítása (pálya első és utolsó útja)
+                jarmuvek.Busz kezdoBusz = new jarmuvek.Busz("busz_1");
+                funkcionalisElemek.Ut vegallomas1 = utak.get(0);
+                funkcionalisElemek.Ut vegallomas2 = utak.get(utak.size() - 1);
+                kezdoBusz.setRoute(vegallomas1, vegallomas2);
+                
+                if (induloSav.elfogad(kezdoBusz)) {
+                    modell.addJarmu(kezdoBusz);
+                }
             }
+            modell.notifyObservers(); 
         }
         
 
