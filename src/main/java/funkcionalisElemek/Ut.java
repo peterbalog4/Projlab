@@ -32,6 +32,25 @@ public class Ut extends AbstractObservable {
     /** Véletlenszám-generátor a sávonkénti (1/10 esélyű) hóeséshez. */
     private static final java.util.Random HO_RANDOM = new java.util.Random();
     private boolean aktivCel = false;
+    /**
+     * Az út két végén lévő kereszteződés/kanyar tile-jai. A {@link vezerles.Map_generator}
+     * tölti ki a térkép betöltése után, így a hókotró {@code elertSavVeget()}-ben tudja
+     * letakarítani a megfelelő végén lévő tile-t (haladási irány szerint).
+     * Lehet {@code null}, ha az adott végen nincs kanyar/kereszteződés (pl. zsákutca).
+     */
+    private Tile vegA_tile;
+    private Tile vegB_tile;
+
+    /** A megadott vég ({@code "vegA"} / {@code "vegB"}) tile-jának beállítása. */
+    public void setVegTile(String veg, Tile tile) {
+        if ("vegA".equalsIgnoreCase(veg)) vegA_tile = tile;
+        else if ("vegB".equalsIgnoreCase(veg)) vegB_tile = tile;
+    }
+
+    /** A megadott vég tile-jának lekérdezése (null, ha nincs). */
+    public Tile getVegTile(String veg) {
+        return "vegA".equalsIgnoreCase(veg) ? vegA_tile : vegB_tile;
+    }
 
     public boolean isAktivCel() {
         return this.aktivCel;

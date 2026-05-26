@@ -1,10 +1,16 @@
 package grafika.view;
 
+import funkcionalisElemek.Tile;
+import grafika.Observer;
+
+import javax.imageio.ImageIO;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
+import java.io.File;
 
 /**
  * Egy 3- vagy 4-ágú kereszteződés letisztult megjelenítése.
@@ -17,12 +23,19 @@ import java.awt.RenderingHints;
  * A cella – a kanyarokhoz hasonlóan – a csomóponthoz illesztett, az út
  * szélességével megegyező oldalú négyzet (az utak +x/+y irányba terülnek el).
  */
-public class KeresztezodesView {
+public class KeresztezodesView implements Observer {
 
     private static final Color STOP_LINE = new Color(245, 245, 245, 220);
+    private static final Image HO_IMG = betoltKep("ho.PNG");
+
+    private static Image betoltKep(String nev) {
+        try { return ImageIO.read(new File(nev)); } catch (Exception e) { return null; }
+    }
 
     private final int cellX, cellY, meret;
     private final boolean eszak, del, kelet, nyugat;
+    private final Tile tile;
+    private int homennyiseg = 0;
 
     /**
      * @param cellX  A cella bal-fenti X koordinátája.
@@ -32,9 +45,11 @@ public class KeresztezodesView {
      * @param del    Indul-e út dél felé (alsó él).
      * @param kelet  Indul-e út kelet felé (jobb él).
      * @param nyugat Indul-e út nyugat felé (bal él).
+     * @param tile   A kereszteződéshez tartozó tile (hó-állapot). Lehet null.
      */
     public KeresztezodesView(int cellX, int cellY, int meret,
-                             boolean eszak, boolean del, boolean kelet, boolean nyugat) {
+                             boolean eszak, boolean del, boolean kelet, boolean nyugat,
+                             Tile tile) {
         this.cellX = cellX;
         this.cellY = cellY;
         this.meret = meret;
@@ -42,6 +57,13 @@ public class KeresztezodesView {
         this.del = del;
         this.kelet = kelet;
         this.nyugat = nyugat;
+        this.tile = tile;
+        if (tile != null) tile.addObserver(this);
+    }
+
+    @Override
+    public void update() {
+        if (tile != null) homennyiseg = tile.getHo();
     }
 
     /** Egységes aszfaltfolt + fehér megállási vonalak az úttal rendelkező oldalakon. */
@@ -52,6 +74,19 @@ public class KeresztezodesView {
         // Egységes aszfalt – elfedi a kereszteződő sávjelzéseket
         g2.setColor(KanyarView.ASPHALT);
         g2.fillRect(cellX, cellY, meret, meret);
+
+        // Havazás a kereszteződés tile-on (a sávhavazással konzisztens alpha)
+        if (homennyiseg > 0) {
+            int alpha = Math.min(210, 50 + homennyiseg * 35);
+            g2.setColor(new Color(255, 255, 255, alpha));
+            g2.fillRect(cellX, cellY, meret, meret);
+            if (HO_IMG != null) {
+                final int ICON = Math.max(20, meret / 4);
+                int ix = cellX + (meret - ICON) / 2;
+                int iy = cellY + (meret - ICON) / 2;
+                g2.drawImage(HO_IMG, ix, iy, ICON, ICON, null);
+            }
+        }
 
         // Megállási vonalak kissé beljebb húzva az éltől
         g2.setColor(STOP_LINE);

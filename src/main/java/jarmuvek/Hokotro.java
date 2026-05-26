@@ -2,8 +2,10 @@ package jarmuvek;
 
 import funkcionalisElemek.Sav;
 import funkcionalisElemek.Telephely;
+import funkcionalisElemek.Tile;
 import funkcionalisElemek.Ut;
 import kotrofejek.KotroFej;
+import segedOsztalyok.HaladasiIrany;
 
 /**
  * A hókotró járművet reprezentáló osztály, amely a Jármű alaposztályból származik.
@@ -63,6 +65,16 @@ public class Hokotro extends Jarmu {
             // Itt hívod meg a takarítást (a SoproFej vagy a hókotró saját logikája)
             // A lényeg, hogy a hó mennyisége 0-ra álljon a sávon
             this.dolgozik(); // Győződj meg róla, hogy a Sav.java-ban van ilyen metódusod!
+
+            // A kereszteződés/kanyar tile-t is takarítjuk: a sáv haladási iránya alapján
+            // a megfelelő végén lévő tile-t ürítjük (ha van ott egyáltalán). Ennek köszönhetően
+            // a hókotró áthaladása nyomban eltünteti a havat a kereszteződésről is.
+            Ut aktUt = aktualisSav.getUt();
+            if (aktUt != null) {
+                String veg = (aktualisSav.getIrany() == HaladasiIrany.A_BOL_B_BE) ? "vegB" : "vegA";
+                Tile vegTile = aktUt.getVegTile(veg);
+                if (vegTile != null) vegTile.hoTakarit();
+            }
         }
 
         // 2. KANYARODÁS / TOVÁBBHALADÁS

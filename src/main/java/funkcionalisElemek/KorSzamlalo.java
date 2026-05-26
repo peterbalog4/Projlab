@@ -47,6 +47,12 @@ public class KorSzamlalo extends AbstractObservable {
     private List<Sav> savok = new ArrayList<>();
 
     /**
+     * A pályán található összes „kereszteződés-tile" (kanyar + T- és 4-ágú
+     * kereszteződés) listája. Ezekre is hullik hó, ha a havazás aktív.
+     */
+    private List<Tile> tilek = new ArrayList<>();
+
+    /**
      * Jelzi, hogy ebben a körben esik-e hó.
      */
     private boolean hoesik = false;
@@ -88,6 +94,19 @@ public class KorSzamlalo extends AbstractObservable {
     }
 
     /**
+     * Új kereszteződés-tile-t ad a szimulációhoz. A havazási kör során minden
+     * tile-on 1/10 eséllyel hullik hó, ugyanúgy, mint a sávokon.
+     */
+    public void addTile(Tile t) {
+        tilek.add(t);
+    }
+
+    /** A pályán nyilvántartott tile-ok listája (csak olvasásra). */
+    public List<Tile> getTilek() {
+        return tilek;
+    }
+
+    /**
      * Beállítja, hogy a következő körben esik-e hó.
      *
      * @param hoesik {@code true}, ha hóesés lesz, {@code false} egyébként.
@@ -107,6 +126,7 @@ public class KorSzamlalo extends AbstractObservable {
         jarmuvek.clear();
         utak.clear();
         savok.clear();
+        tilek.clear();
         hoesik = false;
     }
 
@@ -155,6 +175,7 @@ public void leptet() {
     kor++;
     if (hoesik) {
         utak.forEach(Ut::hoNovel);
+        tilek.forEach(Tile::havazas);
     }
     savok.forEach(Sav::allapotFrissit);
 

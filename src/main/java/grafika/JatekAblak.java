@@ -73,7 +73,7 @@ public class JatekAblak extends JFrame implements Observer {
         // 3. Központi játéktér – JScrollPane-be ágyazva, mert az 5x5-ös rács 2+2-es
         // főutakkal nagyobb (~1040x1040 px), mint az ablakban rendelkezésre álló terület.
         JatekterPanel jatekter = new JatekterPanel(modell);
-        jatekter.setPreferredSize(new java.awt.Dimension(1000, 1000));
+        jatekter.setPreferredSize(new java.awt.Dimension(1150, 1150));
         modell.addObserver(jatekter);
         JScrollPane jatekterScroll = new JScrollPane(jatekter);
         jatekterScroll.getVerticalScrollBar().setUnitIncrement(24);

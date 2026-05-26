@@ -4,6 +4,7 @@ import funkcionalisElemek.KorSzamlalo;
 import funkcionalisElemek.Sav;
 import funkcionalisElemek.SzakaszTipus;
 import funkcionalisElemek.Telephely;
+import funkcionalisElemek.Tile;
 import funkcionalisElemek.Ut;
 import grafika.panel.JatekterPanel;
 import grafika.view.KanyarView;
@@ -118,7 +119,21 @@ public class Map_generator {
     private final Map<String, Ut>        utak       = new HashMap<>();
     private final Map<String, Telephely> telephelyek = new HashMap<>();
     private final Map<String, NodeAcc>   csomopontIranyok = new HashMap<>();
+    /**
+     * Node-id → {(út, vegA/vegB), ...} : a node-hoz csatlakozó utak és az adott
+     * node-on lévő végük. A {@link #generaljCsomopontGrafikat} ezekre a végekre
+     * állítja be az újonnan létrehozott Tile-t, hogy a hókotró
+     * {@code elertSavVeget()}-ben le tudja takarítani a kereszteződést.
+     */
+    private final Map<String, java.util.List<RoadEnd>> csomopontUtak = new HashMap<>();
     private final KorSzamlalo           korszamlalo;
+
+    /** Egy út egyik vége (melyik {@link Ut} és annak melyik vége egy adott node-on). */
+    private static class RoadEnd {
+        final Ut ut;
+        final String veg;
+        RoadEnd(Ut ut, String veg) { this.ut = ut; this.veg = veg; }
+    }
 
     // ── Konstruktor ────────────────────────────────────────────────────────
 
@@ -215,6 +230,13 @@ public class Map_generator {
                             }
                             csomopontIranyok.computeIfAbsent(idA, k -> new NodeAcc()).hozzaad(dirA, savokOsszesen);
                             csomopontIranyok.computeIfAbsent(idB, k -> new NodeAcc()).hozzaad(dirB, savokOsszesen);
+
+                            // Feljegyzés a kereszteződés-tile-okhoz: melyik út melyik vége tartozik
+                            // ide; a Tile létrehozásakor erre állítjuk be az Ut.vegA_tile / vegB_tile-t.
+                            csomopontUtak.computeIfAbsent(idA, k -> new java.util.ArrayList<>())
+                                    .add(new RoadEnd(u, "vegA"));
+                            csomopontUtak.computeIfAbsent(idB, k -> new java.util.ArrayList<>())
+                                    .add(new RoadEnd(u, "vegB"));
 
                             UtView utView = new UtView(u, geo.startX, geo.startY, geo.irany);
                             jatekter.addUtView(utView);
@@ -315,16 +337,36 @@ public class Map_generator {
                 else if (acc.N && acc.W) forgatas = 1;
                 else if (acc.N && acc.E) forgatas = 2;
                 else                     forgatas = 3; // K && D
-                jatekter.addKanyarView(new KanyarView(cellX, cellY, meret, forgatas));
+                Tile tile = new Tile("kanyar_" + e.getKey());
+                korszamlalo.addTile(tile);
+                hozzarendelTileUtakhoz(e.getKey(), tile);
+                jatekter.addKanyarView(new KanyarView(cellX, cellY, meret, forgatas, tile));
                 System.out.printf("[Map] Kanyar: %s  px=(%d,%d)  meret=%d  forgatas=%d%n",
                         e.getKey(), cellX, cellY, meret, forgatas);
 
             } else if (acc.iranyokSzama >= 3) {
+                Tile tile = new Tile("kereszt_" + e.getKey());
+                korszamlalo.addTile(tile);
+                hozzarendelTileUtakhoz(e.getKey(), tile);
                 jatekter.addKeresztezodesView(
-                        new KeresztezodesView(cellX, cellY, meret, acc.N, acc.S, acc.E, acc.W));
+                        new KeresztezodesView(cellX, cellY, meret, acc.N, acc.S, acc.E, acc.W, tile));
                 System.out.printf("[Map] Kereszteződés: %s  px=(%d,%d)  meret=%d  agak=%d%n",
                         e.getKey(), cellX, cellY, meret, acc.iranyokSzama);
             }
+        }
+    }
+
+    /**
+     * Az adott csomóponthoz csatlakozó összes út megfelelő végét ráköti a most
+     * létrehozott Tile-ra. Ennek köszönhetően a hókotró {@code elertSavVeget()}
+     * lekérheti az aktuális sáv útjáról a megfelelő végén lévő tile-t, és
+     * letakaríthatja a kereszteződés havát is.
+     */
+    private void hozzarendelTileUtakhoz(String nodeId, Tile tile) {
+        java.util.List<RoadEnd> list = csomopontUtak.get(nodeId);
+        if (list == null) return;
+        for (RoadEnd re : list) {
+            re.ut.setVegTile(re.veg, tile);
         }
     }
 

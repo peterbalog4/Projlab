@@ -26,33 +26,33 @@
 #    1+1 cella mérete  = 120 px (sávköteg 120)
 #    2+2 cella mérete  = 240 px (sávköteg 240) – mindenhol az 1. sor / 1. oszlop
 #                       node-jainál, mert ott legalább egy 2+2 csatlakozik
-#    Egységes spacing  = 270 px minden tengelyen. A leg-szűkebb (2+2↔2+2) szakasz
-#                       látható-út = 270 - 120 - 120 = 30 px (épp még megjelenik);
-#                       az 1+1↔2+2 szakaszokon 90 px látszik, az 1+1↔1+1-en 150 px.
-#  Maximum kiterjedés: 990 × 990 px.
+#    Egységes spacing  = 320 px minden tengelyen. A leg-szűkebb (2+2↔2+2) szakasz
+#                       látható-út = 320 - 120 - 120 = 80 px; az 1+1↔2+2-eken 140 px,
+#                       az 1+1↔1+1-en 200 px.
+#  Maximum kiterjedés: 1140 × 1140 px.
 # ════════════════════════════════════════════════════════════════
 
 # ─── Csomópontok ──────────────────────────────────────────────────
 # Sor 0 (csak 1+1 csatlakozók)
 node n00   60    60
-node n10  330    60
-node n20  600    60
-node n30  870    60
+node n10  380    60
+node n20  700    60
+node n30 1020    60
 # Sor 1 (vízszintes 2+2 főút)
-node n01   60   330
-node n11  330   330
-node n21  600   330
-node n31  870   330
+node n01   60   380
+node n11  380   380
+node n21  700   380
+node n31 1020   380
 # Sor 2 (1+1)
-node n02   60   600
-node n12  330   600
-node n22  600   600
-node n32  870   600
+node n02   60   700
+node n12  380   700
+node n22  700   700
+node n32 1020   700
 # Sor 3 (1+1)
-node n03   60   870
-node n13  330   870
-node n23  600   870
-node n33  870   870
+node n03   60  1020
+node n13  380  1020
+node n23  700  1020
+node n33 1020  1020
 
 # ─── Vízszintes utak ──────────────────────────────────────────────
 # Sor 0 (1+1)
