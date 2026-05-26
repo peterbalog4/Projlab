@@ -3,6 +3,7 @@ package grafika.view;
 import funkcionalisElemek.Ut;
 import funkcionalisElemek.SzakaszTipus;
 import grafika.Observer;
+import segedOsztalyok.HaladasiIrany;
 import segedOsztalyok.Irany;
 import funkcionalisElemek.Sav;
 
@@ -65,27 +66,44 @@ public class UtView implements Observer {
      * Felépíti a sávnézetek listáját a helyes koordinátákkal.
      * Egy irányban (a haladási iránnyal párhuzamosan) az út hossza adott.
      * Arra merőlegesen a sávok egymás mellé kerülnek, SAV_SZELLESEG lépésközzel.
+     *
+     * Jobb-oldali közlekedés: minden sáv a maga menetiránya szerinti jobb oldalon
+     * jelenjen meg. A „menetirány szerinti jobb" mindig a haladási irányhoz képest
+     * 90°-kal jobbra van (lefelé haladva nyugat = kis X, felfelé haladva kelet = nagy X):
+     *   JOBBRA: A→B (jobbra menő) alulra (nagy Y), B→A felülre (kis Y).
+     *   BALRA : A→B (balra menő)  felülre (kis Y), B→A alulra (nagy Y).
+     *   LE    : A→B (lefelé menő) balra (kis X), B→A jobbra (nagy X).
+     *   FEL   : A→B (felfelé menő) jobbra (nagy X), B→A balra (kis X).
+     * A modell {@code getSavok()} az A→B sávokat sorolja elsőként, így JOBBRA és FEL
+     * esetén a renderelési sorrendet meg kell fordítani, BALRA/LE esetén marad.
      */
     private void buildSavNezetek(int startX, int startY) {
         savNezetek.clear();
- 
-        List<Sav> savok = modell.getSavok();
+
+        List<Sav> rendezett = new ArrayList<>(modell.getSavok());
+        if (utIrany == Irany.JOBBRA || utIrany == Irany.FEL) {
+            // B→A sávok kerüljenek elsőként (kisebb offset), majd az A→B-k.
+            rendezett.sort((s1, s2) -> {
+                boolean s1AbolB = (s1.getIrany() == HaladasiIrany.A_BOL_B_BE);
+                boolean s2AbolB = (s2.getIrany() == HaladasiIrany.A_BOL_B_BE);
+                return Boolean.compare(s1AbolB, s2AbolB);
+            });
+        }
         int currentX = startX;
         int currentY = startY;
- 
-        for (Sav sav : savok) {
+
+        for (Sav sav : rendezett) {
             switch (utIrany) {
                 case FEL:
                 case LE:
-                    // Függőleges út, lefelé haladó. Az út teteje startY, alja startY+hossz.
+                    // Függőleges út. Az út teteje startY, alja startY+hossz.
                     savNezetek.add(new SavView(sav, currentX, currentY, utIrany));
                     currentX += SAV_SZELLESEG;
                     break;
- 
+
                 case JOBBRA:
                 case BALRA:
-                    // Vízszintes út, balra haladó. Az út jobb széle startX-nál van,
-                    // de a SavView-nak a bal felső sarokot adjuk át (startX).
+                    // Vízszintes út. A SavView-nak a bal felső sarkot adjuk át.
                     savNezetek.add(new SavView(sav, currentX, currentY, utIrany));
                     currentY += SAV_SZELLESEG;
                     break;
