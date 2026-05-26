@@ -248,45 +248,7 @@ public class TelephelyView extends JPanel implements Observer {
         biokerozinLabel.setText("Biokerozin: " + frissBiokerozin + " liter");
         soLabel.setText("Só: " + frissSo + " kg");
         zuzalekLabel.setText("Zúzalék: " + frissZuzalek + " kg");
-        if (hokotro != null && hokotro.getAktivFej() != null) {
-            KotroFej aktivFej = hokotro.getAktivFej();
-            String activeFejNev = aktivFej.getClass().getSimpleName();
-            
-            String anyagInfo = "";
-            boolean szuksegesUjratolteni = false; // Ezzel akadályozzuk meg a pazarlást
-            
-            // Anyagmennyiség kiszámítása és a gomb engedélyezése, HA NINCS TELE
-            if (aktivFej instanceof kotrofejek.SoszoroFej) {
-                int amount = ((kotrofejek.SoszoroFej) aktivFej).getSo();
-                String szin = (amount == 0) ? "red" : "blue"; // Ha nulla, piros lesz
-                anyagInfo = " (<font color='" + szin + "'>" + amount + "</font>/10 só)";
-                if (amount < 10) szuksegesUjratolteni = true;
-                
-            } else if (aktivFej instanceof kotrofejek.ZuzalekszoroFej) {
-                int amount = ((kotrofejek.ZuzalekszoroFej) aktivFej).getZuzalek();
-                String szin = (amount == 0) ? "red" : "blue";
-                anyagInfo = " (<font color='" + szin + "'>" + amount + "</font>/10 zúzalék)";
-                if (amount < 10) szuksegesUjratolteni = true;
-                
-            } else if (aktivFej instanceof kotrofejek.SarkanyFej) {
-                int amount = ((kotrofejek.SarkanyFej) aktivFej).getBiokerozin();
-                String szin = (amount == 0) ? "red" : "blue";
-                anyagInfo = " (<font color='" + szin + "'>" + amount + "</font>/10 kerozin)";
-                if (amount < 10) szuksegesUjratolteni = true;
-            }
-            
-            // Megjelenítjük a fej nevét és a hozzá tartozó készletinfót
-            jelenlegiFejLabel.setText("<html><b>Felszerelt fej:</b> <font color='blue'>" + activeFejNev + "</font>" + anyagInfo + "</html>");
-            
-            // A gomb csak akkor kattintható, ha OLYAN fej van rajta, amit LEHET tölteni, ÉS NINCS TELE
-            refillGomb.setEnabled(szuksegesUjratolteni);
-            
-        } else {
-            jelenlegiFejLabel.setText("<html><b>Felszerelt fej:</b> <font color='red'>Nincs</font></html>");
-            if (refillGomb != null) {
-                refillGomb.setEnabled(false);
-            }
-        }
+        
         List<KotroFej> frissFejek = modell.getKotrofejek();
 
         // 1. A SZÖVEGES LISTA (Label) frissítése
