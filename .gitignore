@@ -1,0 +1,12 @@
+# Maven build output (compiled .class files, jars, surefire reports)
+target/
+
+# IDE artifacts
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# OS artifacts
+.DS_Store
+Thumbs.db
