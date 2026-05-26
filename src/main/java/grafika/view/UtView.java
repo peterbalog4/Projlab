@@ -1,12 +1,5 @@
 package grafika.view;
  
-import funkcionalisElemek.Ut;
-import funkcionalisElemek.SzakaszTipus;
-import grafika.Observer;
-import segedOsztalyok.HaladasiIrany;
-import segedOsztalyok.Irany;
-import funkcionalisElemek.Sav;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -14,6 +7,13 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
 import java.util.List;
+
+import funkcionalisElemek.Sav;
+import funkcionalisElemek.SzakaszTipus;
+import funkcionalisElemek.Ut;
+import grafika.Observer;
+import segedOsztalyok.HaladasiIrany;
+import segedOsztalyok.Irany;
  
 /**
  * Az egész út globális megjelenítését és a sávok összefogását reprezentáló nézet.
@@ -39,11 +39,6 @@ public class UtView implements Observer {
 
     private int startX;
     private int startY;
-    private int kijeloles = 0;
-
-    public void setKijeloles(int kijelolesSzint) {
-        this.kijeloles = kijelolesSzint;
-    }
  
     /**
      * @param modell   A megfigyelt logikai Ut objektum.
@@ -155,34 +150,6 @@ public class UtView implements Observer {
             } else {
                 g2.drawRect(startX, startY, utHossz, utSzelesseg);
             }
-            g2.setStroke(regiStroke); 
-        }
-
-        // 2. Kijelölő keret kirajzolása (ha van)
-        if (kijeloles != 0) {
-            java.awt.Graphics2D g2 = (java.awt.Graphics2D) g;
-            java.awt.Stroke regiStroke = g2.getStroke();
-            g2.setStroke(new java.awt.BasicStroke(6f)); // 6 pixel vastag keret
-
-            if (kijeloles == 1) {
-                // Zöld, félig átlátszó keret
-                g2.setColor(new java.awt.Color(0, 255, 0, 180)); 
-            } else {
-                // Szürke, félig átlátszó keret
-                g2.setColor(new java.awt.Color(128, 128, 128, 180)); 
-            }
-
-            int utHossz = modell.getHossz();
-            int utSzelesseg = getTeljesszelesseg();
-
-            // A keret orientációja az út iránya alapján
-            if (utIrany == Irany.FEL || utIrany == Irany.LE) {
-                g2.drawRect(startX, startY, utSzelesseg, utHossz);
-            } else {
-                g2.drawRect(startX, startY, utHossz, utSzelesseg);
-            }
-
-            // Visszaállítjuk az ecsetet az eredetire
             g2.setStroke(regiStroke); 
         }
     }
@@ -340,4 +307,10 @@ public class UtView implements Observer {
         }
         return Math.sqrt(Math.pow(mouseX - centerX, 2) + Math.pow(mouseY - centerY, 2));
     }
+
+
+    public List<SavView> getSavNezetek() {
+        return this.savNezetek;
+    }
+    
 }

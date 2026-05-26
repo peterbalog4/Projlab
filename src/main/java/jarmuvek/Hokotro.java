@@ -38,6 +38,8 @@ public class Hokotro extends Jarmu {
      */
     private Ut kovetkezoUt;
 
+    private Sav kovetkezoSav;
+
     /**
      * Konstruktor a Hokotro osztályhoz.
      *
@@ -50,6 +52,7 @@ public class Hokotro extends Jarmu {
         this.tulajdonos = tulajdonos;
         this.telephely = telephely;
         this.kovetkezoUt = null;
+        this.kovetkezoSav = null;
     }
 
     /**
@@ -66,23 +69,31 @@ public class Hokotro extends Jarmu {
         }
 
         // 2. KANYARODÁS / TOVÁBBHALADÁS
-        if (kovetkezoUt != null) {
+        if (kovetkezoSav != null) {
+            Sav cel = kovetkezoSav;
+            kovetkezoSav = null;
+            kanyarodikSavba(cel);
+        } else if (kovetkezoUt != null) {
             Ut cel = kovetkezoUt;
             kovetkezoUt = null;
             kanyarodik(cel);
         } else {
-            // Ha nincs megadott út, továbbhaladunk a jelenlegi úton, ha lehet
             this.allapot = Allapot.KOZLEKEDIK;
         }
     }
-    /**A játékos adja meg a {@code move} paranccsal.
-     *
-     * @param ut A kívánt következő {@link Ut}.
-     */
     public void setKovetkezoUt(Ut ut) {
         this.kovetkezoUt = ut;
+        this.kovetkezoSav = null; // Töröljük a sávot, ha utat állítunk be
     }
 
+    public void setKovetkezoSav(Sav sav) {
+        this.kovetkezoSav = sav;
+        this.kovetkezoUt = null; // Töröljük az utat, ha sávot állítunk be
+    }
+
+    public Sav getKovetkezoSav() {
+        return this.kovetkezoSav;
+    }
     /**
      * A hókotró haladását megvalósító metódus, amelyet a KörSzámláló hív meg minden körben.
      *

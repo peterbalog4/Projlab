@@ -1,25 +1,24 @@
 package grafika.panel;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.JPanel;
+
+import funkcionalisElemek.KorSzamlalo;
 import grafika.Observer;
 import grafika.view.JarmuView;
 import grafika.view.KanyarView;
 import grafika.view.KeresztezodesView;
 import grafika.view.UtView;
-import jarmuvek.Hokotro;
 import jarmuvek.Jarmu;
-
-import javax.swing.*;
-
-import org.w3c.dom.events.MouseEvent;
-
-import funkcionalisElemek.KorSzamlalo;
-import funkcionalisElemek.Ut;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A fő játékablak központi része, a pálya vizualizációja.
@@ -56,9 +55,10 @@ public class JatekterPanel extends JPanel implements Observer {
     
     public void setAktivJatekos(String aktivJatekos) {
         this.aktivJatekos = aktivJatekos;
-        // Töröljük a kijelöléseket a kör átadásakor
         for (grafika.view.UtView uv : utakNezetei) {
-            uv.setKijeloles(0);
+            for (grafika.view.SavView sv : uv.getSavNezetek()) {
+                sv.setKijeloles(0);
+            }
         }
         repaint();
     }
@@ -66,6 +66,7 @@ public class JatekterPanel extends JPanel implements Observer {
     public String getAktivJatekos() {
         return aktivJatekos;
     }
+
 
     public JatekterPanel(KorSzamlalo modell) {
         this.modell = modell;
@@ -80,83 +81,85 @@ public class JatekterPanel extends JPanel implements Observer {
         setBackground(KanyarView.GRASS);
         
         // EGÉR IRÁNYÍTÁS BEKÖTÉSE
-        addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
+        addMouseListener(new java.awt.event.MouseAdapter(){
+           @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 int mouseX = e.getX();
                 int mouseY = e.getY();
                 
-            // 1. Megkeressük az aktuális játékos járművét
+                // 1. Megkeressük az aktuális játékos járművét
                 jarmuvek.Jarmu jatekosJarmu = null;
-                
                 if ("HOKOTRO".equals(aktivJatekos)) {
-                    // JAVÍTVA: Ha még nincs kiválasztva gép, vagy a meglévő már nincs a pályán
                     if (aktivHokotro == null || !modell.getJarmuvek().contains(aktivHokotro)) {
                         kovetkezoHokotro(); 
                     }
-                    jatekosJarmu = aktivHokotro; // Itt a kiválasztott gépet adjuk át!
+                    jatekosJarmu = aktivHokotro; 
                 } else if ("BUSZ".equals(aktivJatekos)) {
                     for (jarmuvek.Jarmu j : modell.getJarmuvek()) {
-                        if (j instanceof jarmuvek.Busz) {
-                            jatekosJarmu = j;
+                        if (j instanceof jarmuvek.Busz) { jatekosJarmu = j; break; }
+                    }
+                }
+
+                // 2. Minden sáv kijelölésének törlése
+                for (grafika.view.UtView uv : utakNezetei) {
+                    for (grafika.view.SavView sv : uv.getSavNezetek()) {
+                        sv.setKijeloles(0);
+                    }
+                }
+
+                // 3. Megkeressük, melyik SavView-ra kattintottunk
+                grafika.view.SavView celSavView = null;
+                for (grafika.view.UtView uv : utakNezetei) {
+                    for (grafika.view.SavView sv : uv.getSavNezetek()) {
+                        if (sv.contains(mouseX, mouseY)) {
+                            // Ugyanazt a sávot ne válasszuk ki, amin épp vagyunk
+                            if (jatekosJarmu != null && jatekosJarmu.getAktualisSav() == sv.getModell()) {
+                                continue;
+                            }
+                            celSavView = sv;
                             break;
                         }
                     }
+                    if (celSavView != null) break;
                 }
 
-                // 2. Minden út kijelölésének törlése
-                for (grafika.view.UtView uv : utakNezetei) {
-                    uv.setKijeloles(0);
-                }
-
-// 3. Megkeressük, melyik UtView-ra kattintottunk
-                double minTavolsag = Double.MAX_VALUE;
-                grafika.view.UtView celUtView = null;
-
-                for (grafika.view.UtView uv : utakNezetei) {
-                    if (uv.contains(mouseX, mouseY)) {
-                        funkcionalisElemek.Ut vizsgaltUt = uv.getModell();
-                        
-                        if (jatekosJarmu != null && jatekosJarmu.getAktualisSav() != null && jatekosJarmu.getAktualisSav().getUt() == vizsgaltUt) {
-                            continue;
-                        }
-                        
-                        double tav = uv.kozepTavolsag(mouseX, mouseY);
-                        if (tav < minTavolsag) {
-                            minTavolsag = tav;
-                            celUtView = uv;
-                        }
-                    }
-                }
-
-                if (celUtView != null && jatekosJarmu != null) {
+                // 4. Kijelölés érvényesítése
+                if (celSavView != null && jatekosJarmu != null) {
+                    funkcionalisElemek.Sav celSav = celSavView.getModell();
+                    funkcionalisElemek.Ut celUt = celSav.getUt();
                     funkcionalisElemek.Sav aktSav = jatekosJarmu.getAktualisSav();
                     boolean ervenyesKanyar = false;
 
                     if (aktSav != null) {
                         funkcionalisElemek.Ut aktUt = aktSav.getUt();
                         segedOsztalyok.HaladasiIrany irany = aktSav.getIrany();
-                        if (aktUt.getKapcsolatok(irany) != null) {
-                            ervenyesKanyar = aktUt.getKapcsolatok(irany).containsKey(celUtView.getModell());
+                        // Fizikai kapcsolat ellenőrzése
+                        if (aktUt.getKapcsolatok(irany) != null && aktUt.getKapcsolatok(irany).containsKey(celUt)) {
+                            String erkezesiVeg = aktUt.getKapcsolatok(irany).get(celUt);
+                            // Irány (sáv oldalának) ellenőrzése
+                            segedOsztalyok.HaladasiIrany vartIrany = erkezesiVeg.equals("vegA") ? segedOsztalyok.HaladasiIrany.A_BOL_B_BE : segedOsztalyok.HaladasiIrany.B_BOL_A_BA;
+                            
+                            if (celSav.getIrany() == vartIrany) {
+                                ervenyesKanyar = true;
+                            }
                         }
                     }
 
                     if (ervenyesKanyar) {
                         if (jatekosJarmu instanceof jarmuvek.Hokotro) {
-                            ((jarmuvek.Hokotro) jatekosJarmu).setKovetkezoUt(celUtView.getModell());
+                            ((jarmuvek.Hokotro) jatekosJarmu).setKovetkezoSav(celSav);
                         } else if (jatekosJarmu instanceof jarmuvek.Busz) {
-                            ((jarmuvek.Busz) jatekosJarmu).setKovetkezoUt(celUtView.getModell());
+                            ((jarmuvek.Busz) jatekosJarmu).setKovetkezoSav(celSav);
                         }
-                        System.out.println("Érvényes kijelölés! Új célpont átadva: " + celUtView.getModell().id);
+                        System.out.println("Érvényes kijelölés! Új célpont sáv: " + celSav.getId());
                     } else {
-                        celUtView.setKijeloles(2); 
-                        System.out.println("Érvénytelen kanyarodási cél!");
+                        celSavView.setKijeloles(2); // Érvénytelen cél = piros villanás
+                        System.out.println("Érvénytelen kanyarodási cél sáv (Nincs út vagy rossz irány)!");
                         repaint();
-                        return; // Kilépünk, hogy a piros villanás megmaradjon egy pillanatra
+                        return; 
                     }
                 }
                 
-                // Újraértékeljük az összes létező jármű úticélját, és azokat zöldre festjük
                 frissitKijelolesek();
                 
                 // Panel azonnali frissítése, hogy a keretek megjelenjenek
@@ -164,7 +167,6 @@ public class JatekterPanel extends JPanel implements Observer {
             }
         });
     }
-
     
 
     // Ezeket a metódusokat a pályabetöltő fogja használni,
@@ -261,12 +263,14 @@ public class JatekterPanel extends JPanel implements Observer {
 
     public void frissitKijelolesek() {
         for (grafika.view.UtView uv : utakNezetei) {
-            uv.setKijeloles(0);
-            for (jarmuvek.Jarmu jrm : modell.getJarmuvek()) {
-                if (jrm instanceof jarmuvek.Hokotro && ((jarmuvek.Hokotro) jrm).getKovetkezoUt() == uv.getModell()) {
-                    uv.setKijeloles(1);
-                } else if (jrm instanceof jarmuvek.Busz && ((jarmuvek.Busz) jrm).getKovetkezoUt() == uv.getModell()) {
-                    uv.setKijeloles(1);
+            for (grafika.view.SavView sv : uv.getSavNezetek()) {
+                sv.setKijeloles(0);
+                for (jarmuvek.Jarmu jrm : modell.getJarmuvek()) {
+                    if (jrm instanceof jarmuvek.Hokotro && ((jarmuvek.Hokotro) jrm).getKovetkezoSav() == sv.getModell()) {
+                        sv.setKijeloles(1);
+                    } else if (jrm instanceof jarmuvek.Busz && ((jarmuvek.Busz) jrm).getKovetkezoSav() == sv.getModell()) {
+                        sv.setKijeloles(1);
+                    }
                 }
             }
         }

@@ -314,4 +314,20 @@ public class Ut extends AbstractObservable {
                 celsav.zuzalekSzor();
         } 
     }
+
+    /**
+     * Átnavigálja a járművet egy kifejezetten kiválasztott sávba, feltéve hogy létezik az összeköttetés.
+     */
+    public void kanyarodikSavba(Jarmu j, Sav celSav, Sav honnanSav, HaladasiIrany honnanIrany) {
+        Ut celUt = celSav.getUt();
+        Map<Ut, String> kapcsolatok = (honnanIrany == HaladasiIrany.A_BOL_B_BE) ? vegB_kapcsolatok : vegA_kapcsolatok;
+        String erkezesiVeg = kapcsolatok.get(celUt);
+        
+        if (erkezesiVeg != null) {
+            System.out.println("    >>> KANYARODÁS SIKERES! Jármű átlépett a(z) " + celSav.getId() + " sávra.");
+            celSav.elfogad(j);
+        } else {
+            System.out.println("    [HIBA] Nem lehet kanyarodni a kért sávra! A két út nincs összekötve.");
+        }
+    }
 }

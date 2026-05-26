@@ -449,4 +449,11 @@ public class Sav extends AbstractObservable {
         return utkozesmentes;
     }
 
+    /**
+     * Delegálja a konkrét sávra való kanyarodási szándékot.
+     */
+    public void jarmuKanyarodikSavba(Jarmu j, Sav celSav) {
+        this.ut.kanyarodikSavba(j, celSav, this, this.haladasiIrany);
+    }
+
 }
