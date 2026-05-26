@@ -1,88 +1,183 @@
 # ═══════════════════════════════════════════════════════════════
-#  "Bízz bennem, mérnök leszek" – nagyobb városi térkép
+#  "Bízz bennem, mérnök leszek" – 4x4-es városi térkép
 # ═══════════════════════════════════════════════════════════════
 #
-#  3x3 csomópont-rács, 1+1 sávos utakkal (keskenyebb, úttest-szerű).
-#  Tartalmaz: 4 sarkot (kanyar), 4 T-kereszteződést és 1 db 4-ágú keresztet.
+#  4x4 csomópont-rács. Az 1-es sor (n01..n31) és az 1-es oszlop (n10..n13)
+#  egy 2+2 sávos főutat alkot, kereszt-alakzatban; a két főút az n11
+#  csomópontnál (nagy 4-ágú kereszteződés) találkozik. A többi 18 szakasz
+#  1+1 sávos.
 #
-#    n00 ── n10 ── n20
-#     │      │      │
-#    n01 ── n11 ── n21
-#     │      │      │
-#    n02 ── n12 ── n22
+#  ÚJ KONVENCIÓ: A node-pont mindig a kereszteződés/sávköteg KÖZÉPPONTJÁBAN
+#  van (nem a bal-felső sarokban, ahogy korábban). Az utak középvonala áthalad
+#  a node-pontokon; ennek köszönhetően a 1+1 és 2+2 sávos utak vizuálisan
+#  illeszkednek a kereszteződéseknél.
 #
-#  Koordináták: origó 40, rácstávolság 240, út-szélesség 120 (=2 sáv).
-#  Max kiterjedés: 640x640 px, így a HUD melletti játéktérben elfér.
+#    n00 ── n10 ── n20 ── n30
+#     │     ║      │      │
+#    n01 ══ n11 ══ n21 ══ n31      <-- 2+2 sávos vízszintes főút
+#     │     ║      │      │
+#    n02 ── n12 ── n22 ── n32
+#     │     ║      │      │
+#    n03 ── n13 ── n23 ── n33
+#           ↑
+#           2+2 sávos függőleges főút (n10..n13)
+#
+#  Koordináták (NODE = cella középpontja):
+#    1+1 cella mérete  = 120 px (sávköteg 120)
+#    2+2 cella mérete  = 240 px (sávköteg 240) – mindenhol az 1. sor / 1. oszlop
+#                       node-jainál, mert ott legalább egy 2+2 csatlakozik
+#    Egységes spacing  = 270 px minden tengelyen. A leg-szűkebb (2+2↔2+2) szakasz
+#                       látható-út = 270 - 120 - 120 = 30 px (épp még megjelenik);
+#                       az 1+1↔2+2 szakaszokon 90 px látszik, az 1+1↔1+1-en 150 px.
+#  Maximum kiterjedés: 990 × 990 px.
 # ════════════════════════════════════════════════════════════════
 
-# Csomópontok (x, y)
-node n00   40    40
-node n10  280    40
-node n20  520    40
-node n01   40   280
-node n11  280   280
-node n21  520   280
-node n02   40   520
-node n12  280   520
-node n22  520   520
+# ─── Csomópontok ──────────────────────────────────────────────────
+# Sor 0 (csak 1+1 csatlakozók)
+node n00   60    60
+node n10  330    60
+node n20  600    60
+node n30  870    60
+# Sor 1 (vízszintes 2+2 főút)
+node n01   60   330
+node n11  330   330
+node n21  600   330
+node n31  870   330
+# Sor 2 (1+1)
+node n02   60   600
+node n12  330   600
+node n22  600   600
+node n32  870   600
+# Sor 3 (1+1)
+node n03   60   870
+node n13  330   870
+node n23  600   870
+node n33  870   870
 
-# Vízszintes utak: road <id> <savokA> <savokB> <nodeA> <nodeB> [tipus]
-road rh0 1 1 n00 n10
-road rh1 1 1 n10 n20 hid          # HÍD: a felső szakaszon a járművek egymás felett mennek el
-road rh2 1 1 n01 n11
-road rh3 1 1 n11 n21
-road rh4 1 1 n02 n12
-road rh5 1 1 n12 n22
+# ─── Vízszintes utak ──────────────────────────────────────────────
+# Sor 0 (1+1)
+road rh00 1 1 n00 n10
+road rh01 1 1 n10 n20 hid       # HÍD: a felső sor egyik 1+1 szakasza
+road rh02 1 1 n20 n30
+# Sor 1 (2+2 főút)
+road rh10 2 2 n01 n11
+road rh11 2 2 n11 n21
+road rh12 2 2 n21 n31
+# Sor 2 (1+1)
+road rh20 1 1 n02 n12
+road rh21 1 1 n12 n22
+road rh22 1 1 n22 n32
+# Sor 3 (1+1)
+road rh30 1 1 n03 n13
+road rh31 1 1 n13 n23
+road rh32 1 1 n23 n33
 
-# Függőleges utak
-road rv0 1 1 n00 n01
-road rv1 1 1 n01 n02 alagut       # ALAGÚT: a járművek egymás alatt haladnak el
-road rv2 1 1 n10 n11
-road rv3 1 1 n11 n12
-road rv4 1 1 n20 n21
-road rv5 1 1 n21 n22
+# ─── Függőleges utak ─────────────────────────────────────────────
+# Oszlop 0 (1+1)
+road rv00 1 1 n00 n01
+road rv01 1 1 n01 n02 alagut    # ALAGÚT: a bal oszlop egyik 1+1 szakasza
+road rv02 1 1 n02 n03
+# Oszlop 1 (2+2 főút)
+road rv10 2 2 n10 n11
+road rv11 2 2 n11 n12
+road rv12 2 2 n12 n13
+# Oszlop 2 (1+1)
+road rv20 1 1 n20 n21
+road rv21 1 1 n21 n22
+road rv22 1 1 n22 n23
+# Oszlop 3 (1+1)
+road rv30 1 1 n30 n31
+road rv31 1 1 n31 n32
+road rv32 1 1 n32 n33
 
-# ─── ÖSSZEKÖTTETÉSEK (CSOMÓPONTOK) ───
+# ─── ÖSSZEKÖTTETÉSEK (csomópontonként) ─────────────────────────
+# Sor 0 -----------------------------------------------------------
+# n00 (bal-felső sarok)
+connect rh00 vegA rv00 vegA
 
-# n00 (Bal felső sarok)
-connect rh0 vegA rv0 vegA
+# n10 (T-elágazás)
+connect rh00 vegB rh01 vegA
+connect rh00 vegB rv10 vegA
+connect rh01 vegA rv10 vegA
 
-# n10 (Felső T-kereszteződés)
-connect rh0 vegB rh1 vegA
-connect rh0 vegB rv2 vegA
-connect rh1 vegA rv2 vegA
+# n20 (T)
+connect rh01 vegB rh02 vegA
+connect rh01 vegB rv20 vegA
+connect rh02 vegA rv20 vegA
 
-# n20 (Jobb felső sarok)
-connect rh1 vegB rv4 vegA
+# n30 (jobb-felső sarok)
+connect rh02 vegB rv30 vegA
 
-# n01 (Bal oldali T-kereszteződés)
-connect rv0 vegB rv1 vegA
-connect rv0 vegB rh2 vegA
-connect rv1 vegA rh2 vegA
+# Sor 1 (vízszintes főút) -----------------------------------------
+# n01 (T)
+connect rv00 vegB rv01 vegA
+connect rv00 vegB rh10 vegA
+connect rv01 vegA rh10 vegA
 
-# n11 (Középső 4-ágú kereszteződés)
-connect rh2 vegB rh3 vegA
-connect rh2 vegB rv2 vegB
-connect rh2 vegB rv3 vegA
-connect rh3 vegA rv2 vegB
-connect rh3 vegA rv3 vegA
-connect rv2 vegB rv3 vegA
+# n11 (NAGY 4-ágú kereszteződés; a két 2+2 főút találkozik)
+connect rh10 vegB rh11 vegA
+connect rh10 vegB rv10 vegB
+connect rh10 vegB rv11 vegA
+connect rh11 vegA rv10 vegB
+connect rh11 vegA rv11 vegA
+connect rv10 vegB rv11 vegA
 
-# n21 (Jobb oldali T-kereszteződés)
-connect rh3 vegB rv4 vegB
-connect rh3 vegB rv5 vegA
-connect rv4 vegB rv5 vegA
+# n21 (4-ágú)
+connect rh11 vegB rh12 vegA
+connect rh11 vegB rv20 vegB
+connect rh11 vegB rv21 vegA
+connect rh12 vegA rv20 vegB
+connect rh12 vegA rv21 vegA
+connect rv20 vegB rv21 vegA
 
-# n02 (Bal alsó sarok)
-connect rv1 vegB rh4 vegA
+# n31 (T)
+connect rh12 vegB rv30 vegB
+connect rh12 vegB rv31 vegA
+connect rv30 vegB rv31 vegA
 
-# n12 (Alsó T-kereszteződés)
-connect rh4 vegB rh5 vegA
-connect rh4 vegB rv3 vegB
-connect rh5 vegA rv3 vegB
+# Sor 2 -----------------------------------------------------------
+# n02 (T)
+connect rv01 vegB rv02 vegA
+connect rv01 vegB rh20 vegA
+connect rv02 vegA rh20 vegA
 
-# n22 (Jobb alsó sarok)
-connect rh5 vegB rv5 vegB
+# n12 (4-ágú)
+connect rh20 vegB rh21 vegA
+connect rh20 vegB rv11 vegB
+connect rh20 vegB rv12 vegA
+connect rh21 vegA rv11 vegB
+connect rh21 vegA rv12 vegA
+connect rv11 vegB rv12 vegA
 
-# Telephely a bal-felső csomópontnál
+# n22 (4-ágú)
+connect rh21 vegB rh22 vegA
+connect rh21 vegB rv21 vegB
+connect rh21 vegB rv22 vegA
+connect rh22 vegA rv21 vegB
+connect rh22 vegA rv22 vegA
+connect rv21 vegB rv22 vegA
+
+# n32 (T)
+connect rh22 vegB rv31 vegB
+connect rh22 vegB rv32 vegA
+connect rv31 vegB rv32 vegA
+
+# Sor 3 -----------------------------------------------------------
+# n03 (bal-alsó sarok)
+connect rv02 vegB rh30 vegA
+
+# n13 (T)
+connect rh30 vegB rh31 vegA
+connect rh30 vegB rv12 vegB
+connect rh31 vegA rv12 vegB
+
+# n23 (T)
+connect rh31 vegB rh32 vegA
+connect rh31 vegB rv22 vegB
+connect rh32 vegA rv22 vegB
+
+# n33 (jobb-alsó sarok)
+connect rh32 vegB rv32 vegB
+
+# ─── Telephely ───────────────────────────────────────────────────
 depot d0 n00 5000
