@@ -109,7 +109,7 @@ public class JatekterPanel extends JPanel implements Observer {
                     uv.setKijeloles(0);
                 }
 
-                // 3. Megkeressük, melyik UtView-ra kattintottunk
+// 3. Megkeressük, melyik UtView-ra kattintottunk
                 double minTavolsag = Double.MAX_VALUE;
                 grafika.view.UtView celUtView = null;
 
@@ -117,7 +117,6 @@ public class JatekterPanel extends JPanel implements Observer {
                     if (uv.contains(mouseX, mouseY)) {
                         funkcionalisElemek.Ut vizsgaltUt = uv.getModell();
                         
-                        // Az aktuális utat ignoráljuk
                         if (jatekosJarmu != null && jatekosJarmu.getAktualisSav() != null && jatekosJarmu.getAktualisSav().getUt() == vizsgaltUt) {
                             continue;
                         }
@@ -137,14 +136,12 @@ public class JatekterPanel extends JPanel implements Observer {
                     if (aktSav != null) {
                         funkcionalisElemek.Ut aktUt = aktSav.getUt();
                         segedOsztalyok.HaladasiIrany irany = aktSav.getIrany();
-                        // JAVÍTVA: Csak akkor ellenőrizzük, ha nem null
                         if (aktUt.getKapcsolatok(irany) != null) {
                             ervenyesKanyar = aktUt.getKapcsolatok(irany).containsKey(celUtView.getModell());
                         }
                     }
 
                     if (ervenyesKanyar) {
-                        celUtView.setKijeloles(1); 
                         if (jatekosJarmu instanceof jarmuvek.Hokotro) {
                             ((jarmuvek.Hokotro) jatekosJarmu).setKovetkezoUt(celUtView.getModell());
                         } else if (jatekosJarmu instanceof jarmuvek.Busz) {
@@ -153,9 +150,14 @@ public class JatekterPanel extends JPanel implements Observer {
                         System.out.println("Érvényes kijelölés! Új célpont átadva: " + celUtView.getModell().id);
                     } else {
                         celUtView.setKijeloles(2); 
-                        System.out.println("Érvénytelen kanyarodási cél: Nincs összeköttetés!");
+                        System.out.println("Érvénytelen kanyarodási cél!");
+                        repaint();
+                        return; // Kilépünk, hogy a piros villanás megmaradjon egy pillanatra
                     }
                 }
+                
+                // Újraértékeljük az összes létező jármű úticélját, és azokat zöldre festjük
+                frissitKijelolesek();
                 
                 // Panel azonnali frissítése, hogy a keretek megjelenjenek
                 repaint();
@@ -186,7 +188,7 @@ public class JatekterPanel extends JPanel implements Observer {
      * illetve ha állapotváltozás történik.
      */
     @Override
-public void update() {
+    public void update() {
         // PULL fázis: Lekérjük az összes aktuális járművet a modelltől
         List<Jarmu> aktualisJarmuvek = modell.getJarmuvek();
 
@@ -208,6 +210,7 @@ public void update() {
         }
 
         // A Swing motorjának jelezzük, hogy rajzoljon újra mindent
+        frissitKijelolesek();
         repaint();
     }
 
@@ -239,5 +242,43 @@ public void update() {
         for (JarmuView jv : jarmuvekNezetei) {
             jv.draw(g);
         }
+        // 5. Kijelölt jármű megjelölése sárga gyűrűvel
+        if ("HOKOTRO".equals(aktivJatekos) && aktivHokotro != null) {
+            JarmuView jv = jarmuNezetekMap.get(aktivHokotro);
+            if (jv != null) {
+                Graphics2D g2 = (Graphics2D) g;
+                Stroke regiStroke = g2.getStroke();
+                g2.setColor(new Color(255, 215, 0, 220)); // Arany sárga
+                g2.setStroke(new BasicStroke(4f));
+                g2.drawOval(jv.getXKalkulalt() - 10, jv.getYKalkulalt() - 10, 70, 70); 
+                g2.setStroke(regiStroke);
+            }
+        }
+
+    }
+
+    
+
+    public void frissitKijelolesek() {
+        for (grafika.view.UtView uv : utakNezetei) {
+            uv.setKijeloles(0);
+            for (jarmuvek.Jarmu jrm : modell.getJarmuvek()) {
+                if (jrm instanceof jarmuvek.Hokotro && ((jarmuvek.Hokotro) jrm).getKovetkezoUt() == uv.getModell()) {
+                    uv.setKijeloles(1);
+                } else if (jrm instanceof jarmuvek.Busz && ((jarmuvek.Busz) jrm).getKovetkezoUt() == uv.getModell()) {
+                    uv.setKijeloles(1);
+                }
+            }
+        }
+        repaint();
+    }
+
+    public void setAktivHokotro(jarmuvek.Hokotro h) {
+        this.aktivHokotro = h;
+        repaint();
+    }
+
+    public jarmuvek.Hokotro getAktivHokotro() {
+        return this.aktivHokotro;
     }
 }

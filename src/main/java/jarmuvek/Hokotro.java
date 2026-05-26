@@ -236,5 +236,8 @@ public class Hokotro extends Jarmu {
         }
     }
 
+    public Ut getKovetkezoUt() {
+        return this.kovetkezoUt;
+    }
     
 }

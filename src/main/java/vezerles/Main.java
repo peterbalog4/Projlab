@@ -58,11 +58,7 @@ public class Main {
         KorSzamlalo kozpontiModell = new KorSzamlalo();
 
 
-        
-
-        // TODO: Pályabeolvasás (pl. test_map.txt) és kezdeti inicializálás [cite: 117]
-
-        // 2. A grafikus motor és ablak indítása a Swing eseménykezelő szálán (EDT) [cite: 17]
+        // 2. A grafikus motor és ablak indítása a Swing eseménykezelő szálán (EDT)
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -104,8 +100,8 @@ public class Main {
      * Interaktív menü, amellyel a tesztelő szám alapján választhat tesztesetet.
      */
     private static void interaktivMod() {
-        Scanner sc            = new Scanner(System.in);
-        TestRunner runner     = new TestRunner();
+        Scanner sc = new Scanner(System.in);
+        TestRunner runner = new TestRunner();
         OutputComparator komp = new OutputComparator();
 
         while (true) {

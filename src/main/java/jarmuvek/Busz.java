@@ -240,4 +240,7 @@ public class Busz extends Jarmu {
         super.statKiir(id, kimenet);
         kimenet.println("- Forduloszam: " + forduloSzam);
     }
+    public Ut getKovetkezoUt() {
+        return this.kovetkezoUt;
+    }
 }

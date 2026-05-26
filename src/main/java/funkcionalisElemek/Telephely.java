@@ -1,10 +1,11 @@
 package funkcionalisElemek;
 
-import grafika.AbstractObservable;
-import kotrofejek.*;
-import jarmuvek.Hokotro;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.util.*;
+import grafika.AbstractObservable;
+import jarmuvek.Hokotro;
+import kotrofejek.*;
 
 /**
  * Egy takarító játékos raktárát valósítja meg. Itt tudja elraktározni a Hókotrók Kotrófejeit és azok feltölthető
@@ -208,6 +209,7 @@ public class Telephely extends AbstractObservable {
             case "hokotro":
                 if (JMF >= hokotroAr) {
                     JMF -= hokotroAr;
+                    raktaronLevoHokotrok++;
                     sikeres = true; // Ez a régi kódból hiányzott!
                 }
                 break;

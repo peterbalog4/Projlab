@@ -3,6 +3,8 @@ package grafika.view;
 import funkcionalisElemek.Telephely;
 import grafika.Observer;
 import kotrofejek.KotroFej;
+import funkcionalisElemek.KorSzamlalo;
+import grafika.panel.JatekterPanel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -24,6 +26,8 @@ public class TelephelyView extends JPanel implements Observer {
     // Referencia a telephely logikai modelljére a pull alapú adatlekéréshez
     private Telephely modell;
     private jarmuvek.Hokotro hokotro;
+    private KorSzamlalo korszamlalo;
+    private JatekterPanel jatekter;
 
     // Swing UI elemek a statikus információk megjelenítéséhez
     private JLabel jmfLabel;
@@ -34,6 +38,8 @@ public class TelephelyView extends JPanel implements Observer {
     private JLabel jelenlegiFejLabel;
     private JButton refillGomb;
     private JButton boltGomb;
+    private JButton ujHokotroGomb;
+    private JButton valtasGomb;
 
     private JComboBox<String> fejekCombo;
     private JButton equipGomb;
@@ -43,9 +49,11 @@ public class TelephelyView extends JPanel implements Observer {
      * 
      * @param modell A megfigyelendő Telephely modell.
      */
-    public TelephelyView(Telephely modell, jarmuvek.Hokotro hokotro) {
+    public TelephelyView(Telephely modell, jarmuvek.Hokotro hokotro, KorSzamlalo korszamlalo, JatekterPanel jatekter) {
         this.modell = modell;
         this.hokotro = hokotro;
+        this.korszamlalo = korszamlalo;
+        this.jatekter = jatekter;
 
         // A panel elrendezésének és stílusának beállítása
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -129,6 +137,43 @@ public class TelephelyView extends JPanel implements Observer {
                 boltAblak.setVisible(true);
             }
         });
+
+        ujHokotroGomb = new JButton("🚜 Lerakás Raktárból (0 db)");
+        ujHokotroGomb.setAlignmentX(Component.CENTER_ALIGNMENT);
+        ujHokotroGomb.addActionListener(e -> {
+            if (this.modell.getRaktaronLevoHokotrok() > 0) {
+                java.util.List<funkcionalisElemek.Sav> savok = this.korszamlalo.getSavok();
+                if (!savok.isEmpty()) {
+                    jarmuvek.Hokotro ujHk = new jarmuvek.Hokotro("hokotro_" + System.currentTimeMillis(), 0, this.modell);
+                    kotrofejek.SoproFej kezdoFej = new kotrofejek.SoproFej();
+                    this.modell.tarol(kezdoFej);
+                    ujHk.fejcsere(kezdoFej);
+                    if (savok.get(0).elfogad(ujHk)) {
+                        this.korszamlalo.addJarmu(ujHk);
+                        this.modell.kiveszHokotrot();
+                        this.korszamlalo.notifyObservers();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "A kezdősáv le van zárva vagy foglalt!", "Hiba", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+
+        valtasGomb = new JButton("🔄 Irányítás Váltása");
+        valtasGomb.setAlignmentX(Component.CENTER_ALIGNMENT);
+        valtasGomb.addActionListener(e -> {
+            this.jatekter.kovetkezoHokotro();
+            setHokotro(this.jatekter.getAktivHokotro());
+            this.jatekter.frissitKijelolesek();
+        });
+
+        add(Box.createRigidArea(new Dimension(0, 20)));
+        add(new JLabel("FLOTTA KEZELÉS:"));
+        add(Box.createRigidArea(new Dimension(0, 5)));
+        add(ujHokotroGomb);
+        add(Box.createRigidArea(new Dimension(0, 5)));
+        add(valtasGomb);
+
         update();
     }
 
@@ -325,6 +370,10 @@ public class TelephelyView extends JPanel implements Observer {
             fejekCombo.setEnabled(false);
             equipGomb.setEnabled(false);
         }
+        
+        int raktaronLevo = modell.getRaktaronLevoHokotrok();
+        ujHokotroGomb.setText("🚜 Lerakás Raktárból (" + raktaronLevo + " db)");
+        ujHokotroGomb.setEnabled(raktaronLevo > 0);
 
         // Újrarajzolás kérése a Swing keretrendszertől
         repaint();
@@ -347,5 +396,10 @@ public class TelephelyView extends JPanel implements Observer {
         super.paintComponent(g);
         // Összekötjük a Swing rajzoló ciklusát a specifikált draw metódussal
         draw(g);
+    }
+
+    public void setHokotro(jarmuvek.Hokotro h) {
+        this.hokotro = h;
+        update(); // Azonnal frissíti a UI-t
     }
 }
