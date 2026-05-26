@@ -350,6 +350,11 @@ public class Sav extends AbstractObservable {
         return zuzalek;
     }
 
+    public boolean isSozott(){
+        return sozottIdotartam > 0;
+    }
+
+
 
     /**
      * TDA: Kéri az út objektumot a jármű megfelelő irányba történő átmozgatására.

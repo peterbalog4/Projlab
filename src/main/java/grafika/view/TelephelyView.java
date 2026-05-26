@@ -215,10 +215,7 @@ public class TelephelyView extends JPanel implements Observer {
             // Ha a SarkanyFej-ben nincs ujratoltEllenorzott, akkor sima ujratolt:
             // (Ha ott is megírtátok az ujratoltEllenorzott-t, akkor cseréld arra a lenti
             // sort!)
-            int elotte = modell.getBiokerozin();
-            fej.ujratolt(modell);
-            if (elotte > modell.getBiokerozin())
-                sikeres = true;
+            sikeres = fej.ujratoltEllenorzott(modell);
         }
 
         // --- VISSZAJELZÉS A JÁTÉKOSNAK ---
