@@ -160,6 +160,13 @@ public class Hokotro extends Jarmu {
             // Csak akkor fizetünk, ha a takarítás "sikeres" volt, ÉS volt is mit letakarítani
             if (tisztabb && (hoElotte > 0 || jegElotte)) {
                 telephely.JMFmodosit(1000000);
+            } else {
+                // --- ÚJ RÉSZ: KIKÉNYSZERÍTETT FRISSÍTÉS ---
+                // Ha nem takarított sikeresen (mert pl. nincs hó), a pénz nem nő, 
+                // de az anyag fogyhatott a háttérben! 
+                // A 0-s érték átadásával rávesszük a Telephelyet, hogy értesítse a HUD-ot a frissítésről!
+                telephely.JMFmodosit(0);
+                // ------------------------------------------
             }
         }
     }
