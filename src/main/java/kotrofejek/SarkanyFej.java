@@ -17,7 +17,7 @@ public class SarkanyFej extends KotroFej {
      * A Hókotróban aktuálisan tárolt biokerozin mennyiségét tartja számon. Ezt fogyasztja a fej a működése során.
      *
      */
-    private int biokerozin = 0;
+    private int biokerozin = 10;
     /**
      * Tárolja, hogy a takarító játékos bekapcsolta-e a fej működését.
      */

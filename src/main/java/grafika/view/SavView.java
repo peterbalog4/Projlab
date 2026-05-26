@@ -30,6 +30,9 @@ public class SavView implements Observer {
     // ÚJ: Lezárás ikonjának betöltése
     private static final Image LEZARVA_IMG = betoltKep("lezarva.png");
 
+    private static final Image soKep = betoltKep("so.png");
+    private static final Image zuzalekKep = betoltKep("zuzalek.png");
+
     /** Egy textúrát tölt be a projekt gyökeréből; hiba esetén null-t ad vissza. */
     private static Image betoltKep(String nev) {
         try {
@@ -54,6 +57,13 @@ public class SavView implements Observer {
     private final int MERET = 60; // A sáv vastagsága (a haladási irányra merőleges)
     private final Irany irany;
 
+    private boolean sozott; // Hogy ezt is egyszerűen elérjük
+    private java.util.List<String> retegSorrend = new java.util.ArrayList<>();
+    private int elozoHo = 0;
+    private boolean elozoJeg = false;
+    private boolean elozoZuzalek = false;
+    private boolean elozoSo = false;
+
     public SavView(Sav modell, int xKord, int yKord, Irany irany) {
         this.modell = modell;
         this.xKord = xKord;
@@ -72,8 +82,46 @@ public class SavView implements Observer {
         homennyiseg = modell.getHo();
         jeges = modell.isJeg();
         zuzalekos = modell.isZuzalek();
-        // ÚJ: Lekérdezzük a sáv lezárási állapotát a modelltől
         lezarva = modell.isLezarva(); 
+        sozott = modell.isSozott(); // Kérlek ellenőrizd, hogy a Sav.java-ban tényleg ez a getter neve!
+
+        // ─── IDŐRENDI SORREND FRISSÍTÉSE ───
+        
+        // Jég figyelése
+        if (jeges && !elozoJeg) {
+            retegSorrend.remove("jeg");
+            retegSorrend.add("jeg"); // Legfelülre tesszük
+        } else if (!jeges) {
+            retegSorrend.remove("jeg");
+        }
+        elozoJeg = jeges;
+
+        // Hó figyelése (ha nőtt a hó, akkor új hó esett, tehát felülre kerül)
+        if (homennyiseg > 0 && homennyiseg > elozoHo) {
+            retegSorrend.remove("ho");
+            retegSorrend.add("ho");
+        } else if (homennyiseg == 0) {
+            retegSorrend.remove("ho");
+        }
+        elozoHo = homennyiseg;
+
+        // Zúzalék figyelése
+        if (zuzalekos && !elozoZuzalek) {
+            retegSorrend.remove("zuzalek");
+            retegSorrend.add("zuzalek");
+        } else if (!zuzalekos) {
+            retegSorrend.remove("zuzalek");
+        }
+        elozoZuzalek = zuzalekos;
+
+        // Só figyelése
+        if (sozott && !elozoSo) {
+            retegSorrend.remove("so");
+            retegSorrend.add("so");
+        } else if (!sozott) {
+            retegSorrend.remove("so");
+        }
+        elozoSo = sozott;
     }
 
     public Sav getModell() { return modell; }
@@ -95,17 +143,25 @@ public class SavView implements Observer {
         rajzolUtAlap(g2d, w, h, fuggoleges);
         rajzolSavjelzes(g2d, w, h, fuggoleges);
 
-        if (jeges) {
-            rajzolReteg(g2d, JEG_IMG, new Color(0, 190, 255, 90), w, h, fuggoleges);
-        } else if (homennyiseg > 0) {
-            int alpha = Math.min(210, 50 + homennyiseg * 35); 
-            rajzolReteg(g2d, HO_IMG, new Color(255, 255, 255, alpha), w, h, fuggoleges);
-        } else if (zuzalekos) {
-            g2d.setColor(new Color(110, 110, 110, 120));
-            g2d.fillRect(xKord, yKord, w, h);
+        for (String reteg : retegSorrend) {
+            switch (reteg) {
+                case "jeg":
+                    rajzolReteg(g2d, JEG_IMG, new Color(0, 190, 255, 90), w, h, fuggoleges);
+                    break;
+                case "ho":
+                    int alpha = Math.min(210, 50 + homennyiseg * 35); 
+                    rajzolReteg(g2d, HO_IMG, new Color(255, 255, 255, alpha), w, h, fuggoleges);
+                    break;
+                case "zuzalek":
+                    rajzolReteg(g2d, zuzalekKep, new Color(110, 110, 110, 90), w, h, fuggoleges);
+                    break;
+                case "so":
+                    rajzolReteg(g2d, soKep, new Color(255, 255, 255, 60), w, h, fuggoleges);
+                    break;
+            }
         }
 
-        // ÚJ: Ha le van zárva, a sáv két végére rárajzoljuk az ikont (MERET x MERET formában)
+        // 5. Ha le van zárva, a sáv két végére rárajzoljuk az ikont (MERET x MERET formában)
         if (lezarva && LEZARVA_IMG != null) {
             if (fuggoleges) {
                 // Felső vég

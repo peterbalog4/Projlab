@@ -50,23 +50,26 @@ import java.util.Scanner;
  *
  * ── Koordináta-számítás ─────────────────────────────────────────────────────
  *
- *  Az UtView-nak mindig a sávok "bal felső sarkát" adjuk át (startX, startY),
- *  ahol "bal felső" a képernyő-koordináta-rendszerben értendő (Y lefelé nő).
+ *  A NODE-pont a kereszteződés / cella KÖZÉPPONTJA: minden csatlakozó út
+ *  középvonala a node-pontra esik. Ennek köszönhetően vegyes sávszámú utak is
+ *  vizuálisan illeszkednek (1+1 és 2+2 utak átmenete sima).
  *
  *  Vízszintes út (nodeA balra van):
- *      startX = min(nodeA.x, nodeB.x)
- *      startY = min(nodeA.y, nodeB.y)
+ *      sávköteg-szélesség sk = (savokA + savokB) * SAV_SZELLESEG
+ *      startX = min(nodeA.x, nodeB.x)         (a sávköteg az X tengely menti)
+ *      startY = nodeA.y - sk / 2              (a node a sávköteg KÖZEPE)
  *      hossz  = |nodeB.x - nodeA.x|
- *      irány  = JOBBRA
+ *      irány  = JOBBRA  (vagy BALRA, ha nodeB X-koord kisebb)
  *
  *  Függőleges út (nodeA fent van):
- *      startX = min(nodeA.x, nodeB.x)
+ *      startX = nodeA.x - sk / 2
  *      startY = min(nodeA.y, nodeB.y)
  *      hossz  = |nodeB.y - nodeA.y|
- *      irány  = FEL
+ *      irány  = FEL     (vagy LE)
  *
  *  A sávok egymás mellé (merőleges irányba) kerülnek SAV_SZELLESEG lépésközzel,
- *  ezt az UtView kezeli.
+ *  ezt az UtView kezeli. A kereszteződés/kanyar cellák szintén a node köré
+ *  centráltak: cellX = node.x - meret/2, cellY = node.y - meret/2.
  */
 public class Map_generator {
 
@@ -169,8 +172,11 @@ public class Map_generator {
                             Node b = requireNode(idB, lineNumber);
                             if (a == null || b == null) break;
 
-                            // Irány és hossz meghatározása
-                            RoadGeometry geo = computeGeometry(a, b, lineNumber);
+                            // Irány és hossz meghatározása. A sávköteg-szélesség is kell,
+                            // mert a node-pont a sávköteg KÖZEPÉN van: az út startX/startY
+                            // a (savokA+savokB) számtól függő offset-tel tolódik.
+                            int savokOsszesen = savokA + savokB;
+                            RoadGeometry geo = computeGeometry(a, b, savokOsszesen, lineNumber);
                             if (geo == null) break;
 
                             System.out.printf("[Map] Út: %s  %s→%s  hossz=%d  irány=%s  px=(%d,%d)%n",
@@ -199,7 +205,6 @@ public class Map_generator {
 
                             // Feljegyezzük, melyik csomópontból milyen irányba indul az út,
                             // hogy a betöltés végén legenerálhassuk a kanyar-csempéket.
-                            int savokOsszesen = savokA + savokB;
                             char dirA, dirB;
                             if (a.y == b.y) {                 // vízszintes út
                                 dirA = (b.x > a.x) ? 'E' : 'W';
@@ -298,6 +303,9 @@ public class Map_generator {
 
             NodeAcc acc = e.getValue();
             int meret = acc.savSzam * SAV_SZELESSEG;
+            // A node a cella KÖZEPÉN van (új konvenció), nem a sarkán.
+            int cellX = n.x - meret / 2;
+            int cellY = n.y - meret / 2;
             boolean vizszintesVan = acc.E || acc.W;
             boolean fuggolegesVan = acc.N || acc.S;
 
@@ -307,15 +315,15 @@ public class Map_generator {
                 else if (acc.N && acc.W) forgatas = 1;
                 else if (acc.N && acc.E) forgatas = 2;
                 else                     forgatas = 3; // K && D
-                jatekter.addKanyarView(new KanyarView(n.x, n.y, meret, forgatas));
+                jatekter.addKanyarView(new KanyarView(cellX, cellY, meret, forgatas));
                 System.out.printf("[Map] Kanyar: %s  px=(%d,%d)  meret=%d  forgatas=%d%n",
-                        e.getKey(), n.x, n.y, meret, forgatas);
+                        e.getKey(), cellX, cellY, meret, forgatas);
 
             } else if (acc.iranyokSzama >= 3) {
                 jatekter.addKeresztezodesView(
-                        new KeresztezodesView(n.x, n.y, meret, acc.N, acc.S, acc.E, acc.W));
+                        new KeresztezodesView(cellX, cellY, meret, acc.N, acc.S, acc.E, acc.W));
                 System.out.printf("[Map] Kereszteződés: %s  px=(%d,%d)  meret=%d  agak=%d%n",
-                        e.getKey(), n.x, n.y, meret, acc.iranyokSzama);
+                        e.getKey(), cellX, cellY, meret, acc.iranyokSzama);
             }
         }
     }
@@ -339,14 +347,15 @@ public class Map_generator {
      * Kiszámítja az út geometriáját a két végpont-csomópontból.
      *
      * Szabály:
-     *   – Vízszintes: nodeA.y == nodeB.y  → irány = JOBBRA
-     *   – Függőleges: nodeA.x == nodeB.x  → irány = FEL
+     *   – Vízszintes: nodeA.y == nodeB.y  → irány = JOBBRA / BALRA
+     *   – Függőleges: nodeA.x == nodeB.x  → irány = LE / FEL
      *   – Egyéb: hiba (átlós utak nem támogatottak)
      *
-     * A startX/startY mindig a kisebb koordinátájú végpont
-     * (azaz a bal-fent sarok), mert az UtView is így várja.
+     * A node-pont a sávköteg KÖZEPÉN van, ezért a startX/startY a node-tól
+     * a sávköteg fél-szélességével (sk/2) eltolva tolódik a "bal-fent sarok"
+     * felé. Ez biztosítja, hogy különböző sávszámú utak vizuálisan illeszkedjenek.
      */
-private RoadGeometry computeGeometry(Node a, Node b, int lineNumber) {
+    private RoadGeometry computeGeometry(Node a, Node b, int savokOsszesen, int lineNumber) {
         boolean vizszintes = (a.y == b.y);
         boolean fuggoleges = (a.x == b.x);
 
@@ -357,15 +366,15 @@ private RoadGeometry computeGeometry(Node a, Node b, int lineNumber) {
             return null;
         }
 
+        int sk = savokOsszesen * SAV_SZELESSEG; // sávköteg-szélesség
         if (vizszintes) {
             int startX = Math.min(a.x, b.x);
-            int startY = a.y;                   
+            int startY = a.y - sk / 2;           // a node a sávköteg közepe
             int hossz  = Math.abs(b.x - a.x);
-            // JAVÍTÁS: Dinamikus irány megállapítása vízszintes útnál
             Irany irany = (b.x > a.x) ? Irany.JOBBRA : Irany.BALRA;
             return new RoadGeometry(startX, startY, hossz, irany);
         } else {
-            int startX = a.x;                   
+            int startX = a.x - sk / 2;
             int startY = Math.min(a.y, b.y);
             int hossz  = Math.abs(b.y - a.y);
             Irany irany = (b.y > a.y) ? Irany.LE : Irany.FEL;

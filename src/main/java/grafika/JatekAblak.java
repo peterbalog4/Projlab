@@ -30,7 +30,7 @@ public class JatekAblak extends JFrame implements Observer {
 
         // Alapvető ablakbeállítások
         setTitle("Hókotrós Játék - Bízz bennem, mérnök leszek");
-        setSize(1024, 768);
+        setSize(1280, 1100);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); // Ablak középre helyezése
         setLayout(new BorderLayout());
@@ -70,10 +70,15 @@ public class JatekAblak extends JFrame implements Observer {
         JPanel jobbPanel = new JPanel(cardLayout);
         this.getContentPane().add(jobbPanel, BorderLayout.EAST);
 
-        // 3. Központi játéktér
-        JatekterPanel jatekter = new JatekterPanel(modell); 
+        // 3. Központi játéktér – JScrollPane-be ágyazva, mert az 5x5-ös rács 2+2-es
+        // főutakkal nagyobb (~1040x1040 px), mint az ablakban rendelkezésre álló terület.
+        JatekterPanel jatekter = new JatekterPanel(modell);
+        jatekter.setPreferredSize(new java.awt.Dimension(1000, 1000));
         modell.addObserver(jatekter);
-        this.getContentPane().add(jatekter, BorderLayout.CENTER);
+        JScrollPane jatekterScroll = new JScrollPane(jatekter);
+        jatekterScroll.getVerticalScrollBar().setUnitIncrement(24);
+        jatekterScroll.getHorizontalScrollBar().setUnitIncrement(24);
+        this.getContentPane().add(jatekterScroll, BorderLayout.CENTER);
 
         Map_generator map = new Map_generator(modell);
         map.load("src/main/java/vezerles/nagy_palya.txt", jatekter, telephelyModell);
