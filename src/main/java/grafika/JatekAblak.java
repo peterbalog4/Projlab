@@ -145,6 +145,7 @@ public class JatekAblak extends JFrame implements Observer {
                 grafika.view.BuszView buszHud = new grafika.view.BuszView(kezdoBusz);
                 modell.addObserver(buszHud);
                 jobbPanel.add(buszHud, "HUD");
+                jatekter.setAktivJatekos("BUSZ");
             }
             modell.notifyObservers(); 
         }

@@ -162,7 +162,7 @@ public class Busz extends Jarmu {
 
         // 4. Normál haladás és ütközésvizsgálat
         allapot = Allapot.KOZLEKEDIK;
-        pozicio.halad(this, 300); // Normál sebességű lépés
+        pozicio.halad(this, 500); // Normál sebességű lépés
         
         // 5. Szólunk a sávnak, hogy mozogtunk, ellenőrizze nekimentünk-e valakinek
         if (aktualisSav != null) {

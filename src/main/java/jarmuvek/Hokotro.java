@@ -128,7 +128,7 @@ public class Hokotro extends Jarmu {
         dolgozik();
 
         allapot = Allapot.KOZLEKEDIK;
-        pozicio.halad(this, 300);
+        pozicio.halad(this, 500);
         if (aktualisSav != null) {
             aktualisSav.jarmuMozgott(this);
         }
