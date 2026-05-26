@@ -109,7 +109,7 @@ public class JatekAblak extends JFrame implements Observer {
                 kezdoHokotro.fejcsere(kezdoFej);
                 if (induloSav.elfogad(kezdoHokotro)) modell.addJarmu(kezdoHokotro);
 
-                TelephelyView telephelyHud = new TelephelyView(telephelyModell, kezdoHokotro);
+               TelephelyView telephelyHud = new TelephelyView(telephelyModell, kezdoHokotro, modell, jatekter); 
                 telephelyModell.addObserver(telephelyHud);
                 jobbPanel.add(telephelyHud, "HOKOTRO");
 
@@ -131,7 +131,7 @@ public class JatekAblak extends JFrame implements Observer {
                 kezdoHokotro.fejcsere(kezdoFej);
                 if (induloSav.elfogad(kezdoHokotro)) modell.addJarmu(kezdoHokotro);
 
-                TelephelyView telephelyHud = new TelephelyView(telephelyModell, kezdoHokotro);
+                TelephelyView telephelyHud = new TelephelyView(telephelyModell, kezdoHokotro, modell, jatekter);
                 telephelyModell.addObserver(telephelyHud);
                 jobbPanel.add(telephelyHud, "HUD");
             } else if ("BUSZ".equals(jatekMod)) {
@@ -185,30 +185,6 @@ public class JatekAblak extends JFrame implements Observer {
             }
         });
 
-        // Új gombok (raktárkezelés)
-        JButton ujHokotroGomb = new JButton("🚜 Lerakás Raktárból");
-        ujHokotroGomb.addActionListener(e -> {
-            if (telephelyModell.getRaktaronLevoHokotrok() > 0) {
-                java.util.List<funkcionalisElemek.Sav> savok = modell.getSavok();
-                if (!savok.isEmpty()) {
-                    jarmuvek.Hokotro ujHk = new jarmuvek.Hokotro("hokotro_" + System.currentTimeMillis(), 0, telephelyModell);
-                    kotrofejek.SoproFej kezdoFej = new kotrofejek.SoproFej();
-                    telephelyModell.tarol(kezdoFej);
-                    ujHk.fejcsere(kezdoFej);
-                    if (savok.get(0).elfogad(ujHk)) {
-                        modell.addJarmu(ujHk);
-                        telephelyModell.kiveszHokotrot();
-                        modell.notifyObservers();
-                    }
-                }
-            }
-        });
-
-        JButton valtasGomb = new JButton("🔄 Irányítás Váltása");
-        valtasGomb.addActionListener(e -> jatekter.kovetkezoHokotro());
-
-        jobbPanel.add(ujHokotroGomb, "HOKOTRO");
-        jobbPanel.add(valtasGomb, "HOKOTRO");
         alsoPanel.add(leptoGomb);
         this.getContentPane().add(alsoPanel, BorderLayout.SOUTH);
 

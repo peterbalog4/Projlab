@@ -39,6 +39,8 @@ public class Busz extends Jarmu {
      */
     private Ut kovetkezoUt;
 
+    private Sav kovetkezoSav;
+
     /**
      * Konstruktor a Busz osztályhoz.
      *
@@ -70,14 +72,18 @@ public class Busz extends Jarmu {
         }
     }
 
-    /**
-     * Beállítja a következő utat, amelyre a busz kanyarodni fog a következő
-     * kereszteződésben. A játékos adja meg a {@code move} paranccsal.
-     *
-     * @param ut A kívánt következő {@link Ut}.
-     */
     public void setKovetkezoUt(Ut ut) {
         this.kovetkezoUt = ut;
+        this.kovetkezoSav = null; // Töröljük a sávot, ha utat állítunk be
+    }
+
+    public void setKovetkezoSav(Sav sav) {
+        this.kovetkezoSav = sav;
+        this.kovetkezoUt = null; // Töröljük az utat, ha sávot állítunk be
+    }
+
+    public Sav getKovetkezoSav() {
+        return this.kovetkezoSav;
     }
 
     /**
@@ -117,12 +123,15 @@ public class Busz extends Jarmu {
             }
         }
         
-        if (kovetkezoUt != null) {
+        if (kovetkezoSav != null) {
+            Sav cel = kovetkezoSav;
+            kovetkezoSav = null;
+            kanyarodikSavba(cel);
+        } else if (kovetkezoUt != null) {
             Ut cel = kovetkezoUt;
             kovetkezoUt = null;
             kanyarodik(cel);
         } else {
-            this.varakozasiIdo = 0; //TODO ezt megoldani, szar itt a kód, else ágban is megy tovább
             this.allapot = Allapot.KOZLEKEDIK;
         }
     }
@@ -153,7 +162,7 @@ public class Busz extends Jarmu {
 
         // 4. Normál haladás és ütközésvizsgálat
         allapot = Allapot.KOZLEKEDIK;
-        pozicio.halad(this, 50); // Normál sebességű lépés
+        pozicio.halad(this, 300); // Normál sebességű lépés
         
         // 5. Szólunk a sávnak, hogy mozogtunk, ellenőrizze nekimentünk-e valakinek
         if (aktualisSav != null) {
@@ -239,5 +248,8 @@ public class Busz extends Jarmu {
     public void statKiir(String id, java.io.PrintStream kimenet) {
         super.statKiir(id, kimenet);
         kimenet.println("- Forduloszam: " + forduloSzam);
+    }
+    public Ut getKovetkezoUt() {
+        return this.kovetkezoUt;
     }
 }

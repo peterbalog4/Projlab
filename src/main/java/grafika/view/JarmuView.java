@@ -129,4 +129,6 @@ public class JarmuView implements Observer {
             g.drawImage(utkozesSprite, xKalkulalt, yKalkulalt, null);
         }
     }
+    public int getXKalkulalt() { return xKalkulalt; }
+    public int getYKalkulalt() { return yKalkulalt; }
 }

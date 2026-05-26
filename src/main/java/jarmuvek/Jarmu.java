@@ -175,6 +175,18 @@ public abstract class Jarmu {
     }
 
     /**
+     * Végrehajtja a jármű kanyarodását egy konkrét cél sávra.
+     */
+    public void kanyarodikSavba(Sav celSav) {
+        if (aktualisSav != null) {
+            aktualisSav.jarmuKanyarodikSavba(this, celSav);
+            if (this.allapot != Allapot.OSSZECSUSZOTT) {
+                this.allapot = Allapot.KOZLEKEDIK;
+            }
+        }
+    }
+
+    /**
      * Körönként végrehajtandó mozgáslogika – minden leszármazott saját
      * szabályai szerint valósítja meg.
      */

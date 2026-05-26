@@ -32,13 +32,13 @@ public class KorSzamlalo extends AbstractObservable {
     /**
      * A pályán található összes jármű listája.
      */
-    private List<Jarmu> jarmuvek = new ArrayList<>();
+    private final List<Jarmu> jarmuvek = new ArrayList<>();
 
     /**
      * A pályán található összes út listája.
      * A hóesés szimulálásához szükséges.
      */
-    private List<Ut> utak = new ArrayList<>();
+    private final List<Ut> utak = new ArrayList<>();
 
     /**
      * A pályán található összes sáv listája.

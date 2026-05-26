@@ -1,10 +1,5 @@
 package grafika.view;
 
-import funkcionalisElemek.Sav;
-import grafika.Observer;
-import segedOsztalyok.Irany;
-
-import javax.imageio.ImageIO;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -13,6 +8,12 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.io.File;
 import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+import funkcionalisElemek.Sav;
+import grafika.Observer;
+import segedOsztalyok.Irany;
 
 /**
  * A játéktér egy sávjának megjelenítéséért felelős nézet.
@@ -63,6 +64,7 @@ public class SavView implements Observer {
     private boolean elozoJeg = false;
     private boolean elozoZuzalek = false;
     private boolean elozoSo = false;
+    private int kijeloles = 0; // 0: nincs, 1: kiválasztott (zöld), 2: érvénytelen (piros)
 
     public SavView(Sav modell, int xKord, int yKord, Irany irany) {
         this.modell = modell;
@@ -124,6 +126,27 @@ public class SavView implements Observer {
         elozoSo = sozott;
     }
 
+    public void setKijeloles(int kijelolesSzint) {
+        this.kijeloles = kijelolesSzint;
+    }
+
+    public boolean contains(int mouseX, int mouseY) {
+        boolean fuggoleges = (irany == Irany.FEL || irany == Irany.LE);
+        int h = fuggoleges ? modell.getHossz() : MERET;
+        int w = fuggoleges ? MERET : modell.getHossz();
+        int padding = 60; // Hogy a kereszteződésben is rákattinthass
+
+        if (fuggoleges) {
+            return mouseX >= xKord && mouseX <= xKord + w &&
+                   mouseY >= (yKord - padding) && mouseY <= (yKord + h + padding);
+        } else {
+            return mouseX >= (xKord - padding) && mouseX <= (xKord + w + padding) &&
+                   mouseY >= yKord && mouseY <= yKord + h;
+        }
+    }
+
+    
+
     public Sav getModell() { return modell; }
 
     public int getXKord() { return xKord; }
@@ -175,7 +198,18 @@ public class SavView implements Observer {
                 g2d.drawImage(LEZARVA_IMG, xKord + w - MERET, yKord, MERET, MERET, null);
             }
         }
-
+        // Kijelölő keret rajzolása a konkrét sáv köré
+        if (kijeloles != 0) {
+            Graphics2D r = (Graphics2D) g2d.create();
+            r.setStroke(new BasicStroke(4f));
+            if (kijeloles == 1) {
+                r.setColor(new Color(0, 255, 0, 180)); // Zöld keret
+            } else {
+                r.setColor(new Color(255, 0, 0, 180)); // Piros villanás (hibás irány)
+            }
+            r.drawRect(xKord, yKord, w, h);
+            r.dispose();
+        }
         g2d.dispose();
     }
 
